@@ -36,9 +36,12 @@ export {default as ProductStars} from "./components/products/productReviews/Prod
 export {default as Cart} from "./components/cart/Cart";
 export {default as TextCart} from "./components/cart/TextCart";
 export {default as CartProducts} from "./components/cart/CartProducts";
-export {default as CartDashbaord} from "./components/cart/Dashboard/CartDashbaord";
-export {default as DashboardData} from "./components/cart/Dashboard/DashboardData";
-export {default as ClearCartButton} from "./components/cart/Dashboard/ClearCartButton";
+
+// dashboard
+export {default as CartDashbaord} from "./components/Dashboard/CartDashbaord";
+export {default as Userdashboard} from "./components/Dashboard/Userdashboard";
+export {default as DashboardData} from "./components/Dashboard/DashboardData";
+export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton";
 
 // login
 export {default as LoginText} from "./components/Login/LoginText";

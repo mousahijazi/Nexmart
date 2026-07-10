@@ -8,7 +8,7 @@ export default function LogoutButton() {
         <button
             onClick={logout}
             className="
-            bg-red-500
+            bg-red-600
             text-white
             px-8 py-3
             rounded-2xl

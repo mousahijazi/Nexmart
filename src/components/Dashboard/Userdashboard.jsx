@@ -7,6 +7,7 @@ import { useProductContext } from "@/Context/CartProvider";
 export default function Userdashboard() {
   const { user, loading } = useUserContext();
   const { cart } = useProductContext();
+  
   if (loading) {
     return (
       <div className="bg-white shadow-lg py-12 px-6 rounded-2xl animate-pulse">

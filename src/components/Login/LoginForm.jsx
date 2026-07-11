@@ -7,14 +7,9 @@ import { loginUser } from "@/helper/fetchApi";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm() {
-    // router
     const router = useRouter(); 
-
-    // context
     const { setUser, user } = useUserContext();
     const {showAlert} = useAlertContext();
-
-    // state
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -31,6 +26,9 @@ export default function LoginForm() {
             showAlert("You are already logged in", "danger");
             return;
         } 
+
+        localStorage.setItem(`user-${userData.id}`, JSON.stringify(userData));
+        localStorage.setItem("current-user-id", String(userData.id));
 
         setUser(userData);
         showAlert(`Welcom Back ${userData.firstName}`);

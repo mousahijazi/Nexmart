@@ -21,7 +21,7 @@ export default function Icon() {
             </Link>
             <LoginButton />
             {user && (
-                <Link href={`/user/${user?.id}`}>
+                <Link href={`/user`}>
                     <Image
                         src={user?.image || `/Profile.jpg`}
                         alt={user?.firstName || "Guest"}

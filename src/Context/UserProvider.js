@@ -12,6 +12,12 @@ export default function UserProvider({children}) {
   const {showAlert} = useAlertContext();
 
   useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/");
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
     const currentId = localStorage.getItem("current-user-id");
     if (!currentId) {
       setLoading(false);

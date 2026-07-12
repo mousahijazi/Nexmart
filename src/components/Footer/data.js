@@ -40,15 +40,14 @@ export const UtilityData = [
     },
 ];
 
+import { Mail, Phone } from "lucide-react";
 export const ContactData = [
     {
         text: "mousaeseady@gmail.com",
-        url: "/icons/email.svg",
-        alt: "email",
+        icon: <Mail size={18} strokeWidth={2.2} />,
     },
     {
         text: "+970 595 560 240",
-        url: "/icons/phone.svg",
-        alt: "phone number",
+        icon: <Phone size={18} strokeWidth={2.2} />,
     },
 ]

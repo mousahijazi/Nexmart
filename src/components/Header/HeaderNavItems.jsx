@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import { Nav, Icon } from "@/index";
-import Image from "next/image";
+import { Menu } from "lucide-react";
 
 export default function HeaderNavItems() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,15 +16,10 @@ export default function HeaderNavItems() {
       </div>
       
       <button 
-          className="block md:hidden cursor-pointer"
+          className="block lg:hidden cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
       >
-          <Image 
-              src="/burger-menu.svg"
-              alt="Menu"
-              width={60}
-              height={60}
-          />
+          <Menu size={60} strokeWidth={3} className="dark:text-[#f1f1f1]" />
       </button>
     </>
   )

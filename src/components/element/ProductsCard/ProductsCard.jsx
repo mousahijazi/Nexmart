@@ -9,17 +9,17 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
             <div 
                 key={index} 
                 className={`
-                    bg-white 
+                    bg-white dark:bg-[#181512]
                     rounded-3xl 
                     overflow-hidden 
-                    shadow-md hover:shadow-xl 
+                    shadow-md dark:shadow-black/60 hover:shadow-xl 
                     hover:-translate-y-2 
                     transition duration-300
                     group
                 `}
             >
                 <Link href={`/products/${product.id}`}>
-                    <div className="relative h-64 bg-[#F9F7F3]">
+                    <div className="relative h-64 bg-[#F9F7F3] dark:bg-[#1f1b17]">
                         <Image
                             src={product.thumbnail}
                             alt={product.title}
@@ -48,15 +48,15 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
                     </div>
 
                     <div className="p-4 flex flex-col gap-2">
-                        <h1 className="font-semibold text-[#5B3A21] line-clamp-1">
+                        <h1 className="font-semibold text-[#5B3A21] dark:text-[#F5EBE6] line-clamp-1">
                             {product.title}
                         </h1>
-                        <p className="text-sm text-gray-500 mt-2 line-clamp-2">
+                        <p className="text-sm text-gray-500 dark:text-[#e5ded8] mt-2 line-clamp-2">
                             {product.description}
                         </p>
 
                         {showRating && (
-                            <div>
+                            <div className="dark:text-[#e5ded8]">
                                 ⭐ {product.rating}
                             </div>
                         )}

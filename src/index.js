@@ -64,8 +64,8 @@ export {default as CartSkeleton} from "./components/loader/CartSkeleton";
 // elements
 export {default as Button} from "./components/element/Button";
 export {default as BuyButton} from "./components/element/BuyButton";
+export {default as UserImage} from "./components/element/UserImage";
 export {default as ButtonTheme} from "./components/element/DarkTheme/ButtonTheme";
-export {default as LoginButton} from "./components/element/Login/LoginButton";
 export {default as LogoutButton} from "./components/element/Login/LogoutButton";
 export {default as Text} from "./components/element/NexmartText/Text";
 export {default as ProductsCard} from "./components/element/ProductsCard/ProductsCard";

@@ -25,7 +25,7 @@ export default function Purchases({productPrice, stock, discount}) {
         <div className="flex max-[400px]:flex-col max-[360px]:items-start items-center gap-4">
             <div className="flex items-center max-[300px]:flex-col max-[300px]:items-start gap-3">
                 <QuantityButton Text="-" action={handleDecrement} />
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-[#e5ded8]">
                     {quantity} of {stock} selected
                 </p>
                 <QuantityButton Text="+" action={handleIncrement} />
@@ -37,9 +37,9 @@ export default function Purchases({productPrice, stock, discount}) {
             )}
         </div>
         <div className="text-lg font-semibold tracking-wide flex max-[360px]:flex-col max-[360px]:items-start items-center gap-2">
-            <span className="text-gray-600">Total: </span>
-            <span className="text-[#5B3A21]">${totalPrice}</span>
-            <span className="text-gray-800 text-[17px] line-through">${totalDiscount}</span>
+            <span className="text-gray-600 dark:text-[#e5ded8]">Total: </span>
+            <span className="text-[#5B3A21] dark:text-[#A68A64]">${totalPrice}</span>
+            <span className="text-gray-800 dark:text-zinc-400 text-[17px] line-through">${totalDiscount}</span>
         </div>
     </div>
   )

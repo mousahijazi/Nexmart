@@ -18,7 +18,7 @@ export default function Icons() {
                         alt={icon.alt}
                         width={35}
                         height={35}
-                        className="bg-[#f2f2f2] rounded-sm p-2 cursor-pointer sm:w-11 sm:h-11"
+                        className="bg-[#f2f2f2] dark:bg-zinc-200 rounded-sm p-2 cursor-pointer sm:w-11 sm:h-11"
                     />
                 ))}
             </div>

@@ -15,6 +15,7 @@ export default function ThemeButton() {
         text-white
         cursor-pointer
       "
+      aria-label="Theme mood"
     >
       {darkMode ? <Sun /> : <Moon />}
     </button>

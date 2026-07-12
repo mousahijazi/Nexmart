@@ -15,7 +15,7 @@ export default function Product({data}) {
                 width={500}
                 height={500}
                 priority
-                className="bg-[#F2F2F2] rounded-2xl"
+                className="bg-[#F2F2F2] dark:bg-[#1f1b17] rounded-2xl"
             />
             <div className="flex gap-2 sm:flex-col justify-between">
                 <Icons />
@@ -32,7 +32,7 @@ export default function Product({data}) {
                         height={120}
                         className="
                         w-full h-auto
-                        bg-[#F2F2F2] 
+                        bg-[#F2F2F2] dark:bg-[#1f1b17]
                         p-2 rounded-2xl 
                         cursor-pointer 
                         shadow-sm 

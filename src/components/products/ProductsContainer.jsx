@@ -67,7 +67,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
                 {products.length > PRODUCTS_PER_PAGE && (
                     <button
                       onClick={showLessProducts}
-                      className="bg-gray-300 px-8 py-3 rounded-xl cursor-pointer hover:opacity-70 transition duration-300"
+                      className="bg-gray-300 dark:text-zinc-900 px-8 py-3 rounded-xl cursor-pointer hover:opacity-70 transition duration-300"
                     >
                       Show Less
                     </button>

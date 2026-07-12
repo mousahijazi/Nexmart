@@ -18,10 +18,10 @@ export default function ShowCard({showCard, product}) {
     <>
         {showCard 
             ? <ProductsButton onClick={handleAdd} ariaLabel={`Add ${product.title} to cart`}>
-                <ShoppingCart size={20} strokeWidth={2.5} />
+                <ShoppingCart size={20} strokeWidth={2.5} className="dark:text-[#f1f1f1]" />
               </ProductsButton>
             : <ProductsButton onClick={handleRemove} ariaLabel={`remove ${product.title} from cart`}>
-                <Trash2 size={20} strokeWidth={2.5} />
+                <Trash2 size={20} strokeWidth={2.5} className="dark:text-[#f1f1f1]" />
               </ProductsButton>
         }
     </>

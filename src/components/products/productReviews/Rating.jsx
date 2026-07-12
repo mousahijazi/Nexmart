@@ -32,13 +32,13 @@ export default function Rating({rating}) {
                 />
             </svg>
 
-            <span className="absolute text-xl font-bold text-gray-800">
+            <span className="absolute text-xl font-bold text-gray-800 dark:text-[#F5EBE6]">
                 {rating.toFixed(1)}
             </span>
         </div>
         <div className="flex flex-col items-start gap-1">
             <ProductStars rating={rating} />
-            <span className="text-[16px] max-[400px]:text-sm text-gray-600 font-semibold">from 1,25K reviews</span>
+            <span className="text-[16px] max-[400px]:text-sm text-gray-600 dark:text-[#e5ded8] font-semibold">from 1,25K reviews</span>
         </div>
     </div>
   )

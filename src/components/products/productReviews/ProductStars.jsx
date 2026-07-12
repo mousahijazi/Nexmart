@@ -12,7 +12,7 @@ export default function ProductStars({rating}) {
                     className={`text-2xl ${
                     starNumber <= fullStars 
                         ? "text-orange-400" 
-                        : "text-gray-300"
+                        : "text-gray-300 dark:text-[#F5EBE6]"
                     }`}
                     >
                         ★

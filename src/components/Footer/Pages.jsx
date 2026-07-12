@@ -4,11 +4,11 @@ import { PagesData } from "./data";
 export default function Pages() {
   return (
     <div>
-        <h1 className="font-semibold text-gray-800 mb-6">Pages</h1>
+        <h1 className="font-semibold text-gray-800 dark:text-[#F5EBE6] mb-6">Pages</h1>
         <ul className="flex flex-col gap-3">
             {PagesData.map((ele, index) => (
                 <li key={index}>
-                    <Link href={ele.link} className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                    <Link href={ele.link} className="text-sm text-gray-600 hover:text-gray-900 dark:text-[#D4C7BC] dark:hover:text-[#A68A64] transition-colors">
                         {ele.text}
                     </Link>
                 </li>

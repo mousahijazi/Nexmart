@@ -41,7 +41,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleLogin} className="mt-10 grid grid-cols-1 md:grid-cols-1 min-[560px]:grid-cols-2 gap-5">
         <div>
-            <label className="block mb-2 text-sm font-semibold text-[#5B3A21]">
+            <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
                 Username
             </label>
 
@@ -52,20 +52,21 @@ export default function LoginForm() {
                 placeholder="Enter username"
                 className="
                     w-full
-                    text-[#5B3A21]
+                    text-[#5B3A21] dark:text-zinc-700
+                    dark:bg-[#f2f2f2]
                     font-semibold
                     px-4 py-3
                     rounded-xl
                     border-2 border-gray-200
                     outline-none
-                    focus:border-[#5B3A21]
+                    focus:border-[#5B3A21] dark:focus:border-zinc-700
                     transition
                 "
             />
         </div>
 
         <div className="relative">
-            <label className="block mb-2 text-sm font-semibold text-[#5B3A21]">
+            <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
                 Password
             </label>
 
@@ -77,12 +78,13 @@ export default function LoginForm() {
                 className="
                     w-full
                     px-4 py-3
-                    text-[#5B3A21]
+                    text-[#5B3A21] dark:text-zinc-700
                     font-semibold
                     rounded-xl
+                    dark:bg-[#f2f2f2]
                     border-2 border-gray-200
                     outline-none
-                    focus:border-[#5B3A21]
+                    focus:border-[#5B3A21] dark:focus:border-zinc-700
                     transition
                 "
             />

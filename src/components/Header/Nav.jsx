@@ -6,21 +6,21 @@ export default function Nav({isOpen}) {
   return (
     <div className={`
         ${isOpen ? "flex" : "hidden"}
-        md:flex
+        lg:flex
         flex-col
-        absolute md:static
+        absolute lg:static
         top-24 left-0
-        w-full md:w-auto
-        bg-white
-        shadow-xl md:shadow-none
+        w-full lg:w-auto
+        bg-white dark:bg-zinc-900 max-lg:dark:bg-zinc-800
+        shadow-xl dark:shadow-black/60 lg:shadow-none
         items-center gap-6
-        py-6 md:py-0
+        py-6 lg:py-0
         z-50
     `}>
         <NavLink />
         
         {/*todo*/}
-        <div className="flex sm:hidden justify-center w-full pt-4 border-t-2 border-t-gray-400">
+        <div className="flex sm:hidden justify-center w-full pt-4 border-t-2 border-t-gray-400 dark:border-t-[#A68A64]">
             <Icon />
         </div>
     </div>

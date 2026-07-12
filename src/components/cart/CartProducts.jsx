@@ -10,11 +10,11 @@ export default function CartProducts() {
       ? <CartSkeleton /> 
       : cart.length === 0 
         ? <div className="text-center py-20">
-            <h2 className="text-2xl md:text-3xl font-bold text-[#5B3A21]">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#5B3A21] dark:text-[#F5EBE6]">
               Your cart is empty
             </h2>
 
-            <p className="mt-3 text-gray-600 md:text-lg">
+            <p className="mt-3 text-gray-600 dark:text-[#e5ded8] md:text-lg">
               Add some products to start shopping.
             </p>
 

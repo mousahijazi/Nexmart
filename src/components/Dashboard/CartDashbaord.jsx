@@ -4,13 +4,13 @@ import Image from "next/image";
 export default function CartDashbaord({showCartData = true}) {
   return (
     showCartData 
-        ? <div className="bg-white shadow-lg py-12 px-6 rounded-2xl grid grid-cols-1 lg:grid-cols-2">
+        ? <div className="bg-white dark:bg-zinc-950 shadow-lg py-12 px-6 rounded-2xl grid grid-cols-1 lg:grid-cols-2">
                 <div className="flex flex-col justify-center items-start gap-7">
                     <div className="">
-                        <span className="text-xs font-bold tracking-widest text-[#5B3A21]/80 uppercase mb-1">
+                        <span className="text-xs font-bold tracking-widest text-[#5B3A21]/80 dark:text-[#A68A64] uppercase mb-1">
                             Show cart
                         </span>
-                        <h1 className="text-2xl min-[480px]:text-3xl md:text-4xl font-extrabold text-[#5B3A21] tracking-tight">
+                        <h1 className="text-2xl min-[480px]:text-3xl md:text-4xl font-extrabold text-[#5B3A21] dark:text-[#F5EBE6] tracking-tight">
                             Your Shopping Cart
                         </h1>
                     </div>
@@ -29,7 +29,7 @@ export default function CartDashbaord({showCartData = true}) {
                             alt="shoping cart"
                             width={250}
                             height={250}
-                            className="opacity-10"
+                            className="opacity-10 dark:opacity-40"
                         />
                     </div>
                     <Button title="Shoping Now" link="products" />

@@ -7,7 +7,7 @@ export default function ThemeProvider({children}) {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
+    const saved = sessionStorage.getItem("theme");
 
     if (saved === "dark") {
       setDarkMode(true);
@@ -21,10 +21,10 @@ export default function ThemeProvider({children}) {
 
       if (theme) {
         document.documentElement.classList.add("dark");
-        localStorage.setItem("theme", "dark");
+        sessionStorage.setItem("theme", "dark");
       } else {
         document.documentElement.classList.remove("dark");
-        localStorage.setItem("theme", "light");
+        sessionStorage.setItem("theme", "light");
       }
 
       return theme;

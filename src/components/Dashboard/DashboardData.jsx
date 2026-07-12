@@ -55,21 +55,21 @@ export default function DashboardData() {
     <div className="grid gap-7 grid-cols-1 sm:grid-cols-2 w-full">
         <div className="flex flex-col justify-center gap-6">
             {data.map((ele, index) => (
-                <p key={index} className="text-gray-600 tracking-wider ">{ele.title}: <span className="text-[#5B3A21] font-semibold text-sm">{ele.value}</span></p>
+                <p key={index} className="text-gray-600 dark:text-[#e5ded8] tracking-wider ">{ele.title}: <span className="text-[#5B3A21] dark:text-[#A68A64] font-semibold text-sm">{ele.value}</span></p>
             ))}
         </div>
         {cart.length > 0 && (
             <div className="flex flex-col gap-3">
-                <label className="text-sm font-bold tracking-widest text-[#5B3A21]/90 uppercase">Coubon</label>
+                <label className="text-sm font-bold tracking-widest text-[#5B3A21]/90 dark:text-[#A68A64] uppercase">Coubon</label>
                 <input 
                     type="text" 
                     placeholder="COUBON"
                     value={coupon}
                     onChange={handleCouponChange}
-                    className="border-2 border-gray-[#5B3A21] rounded-lg px-3 py-2 text-[18px] text-gray-700 font-semibold shadow-lg" 
+                    className="dark:bg-[#f3f3f3] border-2 border-[#5B3A21] dark:border-zinc-700 rounded-lg px-3 py-2 text-[18px] text-gray-700 dark:text-zinc-700 font-semibold outline shadow-lg" 
                 />
                 {discount > 0 && (
-                    <p className="text-green-600 tracking-wider sm:text-[17px]">Discount ({(discount * 100)}%): <span className="font-semibold text-sm">-{discountAmount.toFixed(2)}$</span></p>
+                    <p className="text-green-600 dark:text-[#A68A64] tracking-wider sm:text-[17px]">Discount ({(discount * 100)}%): <span className="font-semibold text-sm">-{discountAmount.toFixed(2)}$</span></p>
                 )}
             </div>
         )}

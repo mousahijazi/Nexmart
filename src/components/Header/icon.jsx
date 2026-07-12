@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ButtonTheme } from "@/index";
 import { ShoppingCart } from "lucide-react";
 import { useProductContext } from "@/Context/CartProvider";
 import { useUserContext } from "@/Context/UserProvider";
@@ -19,7 +20,10 @@ export default function Icon() {
                     {cart.length}
                 </span>
             </Link>
+            <ButtonTheme />
             <LoginButton />
+            
+            {/* todo */}
             {user && (
                 <Link href={`/user`}>
                     <Image

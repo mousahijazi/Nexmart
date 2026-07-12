@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @source "../components/**/*.{js,jsx,ts,tsx}";
 @source "./**/*.{js,jsx,ts,tsx}";
+@custom-variant dark (&:where(.dark, .dark *));
+
+*, *::before, *::after {
+  transition-property: color, background-color, border-color;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 @keyframes up-and-down{
   to {

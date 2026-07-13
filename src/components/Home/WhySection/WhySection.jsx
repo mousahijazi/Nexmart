@@ -11,7 +11,9 @@ export default function WhySection() {
           We provide the best shopping experience for our customers.
         </p>
         <Card />
-        <Button title="Learn More About Us" link="about" />
+        <div className="mt-5">
+          <Button title="Learn More About Us" link="about" />
+        </div>
       </div>
     </div>
   );

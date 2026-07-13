@@ -8,7 +8,7 @@ export default function HeroImage() {
             alt="Medicine products"
             width={550}
             height={550}
-            className="w-full shadow-md max-w-lg object-contain rounded-3xl duration-300 hover:-translate-y-4 hover:shadow-xl dark:shadow-black/60 dark:hover:shadow-lg"
+            className="w-full shadow-md max-w-lg object-contain rounded-3xl duration-300 hover:-translate-y-4 hover:shadow-xl dark:shadow-black/60 dark:hover:shadow-lg z-10"
             priority
         />
     </div>

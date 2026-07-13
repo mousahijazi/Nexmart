@@ -25,7 +25,6 @@ export default function ProductProvider({children}) {
   }, [cartKey]);
 
   const addToStorage = (product) => {
-    console.log("add To storage")
       if (!user?.accessToken) {
           showAlert("Please login first", "danger");
           return;

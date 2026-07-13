@@ -1,7 +1,12 @@
 import { getProduct, getCategories } from "@/helper/fetchApi";
 import { ProductGallary, ProductText, ProductsReviews, Rating, ProductsCard, Button } from "@/index";
 
-export default async function Post({params}) {
+export const metadata = {
+  title: "Nexmart - shop - product",
+  description: "Nexmart is your go-to online store for the best products at unbeatable prices. Fast shipping, secure checkout, and a seamless shopping experience.",
+};
+
+export default async function Product({params}) {
     const { id } = await params;
     const data = await getProduct(id);
     const categories = await getCategories(data.category);
@@ -27,7 +32,9 @@ export default async function Post({params}) {
             <div className="max-w-7xl mx-auto px-6">
                 <h1 className="mb-12 text-[#5B3A21] dark:text-[#F5EBE6] text-2xl font-bold">Related Products</h1>
                 <ProductsCard data={relatedProducts} showRating={true} />
-                <Button title="Shop Now" link="products" />
+                <div className="mt-7">
+                    <Button title="Shop Now" link="products" />
+                </div>
             </div>
         </div>
         <div className="bg-[#f1f1f1] dark:bg-zinc-900 py-24">

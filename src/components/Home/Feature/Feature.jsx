@@ -14,7 +14,9 @@ export default function FeaturedProducts() {
                 <Suspense fallback={<Loader />}>
                     <Products />
                 </Suspense>
-                <Button title="Shop Now" link="products" />
+                <div className="mt-7">
+                    <Button title="Shop Now" link="products" />
+                </div>
             </div>
         </div>
     );

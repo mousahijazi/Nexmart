@@ -29,9 +29,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
   };
 
   // Filter categories
-  const filteredCategories = useMemo(() => {
-    console.log("filteredCategories");
-    
+  const filteredCategories = useMemo(() => {    
     const visibleCategories = [
       ...new Set(
         products.map(product => product.category)
@@ -45,8 +43,6 @@ export default function ProductsContainer({data, totalProducts, categories}) {
 
   // Filter products
   const filteredProducts = useMemo(() => {
-    console.log("filteredProducts");
-
     return products.filter((product) => {
       const matchesSearch = product.title.toLowerCase().includes(search.toLowerCase());
       const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;

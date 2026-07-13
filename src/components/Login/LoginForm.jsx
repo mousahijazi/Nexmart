@@ -30,6 +30,16 @@ export default function LoginForm() {
         localStorage.setItem(`user-${userData.id}`, JSON.stringify(userData));
         localStorage.setItem("current-user-id", String(userData.id));
 
+        const guestCart = JSON.parse(localStorage.getItem("cart-guest")) || [];
+        const userCart = JSON.parse(localStorage.getItem(`cart-${userData.id}`)) || [];
+        const mergedCart = [
+            ...userCart, 
+            ...guestCart.filter(guestItem => !userCart.some(userItem => userItem.id === guestItem.id))
+        ];
+
+        localStorage.setItem(`cart-${userData.id}`, JSON.stringify(mergedCart));
+        localStorage.removeItem("cart-guest");
+
         setUser(userData);
         showAlert(`Welcom Back ${userData.firstName}`);
 

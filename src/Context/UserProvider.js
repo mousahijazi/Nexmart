@@ -37,8 +37,10 @@ export default function UserProvider({children}) {
       localStorage.removeItem(`user-${user.id}`);
     }
     localStorage.removeItem("current-user-id");
+
     setUser(null);
     showAlert(`You have successfully logged out`, "danger");
+    
     setTimeout(() => {
         router.replace("/");
     }, 1200);

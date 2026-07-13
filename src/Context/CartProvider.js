@@ -10,40 +10,30 @@ export default function ProductProvider({children}) {
   const [loadingCart, setLoadingCart] = useState(true)
   const {showAlert} = useAlertContext();
   const {user} = useUserContext();
-  const cartKey = user?.id ? `cart-${user.id}` : null;
+  const cartKey = user?.id ? `cart-${user.id}` : "cart-guest";
 
   useEffect(() => {
-    if (!cartKey) {
-        setCart([]);
-        setLoadingCart(false);
-        return;
-    }
-
+    setLoadingCart(true);
+    
     const storedCart = JSON.parse(localStorage.getItem(cartKey)) || [];
     setCart(storedCart);
     setLoadingCart(false);
   }, [cartKey]);
 
   const addToStorage = (product) => {
-      if (!user?.accessToken) {
-          showAlert("Please login first", "danger");
-          return;
-      }
-      else {
-        if (!product || !cart) return;
+        if (!product) return;
 
         const exists = cart.find(
             item => item.id === product.id
         );
 
         if (exists) {
-          showAlert(`${product.title} has alredy in cart !`, "danger");
+          showAlert(`${product.title} has already in cart!`, "danger");
           return 
         } 
         
         setCart(prev => [...prev, product]);
         showAlert(`${product.title} added to cart`);
-      }
   }
 
   const removeFromCart = (product) => {
@@ -63,10 +53,8 @@ export default function ProductProvider({children}) {
   }
 
   useEffect(() => {
-    if(!cartKey) return;
-
     localStorage.setItem(cartKey, JSON.stringify(cart));
-  }, [cart, cartKey])
+  }, [cart, cartKey]);
 
   return (
     <ProductsContext.Provider value={value}>

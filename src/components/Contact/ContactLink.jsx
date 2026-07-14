@@ -16,7 +16,7 @@ export default function ContactLink() {
                             </div>
                             <div className="">
                                 <p className="font-semibold text-sm text-stone-500 dark:text-stone-400">{ele.title}</p>
-                                <Link href={ele.link} className="hover:underline font-medium break-all sm:break-normal">{ele.text}</Link>
+                                <Link href={ele.link} target="_blank" rel="noopener noreferrer" className="hover:underline font-medium break-all sm:break-normal">{ele.text}</Link>
                             </div>
                         </div>
                     ))}

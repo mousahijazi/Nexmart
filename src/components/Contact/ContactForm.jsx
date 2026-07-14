@@ -13,12 +13,6 @@ export default function ContactForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("Keys from code:", {
-      service: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-      template: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-      key: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-    });
-
     if (!formData.name || !formData.email || !formData.message) {
       showAlert("Please fill in all fields", "danger");
       return;

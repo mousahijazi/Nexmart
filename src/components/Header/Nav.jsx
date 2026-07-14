@@ -1,10 +1,28 @@
 "use client";
+import { useRef, useEffect } from "react";
 import NavLink from "./NavLink";
 import {Icon} from "@/index";
 
-export default function Nav({isOpen}) {
+export default function Nav({isOpen, setIsOpen, buttonRef}) {
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isOpen && menuRef.current && !menuRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <div className={`
+    <div 
+      ref={menuRef}
+      className={`
         ${isOpen ? "flex" : "hidden"}
         lg:flex
         flex-col

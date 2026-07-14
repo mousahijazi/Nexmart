@@ -37,3 +37,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 # try my website
 You can try out my nexmart site via this link: https://nexmart-mocha.vercel.app/
+
+## send me a massege 
+You can send me a message via the contact page on my website, nexmart; simply fill in your name and email, and write a lovely message in your own kind words.

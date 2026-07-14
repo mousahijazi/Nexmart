@@ -17,6 +17,11 @@ export {default as Products} from "./components/Home/Feature/Products";
 export {default as WhySection} from "./components/Home/WhySection/WhySection";
 export {default as Card} from "./components/Home/WhySection/Card";
 
+// contact
+export {default as ContactPage} from "./components/Contact/Contact";
+export {default as ContactForm} from "./components/Contact/ContactForm";
+export {default as ContactLink} from "./components/Contact/ContactLink";
+
 // products
 export {default as ProductsPage} from "./components/products/Products";
 export {default as ProductsContainer} from "./components/products/ProductsContainer";

@@ -29,7 +29,7 @@ export default function Nav({isOpen, setIsOpen, buttonRef}) {
         absolute lg:static
         top-24 left-0
         w-full lg:w-auto
-        bg-white dark:bg-zinc-900 max-lg:dark:bg-zinc-800
+        max-lg:bg-white dark:bg-zinc-900 max-lg:dark:bg-zinc-800
         shadow-xl dark:shadow-black/60 lg:shadow-none
         items-center gap-6
         py-6 lg:py-0

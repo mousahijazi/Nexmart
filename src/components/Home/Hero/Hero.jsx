@@ -2,7 +2,7 @@ import { HeroImage, HeroText } from "@/index";
 
 export default function Hero() {
   return (
-    <div className="relative overflow-hidden bg-[#F7F4EF] dark:bg-zinc-900 py-20 sm:py-28 lg:py-32 px-3 sm:px-6 md:px-12">
+    <div className="relative overflow-hidden bg-[#F7F4EF] dark:bg-zinc-900 py-28 sm:py-36 lg:py-48 px-3 sm:px-6 md:px-12">
         <div className="absolute left-0 top-0 w-full lg:w-2/3 h-full pointer-events-none opacity-40 dark:opacity-20 select-none z-0">
           <svg className="w-full h-full" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M-100 100C150 150 200 400 450 350C700 300 650 550 850 600" stroke="url(#ornament-gradient)" strokeWidth="2" strokeDasharray="5 5"/>

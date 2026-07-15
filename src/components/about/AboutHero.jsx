@@ -2,7 +2,7 @@ import { HeroImage } from "@/index";
 
 export default function AboutHero() {
   return (
-    <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 items-center gap-12 py-20 lg:py-24 px-6">
+    <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 items-center gap-12 py-28 lg:py-32 px-6">
       <div className="flex flex-col gap-4">
         <span className="text-xs font-semibold uppercase tracking-widest text-[#5B3A21]/80 dark:text-[#EDE0D4]/80">
           About Nexmart

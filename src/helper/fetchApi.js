@@ -46,26 +46,15 @@ export async function getProduct(id) {
     }
 }
 
-export async function loginUser(username, password) {
-    try {
-        const userFetch = await fetch(
-            "https://dummyjson.com/auth/login",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username,
-                    password,
-                }),
-            }
-        );
+// login
+import { supabase } from "@/lib/supabase";
 
-        const user = await userFetch.json();
-        return user;
-    } catch (error) {
-        console.log(error);
-        return null;
+export async function loginUser(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({email, password});
+
+    if (error) {
+        return {success: false, message: error.message};
     }
+
+    return {success: true, user: data.user, session: data.session};
 }

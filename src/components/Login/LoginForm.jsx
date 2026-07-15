@@ -11,37 +11,36 @@ export default function LoginForm() {
     const { setUser, user } = useUserContext();
     const {showAlert} = useAlertContext();
     const [showPassword, setShowPassword] = useState(false);
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        const userData = await loginUser(username, password);
-        if (!userData?.accessToken) {
-            showAlert("Invalid username or password", "danger");
+        const result = await loginUser(email, password);
+        if (!result.success) {
+            showAlert(result.message, "danger");
             return;
         }
-        if (user?.accessToken) {
+
+        const loggedInUser = result.user;
+        if (loggedInUser?.success) {
             showAlert("You are already logged in", "danger");
             return;
         } 
 
-        localStorage.setItem(`user-${userData.id}`, JSON.stringify(userData));
-        localStorage.setItem("current-user-id", String(userData.id));
-
         const guestCart = JSON.parse(localStorage.getItem("cart-guest")) || [];
-        const userCart = JSON.parse(localStorage.getItem(`cart-${userData.id}`)) || [];
+        const userCart = JSON.parse(localStorage.getItem(`cart-${loggedInUser.id}`)) || [];
         const mergedCart = [
             ...userCart, 
             ...guestCart.filter(guestItem => !userCart.some(userItem => userItem.id === guestItem.id))
         ];
 
-        localStorage.setItem(`cart-${userData.id}`, JSON.stringify(mergedCart));
+        localStorage.setItem(`cart-${loggedInUser.id}`, JSON.stringify(mergedCart));
         localStorage.removeItem("cart-guest");
 
-        setUser(userData);
-        showAlert(`Welcom Back ${userData.firstName}`);
+        setUser(loggedInUser);
+        showAlert(`Welcom Back ${loggedInUser.email}`);
 
         setTimeout(() => {
             router.replace("/");
@@ -52,14 +51,14 @@ export default function LoginForm() {
     <form onSubmit={handleLogin} className="mt-10 grid grid-cols-1 md:grid-cols-1 min-[560px]:grid-cols-2 gap-5">
         <div>
             <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
-                Username
+                Email
             </label>
 
             <input
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter email"
                 className="
                     w-full
                     text-[#5B3A21] dark:text-zinc-700

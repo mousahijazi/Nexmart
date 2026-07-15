@@ -54,6 +54,7 @@ export default function Userdashboard() {
     );
   }
 
+  const username = user?.user_metadata?.first_name ? `${user?.user_metadata?.first_name} ${user?.user_metadata?.last_name || ""}` : "Guest"
   const data = [
     {
       title: "Email",
@@ -61,7 +62,7 @@ export default function Userdashboard() {
     },
     {
       title: "Username",
-      value: user?.username || "N/A",
+      value: username || "N/A",
     },
     {
       title: "Phone",
@@ -87,7 +88,7 @@ export default function Userdashboard() {
             <div className="flex items-center gap-3">
               <UserImage />
               <p className="mt-2 text-gray-500 dark:text-[#e5ded8]">
-                {user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "Guest"}
+                {username}
               </p>
             </div>
             <LogoutButton />

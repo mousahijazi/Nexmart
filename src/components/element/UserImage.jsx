@@ -6,7 +6,7 @@ export default function UserImage() {
 
   return (
     <Image
-        src={user?.image || `/Profile.jpg`}
+        src={user?.user_metadata?.image || `/Profile.jpg`}
         alt={user?.firstName || "Guest"}
         width={60}
         height={60}

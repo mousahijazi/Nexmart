@@ -2,6 +2,7 @@
 import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from './AlertProvider';
 import { useRouter } from "next/navigation";
+import { supabase } from '@/lib/supabase';
 
 const UserContext = createContext();
 
@@ -12,31 +13,33 @@ export default function UserProvider({children}) {
   const {showAlert} = useAlertContext();
 
   useEffect(() => {
-    const currentId = localStorage.getItem("current-user-id");
-    if (!currentId) {
+    supabase.auth.getSession().then((result) => {
+      const session = result.data.session; 
+      session ? setUser(session.user) : setUser(null); 
+
       setLoading(false);
-      return;
-    }
+    });
 
-    const savedUser = localStorage.getItem(`user-${currentId}`);
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    const result = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        setUser(session.user);
+      } else {
+        setUser(null);
+      }
+    });
 
-    setLoading(false);
+    const listener = result.data;
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  const logout = () => {
-    if (user?.id) {
-      localStorage.removeItem(`user-${user.id}`);
-    }
-    localStorage.removeItem("current-user-id");
-
-    setUser(null);
-    showAlert(`You have successfully logged out`, "danger");
-    
+  const logout = async () => {
+    await supabase.auth.signOut();
+    showAlert("You have successfully logged out", "danger");
     setTimeout(() => {
-        router.replace("/");
+      router.replace("/");
     }, 1200);
   };
 

@@ -6,7 +6,7 @@ import { useAlertContext } from "@/Context/AlertProvider";
 import { loginUser } from "@/helper/fetchApi";
 import { Eye, EyeOff } from "lucide-react";
 
-export default function LoginForm() {
+export default function LoginForm({isLogin}) {
     const router = useRouter(); 
     const { setUser, user } = useUserContext();
     const {showAlert} = useAlertContext();
@@ -48,12 +48,35 @@ export default function LoginForm() {
     };
 
   return (
-    <form onSubmit={handleLogin} className="mt-10 grid grid-cols-1 md:grid-cols-1 min-[560px]:grid-cols-2 gap-5">
+    <form onSubmit={handleLogin} className="mt-10 grid grid-cols-1 md:grid-cols-1 min-[560px]:grid-cols-2 items-end gap-5">
+        {!isLogin && (
+            <div>
+                <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
+                    Full Name
+                </label>
+                <input
+                    type="text"
+                    placeholder="Your Name"
+                    className="
+                        w-full
+                        text-[#5B3A21] dark:text-zinc-700
+                        dark:bg-[#f2f2f2]
+                        font-semibold
+                        px-4 py-3
+                        rounded-xl
+                        border-2 border-gray-200
+                        outline-none
+                        focus:border-[#5B3A21] dark:focus:border-zinc-700
+                        transition
+                    "
+                />
+            </div>
+        )}
+
         <div>
             <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
                 Email
             </label>
-
             <input
                 type="text"
                 value={email}
@@ -78,7 +101,6 @@ export default function LoginForm() {
             <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
                 Password
             </label>
-
             <input
                 type={showPassword ? "text" : "password"}
                 value={password}
@@ -102,11 +124,11 @@ export default function LoginForm() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="
-                absolute
-                right-5
-                top-2/3
-                -translate-y-1/2
-                cursor-pointer
+                    absolute
+                    right-5
+                    top-2/3
+                    -translate-y-1/2
+                    cursor-pointer
                 "
                 aria-label={
                     showPassword
@@ -119,7 +141,7 @@ export default function LoginForm() {
         </div>
 
         <button className="cursor-pointer px-7 py-3 text-center bg-[#5B3A21] text-white rounded-full font-medium hover:opacity-90 transition">
-            <span>login</span>
+            {isLogin ? "Sign In" : "Sign Up"}
         </button>
     </form>
   )

@@ -18,7 +18,8 @@ export default function Hero() {
           </svg>
         </div>
         
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+        {/* todo */}
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-[auto_auto] gap-8 xl:gap-32 items-center">
           <HeroText />
           <HeroImage />
         </div>

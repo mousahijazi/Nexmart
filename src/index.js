@@ -3,6 +3,7 @@ export {default as Header} from "./components/Header/Header";
 export {default as HeaderNavItems} from "./components/Header/HeaderNavItems";
 export {default as Nav} from "./components/Header/Nav";
 export {default as Icon} from "./components/Header/icon";
+export {default as Auth} from "./components/Header/Auth";
 
 // Hero
 export {default as Hero} from "./components/Home/Hero/Hero";

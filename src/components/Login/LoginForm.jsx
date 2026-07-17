@@ -1,75 +1,64 @@
 "use client"
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUserContext } from "@/Context/UserProvider";
-import { useAlertContext } from "@/Context/AlertProvider";
-import { loginUser } from "@/helper/fetchApi";
+import {useUserContext} from "@/Context/UserProvider";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm({isLogin}) {
-    const router = useRouter(); 
-    const { setUser, user } = useUserContext();
-    const {showAlert} = useAlertContext();
+    const {login, firstName, setFirstName, lastName, setLastName} = useUserContext();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    
+    const FormNameData = [
+        {
+            text: "First Name",
+            name: firstName,
+            setName: setFirstName,
+        },
+        {
+            text: "Last Name",
+            name: lastName,
+            setName: setLastName,
+        },
+    ];
 
-    const handleLogin = async (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
-
-        const result = await loginUser(email, password);
-        if (!result.success) {
-            showAlert(result.message, "danger");
-            return;
-        }
-
-        const loggedInUser = result.user;
-        if (loggedInUser?.success) {
-            showAlert("You are already logged in", "danger");
-            return;
-        } 
-
-        const guestCart = JSON.parse(localStorage.getItem("cart-guest")) || [];
-        const userCart = JSON.parse(localStorage.getItem(`cart-${loggedInUser.id}`)) || [];
-        const mergedCart = [
-            ...userCart, 
-            ...guestCart.filter(guestItem => !userCart.some(userItem => userItem.id === guestItem.id))
-        ];
-
-        localStorage.setItem(`cart-${loggedInUser.id}`, JSON.stringify(mergedCart));
-        localStorage.removeItem("cart-guest");
-
-        setUser(loggedInUser);
-        showAlert(`Welcom Back ${loggedInUser.email}`);
-
-        setTimeout(() => {
-            router.replace("/");
-        }, 1200);
+        setSubmitting(true);
+        const result = await login(email, password, isLogin);
+        setSubmitting(false);
     };
 
   return (
-    <form onSubmit={handleLogin} className="mt-10 grid grid-cols-1 md:grid-cols-1 min-[560px]:grid-cols-2 items-end gap-5">
+    <form onSubmit={onSubmit} className="mt-10 grid grid-cols-1 items-end gap-5">
         {!isLogin && (
-            <div>
-                <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
-                    Full Name
-                </label>
-                <input
-                    type="text"
-                    placeholder="Your Name"
-                    className="
-                        w-full
-                        text-[#5B3A21] dark:text-zinc-700
-                        dark:bg-[#f2f2f2]
-                        font-semibold
-                        px-4 py-3
-                        rounded-xl
-                        border-2 border-gray-200
-                        outline-none
-                        focus:border-[#5B3A21] dark:focus:border-zinc-700
-                        transition
-                    "
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {FormNameData.map(({text, name, setName}, index) => (
+                    <div key={index}>
+                        <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
+                            {text}
+                        </label>
+                        <input
+                            type="text"
+                            placeholder={`Your ${text}`}
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="
+                                w-full
+                                text-[#5B3A21] dark:text-zinc-700
+                                dark:bg-[#f2f2f2]
+                                font-semibold
+                                px-4 py-3
+                                rounded-xl
+                                border-2 border-gray-200
+                                outline-none
+                                focus:border-[#5B3A21] dark:focus:border-zinc-700
+                                transition
+                            "
+                        />
+                    </div>
+                ))}
             </div>
         )}
 
@@ -141,7 +130,7 @@ export default function LoginForm({isLogin}) {
         </div>
 
         <button className="cursor-pointer px-7 py-3 text-center bg-[#5B3A21] text-white rounded-full font-medium hover:opacity-90 transition">
-            {isLogin ? "Sign In" : "Sign Up"}
+            {submitting ? "Processing..." : isLogin ? "Sign In" : "Sign Up" }
         </button>
     </form>
   )

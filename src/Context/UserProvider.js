@@ -2,6 +2,7 @@
 import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from './AlertProvider';
 import { useRouter } from "next/navigation";
+import { loginUser, registerUser } from "@/helper/fetchApi";
 import { supabase } from '@/lib/supabase';
 
 const UserContext = createContext();
@@ -10,7 +11,11 @@ export default function UserProvider({children}) {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userImage, setUserImage] = useState("");
   const {showAlert} = useAlertContext();
+
 
   useEffect(() => {
     supabase.auth.getSession().then((result) => {
@@ -35,12 +40,54 @@ export default function UserProvider({children}) {
     };
   }, []);
 
+  const login = async (email, password, isLogin) => {
+    if (!isLogin && (!firstName.trim() || !lastName.trim())) {
+      showAlert("Please enter both your First and Last name", "danger");
+      return { success: false };
+    }
+
+    let result = null;
+    if (isLogin) {
+      result = await loginUser(email, password);
+    } else {
+      result = await registerUser(email, password, firstName, lastName, userImage);
+    }
+
+    if (!result.success) {
+      showAlert(result.message, "danger");
+      return { success: false };
+    }
+
+    const loggedInUser = result.user;
+
+    const guestCart = JSON.parse(localStorage.getItem("cart-guest")) || [];
+    const userCart = JSON.parse(localStorage.getItem(`cart-${loggedInUser.id}`)) || [];
+    const mergedCart = [
+      ...userCart, 
+      ...guestCart.filter(guestItem => !userCart.some(userItem => userItem.id === guestItem.id))
+    ];
+
+    localStorage.setItem(`cart-${loggedInUser.id}`, JSON.stringify(mergedCart));
+    localStorage.removeItem("cart-guest");
+
+    setUser(loggedInUser);
+    
+    const displayName = loggedInUser?.user_metadata?.first_name || loggedInUser.email;
+    showAlert(`Welcome Back, ${displayName}!`);
+
+    setTimeout(() => {
+      router.replace("/");
+    }, 1200);
+
+    return { success: true };
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
     showAlert("You have successfully logged out", "danger");
     setTimeout(() => {
       router.replace("/");
-    }, 1200);
+    }, 1000);
   };
 
   const value = {
@@ -48,6 +95,13 @@ export default function UserProvider({children}) {
       setUser,
       logout,
       loading,
+      firstName,
+      setFirstName,
+      lastName,
+      setLastName,
+      userImage,
+      setUserImage,
+      login,
   }
 
   return (

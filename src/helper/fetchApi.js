@@ -58,3 +58,23 @@ export async function loginUser(email, password) {
 
     return {success: true, user: data.user, session: data.session};
 }
+
+// register
+export async function registerUser(email, password, firstName, lastName, userImage) {
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                first_name: firstName,
+                last_name: lastName,
+                image: userImage || "/Profile.jpg",
+                role: "user"
+            }
+        }
+    });
+
+    return error 
+        ? {success: false, message: error.message} 
+        : {success: true, user: data?.user, session: data?.session};
+}

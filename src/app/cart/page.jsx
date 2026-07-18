@@ -8,7 +8,7 @@ export const metadata = {
 export default function CartPage() {
   return (
     <>
-      <div className="bg-[#F9F6F0] dark:bg-zinc-900 min-h-screen py-24">
+      <div className="bg-[#F9F6F0] dark:bg-zinc-900 min-h-screen py-32 md:py-36">
         <div className="max-w-7xl mx-auto px-6">
             <Cart /> 
         </div>

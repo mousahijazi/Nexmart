@@ -16,9 +16,9 @@ export default async function Product({params}) {
 
   return (
     <>
-        <div className="bg-[#f1f1f1] dark:bg-zinc-900 py-24">
+        <div className="bg-[#f1f1f1] dark:bg-zinc-900 py-32 md:py-36">
             <div className="max-w-7xl mx-auto px-6">
-                <p className="text-gray-600 dark:text-[#e5ded8] font-semibold mb-8 flex gap-2">
+                <p className="text-gray-600 dark:text-[#e5ded8] font-semibold mb-8 flex max-sm:flex-col gap-2">
                     Home / Products / {data.category} / 
                     <span className="text-[#5B3A21] dark:text-[#A68A64]">{data.title}</span>
                 </p>

@@ -2,7 +2,7 @@ import { ContactForm, ContactLink } from '@/index';
 
 export default function ContactPage() {
   return (
-    <div className="bg-[#fcfbf9] dark:bg-zinc-950 text-[#5B3A21] dark:text-zinc-100 min-h-screen py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+    <div className="bg-[#fcfbf9] dark:bg-zinc-950 text-[#5B3A21] dark:text-zinc-100 min-h-screen py-28 md:py-28 lg:py-36 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
         <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 text-[#5B3A21] dark:text-[#A68A64]">

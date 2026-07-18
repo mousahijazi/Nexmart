@@ -42,7 +42,7 @@ export default function Userdashboard() {
                   flex
                   max-md:flex-col
                   md:items-center
-                  gap-3
+                  gap-2
                 "
               >
                 <div className="h-6 w-24 bg-gray-200 rounded"></div>

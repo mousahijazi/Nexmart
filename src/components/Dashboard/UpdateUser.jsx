@@ -48,6 +48,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
 
   const formFields = [
     {
+      id: "first-name",
       label: "First Name",
       type: "text",
       value: tempFirstName,
@@ -55,6 +56,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
       required: true
     },
     {
+      id: "last-name",
       label: "Last Name",
       type: "text",
       value: tempLastName,
@@ -62,6 +64,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
       required: true
     },
     {
+      id: "phone-number",
       label: "Phone Number",
       type: "tel",
       value: tempPhone,
@@ -83,6 +86,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
                 <button 
                     onClick={() => setIsModalOpen(false)}
                     className="cursor-pointer text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                    aria-label="close Model"
                 >
                     <X size={24} />
                 </button>
@@ -91,10 +95,11 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
             <form onSubmit={handleSave} className="space-y-4">
               {formFields.map((ele, index) => (
                 <div key={index}>
-                    <label className="block mb-1.5 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
+                    <label htmlFor={ele.id} className="block mb-1.5 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
                         {ele.label}
                     </label>
                     <input
+                        id={ele.id}
                         type={ele.type}
                         value={ele.value}
                         onChange={ele.onChange}

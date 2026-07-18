@@ -13,9 +13,9 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
 
   useEffect(() => {
     if (user) {
-      setTempFirstName(user.user_metadata?.first_name || "");
-      setTempLastName(user.user_metadata?.last_name || "");
-      setTempPhone(user.user_metadata?.phone || "");
+      setTempFirstName(user?.user_metadata?.first_name || "");
+      setTempLastName(user?.user_metadata?.last_name || "");
+      setTempPhone(user?.user_metadata?.phone || "");
       setImageFile(null);
     }
   }, [user, isModalOpen]);

@@ -11,6 +11,7 @@ export default function UserProvider({children}) {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userImage, setUserImage] = useState("");
@@ -82,6 +83,60 @@ export default function UserProvider({children}) {
     return { success: true };
   };
 
+  const updateProfile = async (updatedFields, imageFile, localPreviewUrl) => {
+    try {
+      setIsUploadingImage(true);
+        if (localPreviewUrl) {
+        setUser(prev => ({
+          ...prev,
+          user_metadata: {
+            ...prev?.user_metadata,
+            ...updatedFields,
+            image: localPreviewUrl
+          }
+        }));
+      }
+
+      let imageUrl = updatedFields.image;
+
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, imageFile, { upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+
+        imageUrl = publicUrlData.publicUrl;
+      }
+
+      const { data, error } = await supabase.auth.updateUser({
+        data: {...user?.user_metadata, ...updatedFields, image: imageUrl}
+      });
+
+      if (error) {
+        showAlert(error.message, "danger");
+        return { success: false, message: error.message };
+      }
+
+      setUser(data.user);
+      showAlert("Profile updated successfully!", "success");
+
+      setIsUploadingImage(false);
+      return { success: true };
+    } catch (error) {
+      showAlert("Something went wrong", "danger");
+      setIsUploadingImage(false);
+      return { success: false };
+    }
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
     showAlert("You have successfully logged out", "danger");
@@ -95,6 +150,7 @@ export default function UserProvider({children}) {
       setUser,
       logout,
       loading,
+      isUploadingImage,
       firstName,
       setFirstName,
       lastName,
@@ -102,6 +158,7 @@ export default function UserProvider({children}) {
       userImage,
       setUserImage,
       login,
+      updateProfile,
   }
 
   return (

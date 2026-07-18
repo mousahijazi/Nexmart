@@ -54,6 +54,7 @@ export {default as CartProducts} from "./components/cart/CartProducts";
 // dashboard
 export {default as CartDashbaord} from "./components/Dashboard/CartDashbaord";
 export {default as Userdashboard} from "./components/Dashboard/Userdashboard";
+export {default as UpdateUser} from "./components/Dashboard/UpdateUser";
 export {default as DashboardData} from "./components/Dashboard/DashboardData";
 export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton";
 

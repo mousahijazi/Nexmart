@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 
-export default function ProductsFilter({data, search, setSearch, selectedCategory, setSelectedCategory, categories}) {
+export default function ProductsFilter({data, search, setSearch, selectedCategory, setSelectedCategory, categories, categoryFromUrl, resetToAllProducts}) {
   const [isOpen, setIsOpen] = useState(false);
   const currentCategoryName = selectedCategory === "all" 
     ? "All Categories" 
@@ -51,6 +51,11 @@ export default function ProductsFilter({data, search, setSearch, selectedCategor
               <div className="absolute right-0 left-0 mt-2 max-h-60 overflow-y-auto bg-white dark:bg-[#f2f2f2] rounded-xl shadow-xl border border-gray-100 z-50 p-2 flex flex-col gap-1 transition-all duration-300">
                 <button
                   onClick={() => {
+                    if (categoryFromUrl) {
+                      resetToAllProducts()
+                      return;
+                    }
+                    
                     setSelectedCategory("all");
                     setIsOpen(false);
                   }}

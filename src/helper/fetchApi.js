@@ -15,11 +15,11 @@ export async function getProducts(limit = 20, skip = 0) {
     }
 }
 
-export async function getCategories(category = "", limit = 4) {
+export async function getCategories(category = "", limit) {
     try {
         const categoriesFetch = await fetch(
             category
-                ? `https://dummyjson.com/products/category/${category}?limit=${limit}`
+                ? `https://dummyjson.com/products/category/${category}${limit ? `?limit=${limit}` : ""}`
                 : `https://dummyjson.com/products/categories`,
                 { next: { revalidate: 3600 } }
         );

@@ -9,7 +9,7 @@ export const metadata = {
 export default async function Product({params}) {
     const { id } = await params;
     const data = await getProduct(id);
-    const categories = await getCategories(data.category);
+    const categories = await getCategories(data.category, 4);
     const relatedProducts = categories.products.filter(
         (product) => product.id !== data.id
     );

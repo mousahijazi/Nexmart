@@ -1,13 +1,41 @@
 "use client"
-import { ProductsFilter, ProductsCard, Loader } from "../../index";
-import { useState, useMemo, Suspense } from "react";
-import { getProducts } from "@/helper/fetchApi";
+import { ProductsFilter, ProductsCard, Loader } from "@/index";
+import { useState, useEffect, useMemo, Suspense } from "react";
+import { getProducts, getCategories } from "@/helper/fetchApi";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function ProductsContainer({data, totalProducts, categories}) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
+  const [isLoadingCategory, setIsLoadingCategory] = useState(false);
+
   const [products, setProducts] = useState(data);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const PRODUCTS_PER_PAGE = 20;
+
+  useEffect(() => {
+    async function handleCategoryChange() {
+      if (categoryFromUrl) {
+        setIsLoadingCategory(true);
+        setSelectedCategory(categoryFromUrl);
+
+        const categoryProducts = await getCategories(categoryFromUrl);
+        setProducts(categoryProducts.products);
+        setIsLoadingCategory(false);
+      } else {
+        setSelectedCategory("all");
+        setProducts(data);
+      }
+    }
+
+    handleCategoryChange();
+  }, [categoryFromUrl, data]);
+
+  const resetToAllProducts = () => {
+    router.push("/products"); 
+  };
 
   // This function that I used on the "Show More Products" button, I did not put it as a useEffect function because I do not want it to work with a value that changes, but rather with a button that is pressed!
   const loadMoreProducts = async () => {
@@ -30,6 +58,10 @@ export default function ProductsContainer({data, totalProducts, categories}) {
 
   // Filter categories
   const filteredCategories = useMemo(() => {    
+    if (categoryFromUrl) {
+      return categories.filter(category => category.slug === categoryFromUrl);
+    }
+
     const visibleCategories = [
       ...new Set(
         products.map(product => product.category)
@@ -53,29 +85,39 @@ export default function ProductsContainer({data, totalProducts, categories}) {
 
   return (
     <>
-        <ProductsFilter data={products} search={search} setSearch={setSearch} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} categories={filteredCategories} />
+        <ProductsFilter data={products} search={search} setSearch={setSearch} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} categories={filteredCategories} categoryFromUrl={categoryFromUrl} resetToAllProducts={resetToAllProducts} />
         
         <Suspense fallback={<Loader />}>
-          <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="max-w-7xl mx-auto px-6 pt-12 pb-7">
               <ProductsCard data={filteredProducts} showRating={true} />
-              
               <div className="mt-12 flex gap-2 items-center justify-center">
-                {products.length > PRODUCTS_PER_PAGE && (
+                {categoryFromUrl ? (
                     <button
-                      onClick={showLessProducts}
-                      className="bg-gray-300 dark:text-zinc-900 px-8 py-3 rounded-xl cursor-pointer hover:opacity-70 transition duration-300"
-                    >
-                      Show Less
-                    </button>
-                )}
-                {products.length < totalProducts && (
-                    <button 
-                      onClick={loadMoreProducts}
+                      onClick={resetToAllProducts}
                       className="bg-[#5B3A21] text-white font-bold px-8 py-3 rounded-xl hover:opacity-90 transition duration-300 disabled:opacity-50 cursor-pointer"
                     >
-                      Show More
+                      Show All Products
                     </button>
-                )}
+                  ) : (
+                    <>
+                      {products.length > PRODUCTS_PER_PAGE && (
+                        <button
+                          onClick={showLessProducts}
+                          className="bg-gray-300 dark:text-zinc-900 px-8 py-3 rounded-xl cursor-pointer hover:opacity-70 transition duration-300"
+                        >
+                          Show Less
+                        </button>
+                      )}
+                      {products.length < totalProducts && (
+                        <button 
+                          onClick={loadMoreProducts}
+                          className="bg-[#5B3A21] text-white font-bold px-8 py-3 rounded-xl hover:opacity-90 transition duration-300 disabled:opacity-50 cursor-pointer"
+                        >
+                          Show More
+                        </button>
+                      )}
+                    </>
+                  )}
               </div>
           </div>
         </Suspense>

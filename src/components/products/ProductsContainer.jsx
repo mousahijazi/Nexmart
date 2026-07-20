@@ -1,6 +1,6 @@
 "use client"
-import { ProductsFilter, ProductsCard, Loader } from "@/index";
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { ProductsFilter, ProductsCard } from "@/index";
+import { useState, useEffect, useMemo } from "react";
 import { getProducts, getCategories } from "@/helper/fetchApi";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -85,42 +85,39 @@ export default function ProductsContainer({data, totalProducts, categories}) {
 
   return (
     <>
-        <ProductsFilter data={products} search={search} setSearch={setSearch} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} categories={filteredCategories} categoryFromUrl={categoryFromUrl} resetToAllProducts={resetToAllProducts} />
-        
-        <Suspense fallback={<Loader />}>
-          <div className="max-w-7xl mx-auto px-6 pt-12 pb-7">
-              <ProductsCard data={filteredProducts} showRating={true} />
-              <div className="mt-12 flex gap-2 items-center justify-center">
-                {categoryFromUrl ? (
+      <ProductsFilter data={products} search={search} setSearch={setSearch} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} categories={filteredCategories} categoryFromUrl={categoryFromUrl} resetToAllProducts={resetToAllProducts} />
+      <div className="max-w-7xl mx-auto px-6 pt-12 pb-7">
+          <ProductsCard data={filteredProducts} showRating={true} />
+          <div className="mt-12 flex gap-2 items-center justify-center">
+            {categoryFromUrl ? (
+                <button
+                  onClick={resetToAllProducts}
+                  className="bg-[#5B3A21] text-white font-bold px-8 py-3 rounded-xl hover:opacity-90 transition duration-300 disabled:opacity-50 cursor-pointer"
+                >
+                  Show All Products
+                </button>
+              ) : (
+                <>
+                  {products.length > PRODUCTS_PER_PAGE && (
                     <button
-                      onClick={resetToAllProducts}
+                      onClick={showLessProducts}
+                      className="bg-gray-300 dark:text-zinc-900 px-8 py-3 rounded-xl cursor-pointer hover:opacity-70 transition duration-300"
+                    >
+                      Show Less
+                    </button>
+                  )}
+                  {products.length < totalProducts && (
+                    <button 
+                      onClick={loadMoreProducts}
                       className="bg-[#5B3A21] text-white font-bold px-8 py-3 rounded-xl hover:opacity-90 transition duration-300 disabled:opacity-50 cursor-pointer"
                     >
-                      Show All Products
+                      Show More
                     </button>
-                  ) : (
-                    <>
-                      {products.length > PRODUCTS_PER_PAGE && (
-                        <button
-                          onClick={showLessProducts}
-                          className="bg-gray-300 dark:text-zinc-900 px-8 py-3 rounded-xl cursor-pointer hover:opacity-70 transition duration-300"
-                        >
-                          Show Less
-                        </button>
-                      )}
-                      {products.length < totalProducts && (
-                        <button 
-                          onClick={loadMoreProducts}
-                          className="bg-[#5B3A21] text-white font-bold px-8 py-3 rounded-xl hover:opacity-90 transition duration-300 disabled:opacity-50 cursor-pointer"
-                        >
-                          Show More
-                        </button>
-                      )}
-                    </>
                   )}
-              </div>
+                </>
+              )}
           </div>
-        </Suspense>
+      </div>
     </>
   )
 }

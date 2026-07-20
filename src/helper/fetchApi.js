@@ -29,7 +29,6 @@ export async function getCategories(category = "", limit = 4) {
         console.log(error);
         return [];
     }
-    
 }
 
 export async function getProduct(id) {

@@ -10,6 +10,11 @@ export {default as Hero} from "./components/Home/Hero/Hero";
 export {default as HeroImage} from "./components/Home/Hero/HeroImage";
 export {default as HeroText} from "./components/Home/Hero/HeroText";
 
+// Categories
+export {default as Categories} from "./components/Home/Categories/Categories";
+export {default as CategoriesSlider} from "./components/Home/Categories/CategoriesSlider";
+export {default as CategoriesButton} from "./components/Home/Categories/CategoriesButton";
+
 // Feature
 export {default as Feature} from "./components/Home/Feature/Feature";
 export {default as Products} from "./components/Home/Feature/Products";

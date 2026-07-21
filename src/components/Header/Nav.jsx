@@ -38,7 +38,7 @@ export default function Nav({isOpen, setIsOpen, buttonRef}) {
         <NavLink />
         
         {/*todo*/}
-        <div className="flex sm:hidden justify-center w-full pt-4 border-t-2 border-t-gray-400 dark:border-t-[#A68A64]">
+        <div className="flex md:hidden justify-center w-full pt-4 border-t-2 border-t-gray-400 dark:border-t-[#A68A64]">
             <Icon />
         </div>
     </div>

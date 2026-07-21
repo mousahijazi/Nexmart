@@ -89,5 +89,6 @@ export {default as ButtonTheme} from "./components/element/DarkTheme/ButtonTheme
 export {default as LogoutButton} from "./components/element/Login/LogoutButton";
 export {default as Text} from "./components/element/NexmartText/Text";
 export {default as ProductsCard} from "./components/element/ProductsCard/ProductsCard";
+export {default as ProductsWishlistIcon} from "./components/element/ProductsCard/ProductsWishlistIcon";
 export {default as ProductsButton} from "./components/element/ProductsCard/ProductsButton";
 export {default as ShowCard} from "./components/element/ProductsCard/ShowCard";

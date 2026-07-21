@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function LoginSiteDefinition() {
   return (
-    <div className="relative max-md:py-24 bg-[#F9F7F3] dark:bg-zinc-900 flex items-center justify-center p-10">
+    <div className="hidden min-[480px]:flex relative max-md:py-24 bg-[#F9F7F3] dark:bg-zinc-900 items-center justify-center p-10">
         <Image
             src="/cart.svg"
             alt="Login"

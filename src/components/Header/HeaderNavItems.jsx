@@ -12,7 +12,7 @@ export default function HeaderNavItems() {
       <Nav isOpen={isOpen} setIsOpen={setIsOpen} buttonRef={buttonRef} />
 
       {/* todo */}
-      <div className="hidden sm:flex">
+      <div className="hidden md:flex">
         <Icon />
       </div>
       

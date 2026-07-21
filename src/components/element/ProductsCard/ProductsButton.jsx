@@ -4,9 +4,6 @@ export default function ProductsButton({children, onClick, ariaLabel}) {
       onClick={onClick}
       aria-label={ariaLabel}
       className="
-        absolute 
-        bottom-0 
-        right-0
         p-3 
         rounded-tl-3xl
         hover:bg-gray-100 dark:hover:bg-zinc-600

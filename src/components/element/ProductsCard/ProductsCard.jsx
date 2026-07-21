@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ShowCard } from "@/index";
+import { ShowCard, ProductsWishlistIcon } from "@/index";
 
 export default function ProductsCard({data, showDiscount = false, showRating = false, showCard = true}) {
   return (
@@ -9,6 +9,9 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
             <div 
                 key={index} 
                 className={`
+                    w-full
+                    max-w-[360px]
+                    mx-auto
                     bg-white dark:bg-[#181512]
                     rounded-3xl 
                     overflow-hidden 
@@ -62,7 +65,7 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
                         )}
                     </div>
                 </Link>
-                <div className="relative h-9 cursor-pointer">
+                <div className="relative h-9">
                     <Link href={`/products/${product.id}`} className="
                         absolute bottom-0 left-0 
                         bg-[#5B3A21] text-white font-semibold 
@@ -70,7 +73,10 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
                         hover:opacity-90 transition duration-300">
                         View Details
                     </Link>
-                    <ShowCard showCard={showCard} product={product} />
+                    <div className="absolute bottom-0 right-0 flex items-center">
+                        <ProductsWishlistIcon />
+                        <ShowCard showCard={showCard} product={product} />
+                    </div>
                 </div>
             </div>
         ))}

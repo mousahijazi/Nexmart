@@ -1,7 +1,6 @@
 export const iconsData = [
     {
-        url: "/icons/heart.svg",
-        alt: "Add your favorite product",
+        url: false,
     },
     {
         url: "/icons/share.svg",

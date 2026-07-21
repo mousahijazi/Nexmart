@@ -2,7 +2,7 @@ import { LoginForm } from "@/index";
 
 export default function LoginText({isLogin}) {
   return (
-    <div className="py-12 px-6 sm:p-10 flex flex-col justify-center">
+    <div className="px-2 min-[480px]:py-12 min-[480px]:px-6 sm:p-10 flex flex-col justify-center">
         <span className="text-xs font-bold tracking-widest uppercase text-[#5B3A21]/80 dark:text-[#A68A64]/70">
           {isLogin ? "Welcome Back!" : "Create an Account"}
         </span>

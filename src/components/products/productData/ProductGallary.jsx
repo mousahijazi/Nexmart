@@ -18,7 +18,7 @@ export default function Product({data}) {
                 className="bg-[#F2F2F2] dark:bg-[#1f1b17] rounded-2xl"
             />
             <div className="flex gap-2 sm:flex-col justify-between">
-                <Icons />
+                <Icons product={data} />
             </div>
         </div>
         <div className="grid grid-cols-2 w-full justify-center justify-items-center gap-5 min-[480]:flex lg:justify-center max-[480]:border-b-[3px] max-[480]:border-dashed max-[480]:border-b-[#666] max-[480]:pb-6">

@@ -61,6 +61,7 @@ export default function UserProvider({children}) {
 
     const loggedInUser = result.user;
 
+    // merged cart
     const guestCart = JSON.parse(localStorage.getItem("cart-guest")) || [];
     const userCart = JSON.parse(localStorage.getItem(`cart-${loggedInUser.id}`)) || [];
     const mergedCart = [
@@ -70,6 +71,17 @@ export default function UserProvider({children}) {
 
     localStorage.setItem(`cart-${loggedInUser.id}`, JSON.stringify(mergedCart));
     localStorage.removeItem("cart-guest");
+
+    // merged wishlist
+    const guestWishlist = JSON.parse(localStorage.getItem("wishlist-guest")) || [];
+    const userWishlist =JSON.parse(localStorage.getItem(`wishlist-${loggedInUser.id}`)) || [];
+    const mergedWishlist = [
+        ...userWishlist,
+        ...guestWishlist.filter(guestItem => !userWishlist.some(userItem => userItem.id === guestItem.id))
+    ];
+
+    localStorage.setItem(`wishlist-${loggedInUser.id}`, JSON.stringify(mergedWishlist));
+    localStorage.removeItem("wishlist-guest");
 
     setUser(loggedInUser);
     

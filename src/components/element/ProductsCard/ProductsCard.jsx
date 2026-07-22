@@ -74,7 +74,7 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
                         View Details
                     </Link>
                     <div className="absolute bottom-0 right-0 flex items-center">
-                        <ProductsWishlistIcon />
+                        <ProductsWishlistIcon product={product} />
                         <ShowCard showCard={showCard} product={product} />
                     </div>
                 </div>

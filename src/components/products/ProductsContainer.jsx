@@ -152,6 +152,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
                     ? scrollTo(productsRef, "start")
                     : scrollTo(buttonRef, "center")
             }
+            aria-label={`go to ${isBottom ? "up" : "down"}`}
             className="
                 flex items-center justify-center
                 fixed

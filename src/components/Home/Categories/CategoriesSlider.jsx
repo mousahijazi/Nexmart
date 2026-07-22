@@ -41,10 +41,10 @@ export default function CategoriesSlider({categories}) {
                     key={index}
                     onClick={() => setCurrentPage(index)}
                     aria-label={`Go to page ${index + 1}`}
-                    className={`h-2.5 cursor-pointer rounded-full transition-all duration-300 ${
+                    className={`h-4 cursor-pointer rounded-full transition-all duration-300 ${
                     index === currentPage
-                        ? "w-6 bg-[#5B3A21] dark:bg-[#A68A64]"
-                        : "w-2.5 bg-gray-300 dark:bg-zinc-700"
+                        ? "w-8 bg-[#5B3A21] dark:bg-[#A68A64]"
+                        : "w-4 bg-gray-300 dark:bg-zinc-700"
                     }`}
                 />
                 ))}

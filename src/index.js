@@ -56,9 +56,17 @@ export {default as Cart} from "./components/cart/Cart";
 export {default as TextCart} from "./components/cart/TextCart";
 export {default as CartProducts} from "./components/cart/CartProducts";
 
+// wishlist
+export {default as Wishlist} from "./components/Wishlist/Wishlist"; 
+export {default as WishlistProducts} from "./components/Wishlist/WishlistProducts"; 
+export {default as EmptyWishlist} from "./components/Wishlist/EmptyWishlist";
+
 // dashboard
-export {default as CartDashbaord} from "./components/Dashboard/CartDashbaord";
+export {default as Dashbaord} from "./components/Dashboard/Dashbaord";
+export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
 export {default as Userdashboard} from "./components/Dashboard/Userdashboard";
+export {default as WishlistDashboard} from "./components/Dashboard/WishlistDashboard";
+export {default as WishlistDashboardData} from "./components/Dashboard/WishlistDashboardData";
 export {default as UpdateUser} from "./components/Dashboard/UpdateUser";
 export {default as DashboardData} from "./components/Dashboard/DashboardData";
 export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton";

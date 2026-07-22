@@ -21,26 +21,20 @@ export default function ProductProvider({children}) {
   }, [cartKey]);
 
   const addToStorage = (product) => {
-        if (!product) return;
+      if (!product) return;
 
-        const exists = cart.find(
-            item => item.id === product.id
-        );
-
-        if (exists) {
-          showAlert(`${product.title} has already in cart!`, "danger");
-          return 
-        } 
-        
-        setCart(prev => [...prev, product]);
-        showAlert(`${product.title} added to cart`);
+      const exists = cart.find(item => item.id === product.id);
+      if (exists) {
+        showAlert(`${product.title} has already in cart!`, "danger");
+        return 
+      } 
+      
+      setCart(prev => [...prev, product]);
+      showAlert(`${product.title} added to cart`);
   }
 
   const removeFromCart = (product) => {
-      setCart(prev =>
-          prev.filter(item => item.id !== product.id)
-      );
-
+      setCart(prev => prev.filter(item => item.id !== product.id));
       showAlert(`${product.title} removed from cart`, "danger");
   };
 

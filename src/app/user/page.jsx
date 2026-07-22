@@ -1,4 +1,4 @@
-import { CartDashbaord } from "@/index";
+import { Dashbaord } from "@/index";
 
 export const metadata = {
   title: "Nexmart - profile",
@@ -9,7 +9,7 @@ export default function page() {
   return (
     <div className="bg-[#f2f2f2] dark:bg-zinc-800 py-28 min-[500px]:px-6 min-[500px]:py-32 sm:py-40">
         <div className="max-w-7xl mx-auto min-[500px]:px-6">
-            <CartDashbaord showCartData={false} /> 
+            <Dashbaord showData="userDashboard" /> 
         </div>
     </div>
   )

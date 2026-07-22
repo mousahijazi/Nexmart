@@ -2,7 +2,7 @@ import { iconsData } from "./data";
 import { ProductsWishlistIcon } from "@/index";
 import Image from "next/image";
 
-export default function Icons() {
+export default function Icons({product}) {
     const iconGroups = [
         iconsData.slice(0, 2),
         iconsData.slice(2),
@@ -23,7 +23,7 @@ export default function Icons() {
                             className="bg-[#f2f2f2] dark:bg-zinc-200 rounded-sm p-2 cursor-pointer sm:w-11 sm:h-11"
                         />
                     : <div key={index} className="flex items-center justify-center bg-[#f2f2f2] dark:bg-zinc-200 rounded-sm p-2 cursor-pointer">
-                            <ProductsWishlistIcon />
+                            <ProductsWishlistIcon product={product} />
                         </div>
                 ))}
             </div>

@@ -77,7 +77,7 @@ export default function ContactForm() {
                 />
             </div>
 
-            <button className="w-full cursor-pointer py-3.5 bg-[#5B3A21] hover:bg-[#5B3A21]/90 text-white rounded-full font-medium transition flex items-center justify-center gap-2">
+            <button className="w-full cursor-pointer py-3.5 bg-[#5B3A21] hover:bg-[#5B3A21]/90 text-white rounded-full font-medium transition flex items-center justify-center gap-2" aria-label="send a massage">
                 <Send size={18} />
                 <span>{isSending ? "Sending..." : "Send Message"}</span>
             </button>

@@ -1,6 +1,30 @@
-export default function BuyButton() {
+"use client"
+import { useRouter } from "next/navigation";
+import { useProductContext } from "@/Context/CartProvider";
+import { useCheckoutContext } from "@/Context/CheckoutProvider";
+import { useAlertContext } from "@/Context/AlertProvider";
+
+export default function BuyButton({products = false, singleProduct}) {
+  const router = useRouter();
+  const {cart} = useProductContext();
+  const {showAlert} = useAlertContext();
+  const { checkoutCart, checkoutSingleProduct } = useCheckoutContext();
+  const handleCheckout = () => {
+    if (products) {
+      if (cart && cart.length > 0) {
+        checkoutCart(cart);
+        router.push("/checkout");
+      } else {
+        showAlert("your cart is empty!", "danger");
+      }
+    } else if (singleProduct) {
+      checkoutSingleProduct(singleProduct);
+      router.push("/checkout");
+    }
+  };
+
   return (
-    <button className="w-full font-semibold sm:w-1/2 bg-white text-[#5B3A21] border-2 border-[#5B3A21] px-6 py-3 rounded-2xl cursor-pointer">Buy Now</button>
+    <button className="w-full font-semibold sm:w-1/2 bg-white text-[#5B3A21] border-2 border-[#5B3A21] px-6 py-3 rounded-2xl cursor-pointer" aria-label="checkout" onClick={handleCheckout}>Checkout</button>
   )
 }
 

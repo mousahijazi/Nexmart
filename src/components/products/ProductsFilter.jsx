@@ -33,6 +33,7 @@ export default function ProductsFilter({data, search, setSearch, selectedCategor
           
           <div className="relative w-full md:w-64">
             <button
+              aria-label="open categories filter"
               onClick={() => setIsOpen(!isOpen)}
               className="w-full flex items-center justify-between bg-white text-[#5B3A21] dark:bg-[#f2f2f2] dark:text-zinc-700 font-bold px-5 py-3 rounded-xl border-2 border-transparent hover:border-[#5B3A21] dark:hover:border-zinc-700 shadow-sm cursor-pointer transition duration-300"
             >

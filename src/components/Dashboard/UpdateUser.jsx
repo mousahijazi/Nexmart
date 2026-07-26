@@ -126,6 +126,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
               <div className="pt-4 flex max-[390px]:flex-col gap-3">
                 <button
                   type="button"
+                  aria-label="cancel"
                   onClick={() => setIsModalOpen(false)}
                   className="cursor-pointer w-full py-2.5 border border-gray-300 dark:border-zinc-600 rounded-xl font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-700 transition"
                 >
@@ -133,6 +134,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
                 </button>
                 <button
                   type="submit"
+                  aria-label="save changes"
                   disabled={updating}
                   className="cursor-pointer w-full py-2.5 bg-[#5B3A21] text-white rounded-xl font-medium hover:opacity-90 transition disabled:opacity-50"
                 >

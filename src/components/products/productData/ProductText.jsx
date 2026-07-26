@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Purchases, ProductsTextButton } from "@/index";
 
 export default function ProductText({data}) {
+
   return (
     <div className="flex flex-col gap-5 lg:justify-center">
         <span className="text-gray-500 font-bold dark:text-[#A68A64]">Nexmart</span>

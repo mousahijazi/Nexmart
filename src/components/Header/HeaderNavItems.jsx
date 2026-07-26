@@ -19,6 +19,7 @@ export default function HeaderNavItems() {
       <button 
           className="block lg:hidden cursor-pointer"
           ref={buttonRef}
+          aria-label="menu"
           onClick={() => setIsOpen(!isOpen)}
       >
           <Menu size={60} strokeWidth={3} className="dark:text-[#f1f1f1]" />

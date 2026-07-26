@@ -25,6 +25,7 @@ export default function Error({ error, reset }) {
 
         <button
           onClick={() => reset()} 
+          aria-label="try again"
           className="relative z-10 flex items-center gap-3 px-8 py-3 bg-red-600 text-white font-medium rounded-full hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer hover:-translate-y-0.5"
         >
           <RefreshCcw size={20} className="stroke-[2.5]" />

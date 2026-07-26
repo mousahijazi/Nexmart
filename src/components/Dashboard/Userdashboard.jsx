@@ -100,6 +100,7 @@ export default function Userdashboard() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <button
+                    aria-label="edit profile"
                     onClick={() => setIsModalOpen(true)}
                     className="cursor-pointer flex items-center gap-2 px-6 py-3 bg-[#5B3A21] dark:bg-[#A68A64] text-white dark:text-[#e5ded8] rounded-full font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg"
                   >

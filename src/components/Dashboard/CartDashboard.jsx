@@ -15,7 +15,7 @@ export default function CartDashboard() {
             </div>
             <DashboardData />
             <div className="flex max-sm:flex-col w-full items-center gap-5">
-                <BuyButton />
+                <BuyButton products={true} />
                 <ClearCartButton />   
             </div>
         </div>

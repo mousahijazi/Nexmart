@@ -18,6 +18,7 @@ export default function LogoutButton() {
                 transition
                 cursor-pointer
             "
+            aria-label="logout"
         >
             <LogOut size={18} />
             Logout

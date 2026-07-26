@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function DashboardData() {
     const {cart} = useProductContext();
+
     const [coupon, setCoupon] = useState("");
     const [discount, setDiscount] = useState(0);
     const handleCouponChange = (e) => {

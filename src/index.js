@@ -71,6 +71,10 @@ export {default as UpdateUser} from "./components/Dashboard/UpdateUser";
 export {default as DashboardData} from "./components/Dashboard/DashboardData";
 export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton";
 
+// checkout
+export {default as CheckoutForm} from "./components/Checkout/CheckoutForm";
+export {default as CheckoutData} from "./components/Checkout/CheckoutData";
+
 // login
 export {default as LoginText} from "./components/Login/LoginText";
 export {default as LoginForm} from "./components/Login/LoginForm";

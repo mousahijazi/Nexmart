@@ -77,3 +77,53 @@ export async function registerUser(email, password, firstName, lastName, userIma
         ? {success: false, message: error.message} 
         : {success: true, user: data?.user, session: data?.session};
 }
+
+// create order
+export async function createOrder({ userId, shippingInfo, needShipping, grandTotal }) {
+    const { data: orderData, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+            user_id: userId,
+            status: "pending",
+            total_price: grandTotal,
+            shipping_address: needShipping
+                ? `${shippingInfo.address}, ${shippingInfo.city}`
+                : "No shipping",
+            phone: shippingInfo.phone,
+            notes: shippingInfo.notes || null,
+            full_name: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
+            city: shippingInfo.city,
+            address: shippingInfo.address,
+        })
+        .select()
+        .single();
+
+    if (orderError) {
+        return { success: false, message: orderError.message };
+    }
+
+    return { success: true, order: orderData };
+}
+
+// create order items
+export async function createOrderItems(orderId, checkoutItems) {
+    const orderItemsPayload = checkoutItems.map((item) => ({
+        order_id: orderId,
+        product_id: item.id,
+        product_title: item.title,
+        thumbnail: item.thumbnail || null,
+        price: item.price,
+        quantity: item.quantity || 1,
+        subtotal: item.price * (item.quantity || 1),
+    }));
+
+    const { data, error } = await supabase
+        .from("order_items")
+        .insert(orderItemsPayload);
+
+    if (error) {
+        return { success: false, message: error.message };
+    }
+
+    return { success: true, items: data };
+}

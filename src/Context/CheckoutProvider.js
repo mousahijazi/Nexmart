@@ -1,15 +1,51 @@
 "use client";
-import { createContext, useContext, useState, useMemo } from "react";
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
 
 const CheckoutContext = createContext();
+const STORAGE_KEY = "checkout-items";
 
 export default function CheckoutProvider({ children }) {
     const [checkoutItems, setCheckoutItems] = useState([]);
+    const [isLoaded, setIsLoaded] = useState(false);
     const [coupon, setCoupon] = useState("");
     const [needShipping, setNeedShipping] = useState(true);
+    const [shippingInfo, setShippingInfo] = useState({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        city: "",
+        address: "",
+        notes: "",
+    });
+    const updateShippingField = (name, value) => {
+        setShippingInfo(prev => ({ ...prev, [name]: value }));
+    };
 
     const SHIPPING_PRICE = 5.5;
     const TAX_RATE = 0.10;
+
+    useEffect(() => {
+        try {
+            const stored = sessionStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                setCheckoutItems(JSON.parse(stored));
+            }
+        } catch (error) {
+            console.error("Failed to load checkout items:", error);
+        } finally {
+            setIsLoaded(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        if (checkoutItems.length > 0) {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(checkoutItems));
+        } else {
+            sessionStorage.removeItem(STORAGE_KEY);
+        }
+    }, [checkoutItems, isLoaded]);
 
     const checkoutSingleProduct = (product, quantity = 1) => {
         if (!product) return;
@@ -30,6 +66,11 @@ export default function CheckoutProvider({ children }) {
 
     const clearCheckout = () => {
         setCheckoutItems([]);
+    };
+
+    const isShippingValid = () => {
+        const { firstName, lastName, phone, city, address } = shippingInfo;
+        return firstName.trim() && lastName.trim() && phone.trim() && city.trim() && address.trim();
     };
 
     // Calculations
@@ -64,6 +105,11 @@ export default function CheckoutProvider({ children }) {
     const value = {
         checkoutItems,
         setCheckoutItems,
+
+        shippingInfo,
+        setShippingInfo,
+        updateShippingField,
+        isShippingValid,
 
         checkoutSingleProduct,
         checkoutCart,

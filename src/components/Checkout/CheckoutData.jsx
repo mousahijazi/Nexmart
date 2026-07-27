@@ -1,8 +1,21 @@
 "use client"
-import { useCheckoutContext } from "@/Context/CheckoutProvider"
+import { useCheckoutContext } from "@/Context/CheckoutProvider";
+import { useUserContext } from "@/Context/UserProvider";
+import { useAlertContext } from "@/Context/AlertProvider";
+import { useProductContext } from "@/Context/CartProvider";
+import { createOrder } from "@/helper/fetchApi";
+import { createOrderItems } from "@/helper/fetchApi";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutData() {
-  const {subtotal, shippingPrice, taxes, discountAmount, grandTotal, totalItems, coupon, setCoupon, needShipping, setNeedShipping} = useCheckoutContext();
+  const {user} = useUserContext();
+  const {setCart} = useProductContext();
+  const {showAlert} = useAlertContext();
+  const router = useRouter();
+  const [placing, setPlacing] = useState(false);
+  
+  const {checkoutItems, subtotal, shippingInfo, shippingPrice, taxes, discountAmount, grandTotal, totalItems, coupon, setCoupon, needShipping, setNeedShipping, clearCheckout, isShippingValid} = useCheckoutContext();
   const ItemsData = [
     {
         type: "normal",
@@ -24,11 +37,54 @@ export default function CheckoutData() {
         text: "coupon",
     },
   ];
+
+  const handlePlaceOrder = async () => {
+        if (!user) {
+            showAlert("Please log in to place an order", "danger");
+            return;
+        }
+        if (checkoutItems.length === 0) {
+            showAlert("Please return to your cart and checkout !", "danger");
+            return;
+        }
+        if (!isShippingValid()) {
+            showAlert("Please fill in all required shipping fields", "danger");
+            return;
+        }
+
+        setPlacing(true);
+
+        const orderResult = await createOrder({ userId: user.id, shippingInfo, needShipping, grandTotal, checkoutItems });
+        if (!orderResult.success) {
+            setPlacing(false);
+            showAlert(orderResult.message, "danger");
+            return;
+        }
+
+        const itemsResult = await createOrderItems(orderResult.order.id, checkoutItems);
+        if (!itemsResult.success) {
+            setPlacing(false);
+            showAlert(itemsResult.message, "danger");
+            return;
+        }
+
+        setPlacing(false);
+        showAlert("Order placed successfully!");
+
+        setCart((prevCart) => {
+            return prevCart.filter(
+                (cartItem) => !checkoutItems.some((checkoutItem) => checkoutItem.id === cartItem.id)
+            );
+        });
+
+        clearCheckout();
+        router.push("/user");
+    };
     
   return (
     <div className="px-3 min-[480px]:px-6 py-8">
         <div className="pb-5">
-            <button type="button" aria-label="Place Order" className="p-3 bg-[#5B3A21] rounded-xl w-full cursor-pointer text-white">Place Order</button>
+            <button type="button" aria-label="Place Order" className="p-3 bg-[#5B3A21] rounded-xl w-full cursor-pointer text-white" disabled={placing} onClick={handlePlaceOrder}>{placing ? "Placing Order..." : "Place Order"}</button>
             <p className="mt-5 text-gray-600 dark:text-zinc-300">By placing your order, you agree to our company Privacy policy and Conditions of use.</p>
         </div>
         <div className="py-5 border-t-2 border-t-gray-400 text-gray-600 dark:text-zinc-300">

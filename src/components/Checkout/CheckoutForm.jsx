@@ -1,22 +1,16 @@
 "use client"
+import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { useUserContext } from "@/Context/UserProvider";
 import { useState, useEffect } from "react";
 
 export default function CheckoutForm() {
     const {user} = useUserContext();
-    const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        city: "",
-        address: "",
-        notes: "",
-    });
+    const {shippingInfo, setShippingInfo, updateShippingField} = useCheckoutContext();
 
     useEffect(() => {
         if (!user) return;
 
-        setFormData(prev => ({
+        setShippingInfo(prev => ({
             ...prev,
             firstName: user.user_metadata?.first_name || "",
             lastName: user.user_metadata?.last_name || "",
@@ -26,11 +20,7 @@ export default function CheckoutForm() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
+        updateShippingField(name, value);
     };
 
     const checkoutFields  = [
@@ -38,25 +28,25 @@ export default function CheckoutForm() {
             text: "First Name",
             id: "FirstName",
             name: "firstName",
-            value: formData.firstName,
+            value: shippingInfo.firstName,
         },
         {
             text: "Last Name",
             id: "LastName",
             name: "lastName",
-            value: formData.lastName,
+            value: shippingInfo.lastName,
         },
         {
             text: "Phone number",
             id: "PhoneNumber",
             name: "phone",
-            value: formData.phone,
+            value: shippingInfo.phone,
         },
         {
             text: "City",
             id: "City",
             name: "city",
-            value: formData.city,
+            value: shippingInfo.city,
         },
     ];
 
@@ -97,7 +87,7 @@ export default function CheckoutForm() {
                     <input 
                         id="address" 
                         name="address"
-                        value={formData.address}
+                        value={shippingInfo.address}
                         onChange={handleChange}
                         type="text" 
                         placeholder="Address" 
@@ -120,7 +110,7 @@ export default function CheckoutForm() {
                     <textarea
                         rows={4}
                         name="notes"
-                        value={formData.notes}
+                        value={shippingInfo.notes}
                         onChange={handleChange}
                         placeholder="Write your message here..."
                         className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-zinc-800 bg-[#fcfbf9] dark:bg-[#f2f2f2] outline-none focus:border-[#5B3A21] dark:focus:border-zinc-600 transition resize-none"

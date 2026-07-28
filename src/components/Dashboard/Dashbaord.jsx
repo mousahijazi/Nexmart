@@ -1,4 +1,4 @@
-import { CartDashboard, Userdashboard, WishlistDashboard } from "@/index";
+import { CartDashboard, Userdashboard, WishlistDashboard, OrderDashboard } from "@/index";
 
 export default function Dashbaord({showData = "cartDashboard"}) {
   switch (showData) {
@@ -16,6 +16,11 @@ export default function Dashbaord({showData = "cartDashboard"}) {
       return (
         <WishlistDashboard />
       );
+    
+    case "orderDashboard":
+      return(
+        <OrderDashboard />
+      )
 
     default:
       return null;

@@ -5,7 +5,7 @@ export default async function Categories() {
   const categories = await getCategories();
 
   return (
-    <section className="bg-[#F7F4EF] dark:bg-zinc-950 py-20 lg:py-28">
+    <section className="bg-[#e3dfd7] dark:bg-zinc-800 py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-12 flex flex-col gap-3">
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">

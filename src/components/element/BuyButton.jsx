@@ -3,13 +3,19 @@ import { useRouter } from "next/navigation";
 import { useProductContext } from "@/Context/CartProvider";
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { useAlertContext } from "@/Context/AlertProvider";
+import { useUserContext } from "@/Context/UserProvider";
 
 export default function BuyButton({products = false, singleProduct}) {
   const router = useRouter();
   const {cart} = useProductContext();
+  const {user} = useUserContext();
   const {showAlert} = useAlertContext();
   const { checkoutCart, checkoutSingleProduct } = useCheckoutContext();
   const handleCheckout = () => {
+    if (!user) {
+      showAlert("please login to open this page", "danger");
+      return ;
+    }
     if (products) {
       if (cart && cart.length > 0) {
         checkoutCart(cart);

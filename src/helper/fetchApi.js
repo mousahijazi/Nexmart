@@ -127,3 +127,18 @@ export async function createOrderItems(orderId, checkoutItems) {
 
     return { success: true, items: data };
 }
+
+ // get user orders
+export async function getUserOrders(userId) {
+    const { data, error } = await supabase
+        .from("orders")
+        .select("*, order_items(*)")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        return { success: false, orders: [] };
+    }
+
+    return { success: true, orders: data };
+}

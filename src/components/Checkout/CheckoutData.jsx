@@ -84,7 +84,10 @@ export default function CheckoutData() {
   return (
     <div className="px-3 min-[480px]:px-6 py-8">
         <div className="pb-5">
-            <button type="button" aria-label="Place Order" className="p-3 bg-[#5B3A21] rounded-xl w-full cursor-pointer text-white" disabled={placing} onClick={handlePlaceOrder}>{placing ? "Placing Order..." : "Place Order"}</button>
+            <div className="flex items-center gap-3">
+                <button type="button" aria-label="cancel" className="p-3 border border-black dark:border-zinc-200 dark:bg-zinc-900 dark:text-white rounded-xl min-[480px]:w-1/2 cursor-pointer" onClick={() => router.back()}>cancel</button>
+                <button type="button" aria-label="Place Order" className="p-3 bg-[#5B3A21] rounded-xl w-full cursor-pointer text-white" disabled={placing} onClick={handlePlaceOrder}>{placing ? "Placing Order..." : "Place Order"}</button>
+            </div>
             <p className="mt-5 text-gray-600 dark:text-zinc-300">By placing your order, you agree to our company Privacy policy and Conditions of use.</p>
         </div>
         <div className="py-5 border-t-2 border-t-gray-400 text-gray-600 dark:text-zinc-300">

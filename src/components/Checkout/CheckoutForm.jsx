@@ -117,10 +117,6 @@ export default function CheckoutForm() {
                     />
                 </div>
             </div>
-            <div className="mt-4 flex max-[480px]:flex-col-reverse gap-4">
-                <button type="button" aria-label="cancel" className="p-3 border border-black dark:border-zinc-200 dark:bg-zinc-900 dark:text-white rounded-xl min-[480px]:w-1/2 cursor-pointer">cancel</button>
-                <button type="button" aria-label="save address" className="p-3 bg-[#5B3A21] rounded-xl w-full cursor-pointer text-white">Save this Address</button>
-            </div>
         </form>
     </div>
   )

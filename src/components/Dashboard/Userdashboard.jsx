@@ -18,7 +18,7 @@ export default function Userdashboard() {
           <div className="w-full">
             <div className="h-3 w-20 bg-gray-200 rounded mb-3"></div>
 
-            <h1 className="h-10 max-w-[260px] w-full bg-gray-200 rounded"></h1>
+            <h1 className="h-10 text-2xl sm:text-3xl md:text-4xl max-w-[260px] w-full bg-gray-200 rounded"></h1>
 
             <div className="flex max-[480px]:flex-col items-start min-[480px]:items-center justify-between gap-3 mt-4">
               <div className="flex items-center gap-3">

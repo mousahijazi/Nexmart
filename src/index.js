@@ -63,17 +63,25 @@ export {default as EmptyWishlist} from "./components/Wishlist/EmptyWishlist";
 
 // dashboard
 export {default as Dashbaord} from "./components/Dashboard/Dashbaord";
-export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
+
 export {default as Userdashboard} from "./components/Dashboard/Userdashboard";
-export {default as WishlistDashboard} from "./components/Dashboard/WishlistDashboard";
-export {default as WishlistDashboardData} from "./components/Dashboard/WishlistDashboardData";
 export {default as UpdateUser} from "./components/Dashboard/UpdateUser";
+
+export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
 export {default as DashboardData} from "./components/Dashboard/DashboardData";
 export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton";
+
+export {default as WishlistDashboard} from "./components/Dashboard/WishlistDashboard";
+export {default as WishlistDashboardData} from "./components/Dashboard/WishlistDashboardData";
+
+export {default as OrderDashboard} from "./components/Dashboard/OrderDashboard";
+export {default as OrderDashboardData} from "./components/Dashboard/OrderDashboardData";
+export {default as OrderDashboardButton} from "./components/Dashboard/OrderDashboardButton";
 
 // checkout
 export {default as CheckoutForm} from "./components/Checkout/CheckoutForm";
 export {default as CheckoutData} from "./components/Checkout/CheckoutData";
+export {default as CheckoutItems} from "./components/Checkout/CheckoutItems";
 
 // login
 export {default as LoginText} from "./components/Login/LoginText";

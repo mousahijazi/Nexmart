@@ -82,6 +82,11 @@ export {default as OrderDashboardButton} from "./components/Dashboard/OrderDashb
 export {default as CheckoutForm} from "./components/Checkout/CheckoutForm";
 export {default as CheckoutData} from "./components/Checkout/CheckoutData";
 export {default as CheckoutItems} from "./components/Checkout/CheckoutItems";
+export {default as CheckoutStepper} from "./components/Checkout/CheckoutStepper";
+export {default as StepCircle} from "./components/Checkout/StepCircle";
+
+export {default as PaymentForm} from "./components/Checkout/PaymentForm";
+export {default as PaymentSummary} from "./components/Checkout/PaymentSummary";
 
 // login
 export {default as LoginText} from "./components/Login/LoginText";

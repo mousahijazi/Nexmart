@@ -19,13 +19,13 @@ export default function BuyButton({products = false, singleProduct}) {
     if (products) {
       if (cart && cart.length > 0) {
         checkoutCart(cart);
-        router.push("/checkout");
+        router.push("/checkout?mode=address");
       } else {
         showAlert("your cart is empty!", "danger");
       }
     } else if (singleProduct) {
       checkoutSingleProduct(singleProduct);
-      router.push("/checkout");
+      router.push("/checkout?mode=address");
     }
   };
 

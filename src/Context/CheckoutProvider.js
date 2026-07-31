@@ -6,7 +6,24 @@ const STORAGE_KEY = "checkout-items";
 
 export default function CheckoutProvider({ children }) {
     const [checkoutItems, setCheckoutItems] = useState([]);
+    const [currentOrderId, setCurrentOrderId] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const stored = sessionStorage.getItem("current-order-id");
+        if (stored) {
+            setCurrentOrderId(stored);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (currentOrderId) {
+            sessionStorage.setItem("current-order-id", currentOrderId);
+        } else {
+            sessionStorage.removeItem("current-order-id");
+        }
+    }, [currentOrderId]);
+
     const [coupon, setCoupon] = useState("");
     const [needShipping, setNeedShipping] = useState(true);
     const [shippingInfo, setShippingInfo] = useState({
@@ -66,6 +83,7 @@ export default function CheckoutProvider({ children }) {
 
     const clearCheckout = () => {
         setCheckoutItems([]);
+        setCurrentOrderId(null)
     };
 
     const isShippingValid = () => {
@@ -105,6 +123,8 @@ export default function CheckoutProvider({ children }) {
     const value = {
         checkoutItems,
         setCheckoutItems,
+        currentOrderId,
+        setCurrentOrderId,
 
         shippingInfo,
         setShippingInfo,

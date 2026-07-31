@@ -69,7 +69,6 @@ export default function CheckoutData() {
         }
 
         setPlacing(false);
-        showAlert("Order placed successfully!");
 
         setCart((prevCart) => {
             return prevCart.filter(
@@ -78,7 +77,7 @@ export default function CheckoutData() {
         });
 
         clearCheckout();
-        router.push("/user");
+        router.push("/checkout?mode=pay");
     };
     
   return (

@@ -1,7 +1,7 @@
 "use client"
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { useUserContext } from "@/Context/UserProvider";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 export default function CheckoutForm() {
     const {user} = useUserContext();

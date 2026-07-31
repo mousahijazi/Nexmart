@@ -84,7 +84,7 @@ export async function createOrder({ userId, shippingInfo, needShipping, grandTot
         .from("orders")
         .insert({
             user_id: userId,
-            status: "pending",
+            payment_status: "pending",
             total_price: grandTotal,
             shipping_address: needShipping
                 ? `${shippingInfo.address}, ${shippingInfo.city}`
@@ -128,7 +128,7 @@ export async function createOrderItems(orderId, checkoutItems) {
     return { success: true, items: data };
 }
 
- // get user orders
+// get user orders
 export async function getUserOrders(userId) {
     const { data, error } = await supabase
         .from("orders")
@@ -141,4 +141,20 @@ export async function getUserOrders(userId) {
     }
 
     return { success: true, orders: data };
+}
+
+// get order by id 
+export async function getOrderById(orderId, userId) {
+    const { data, error } = await supabase
+        .from("orders")
+        .select("*, order_items(*)")
+        .eq("id", orderId)
+        .eq("user_id", userId)
+        .single();
+
+    if (error || !data) {
+        return { success: false };
+    }
+
+    return { success: true, order: data };
 }

@@ -15,7 +15,7 @@ export default function CheckoutData() {
   const router = useRouter();
   const [placing, setPlacing] = useState(false);
   
-  const {checkoutItems, subtotal, shippingInfo, shippingPrice, taxes, discountAmount, grandTotal, totalItems, coupon, setCoupon, needShipping, setNeedShipping, clearCheckout, isShippingValid} = useCheckoutContext();
+  const {checkoutItems, setCheckoutItems, subtotal, shippingInfo, shippingPrice, taxes, discountAmount, grandTotal, totalItems, coupon, setCoupon, needShipping, setNeedShipping, setCurrentOrderId, isShippingValid} = useCheckoutContext();
   const ItemsData = [
     {
         type: "normal",
@@ -76,7 +76,8 @@ export default function CheckoutData() {
             );
         });
 
-        clearCheckout();
+        setCurrentOrderId(orderResult.order.id);
+        setCheckoutItems([]);
         router.push("/checkout?mode=pay");
     };
     

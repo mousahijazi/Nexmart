@@ -1,38 +1,57 @@
-"use client"
-import { useState, useEffect } from "react";
-import { useCheckoutContext } from "@/Context/CheckoutProvider";
-import { useUserContext } from "@/Context/UserProvider";
-import { getOrderById } from "@/helper/fetchApi";
 import { ShieldCheck } from "lucide-react";
 import Image from "next/image";
 
-export default function PaymentSummary() {
-    const { currentOrderId } = useCheckoutContext();
-    const { user } = useUserContext();
-    const [order, setOrder] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (!currentOrderId || !user) {
-            setLoading(false);
-            return;
-        }
-
-        getOrderById(currentOrderId, user.id)
-        .then((result) => {
-            setOrder(result.success ? result.order : null);
-            setLoading(false);
-        });
-    }, [currentOrderId, user]);
-
+export default function PaymentSummary({order, loading}) {
     // todo
     if (loading) {
-        return <p className="text-center py-20">Loading order summary...</p>;
+        return (
+            <div className="flex flex-col justify-center items-center gap-8 min-[480px]:bg-[#F9F7F3] min-[480px]:dark:bg-[#1f1b17] px-3 min-[480px]:px-6 py-12">
+
+                <div className="w-[180px] h-[180px] rounded-xl bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+
+                <div className="w-full max-w-md bg-white dark:bg-zinc-950 rounded-2xl shadow-md dark:shadow-black/60 p-6">
+
+                    <div className="h-6 w-40 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse mb-6" />
+
+                    <div className="space-y-4">
+
+                        <div className="flex justify-between items-center">
+                            <div className="h-4 w-16 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                            <div className="h-4 w-28 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                            <div className="h-4 w-16 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                            <div className="h-4 w-10 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                            <div className="h-4 w-24 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                            <div className="h-4 w-20 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                        </div>
+
+                    </div>
+
+                    <div className="border-t-2 border-gray-100 dark:border-zinc-800 mt-6 pt-6 flex justify-between items-center">
+                        <div className="h-5 w-16 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                        <div className="h-7 w-24 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                    </div>
+
+                </div>
+
+                <div className="h-4 w-72 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+
+            </div>
+        );
     }
 
-    // todo
     if (!order) {
-        return <p className="text-center py-20 text-red-600">Order not found.</p>;
+        return (
+            <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+                <p className="text-lg font-bold text-red-600 dark:text-red-400">Order not found.</p>
+                <p className="text-sm text-gray-500 mt-1">Please make sure you have selected a valid order.</p>
+            </div>
+        );
     }
     
     const orderData = [

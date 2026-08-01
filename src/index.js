@@ -85,6 +85,7 @@ export {default as CheckoutItems} from "./components/Checkout/CheckoutItems";
 export {default as CheckoutStepper} from "./components/Checkout/CheckoutStepper";
 export {default as StepCircle} from "./components/Checkout/StepCircle";
 
+export {default as Pay} from "./components/Checkout/Pay";
 export {default as PaymentForm} from "./components/Checkout/PaymentForm";
 export {default as PaymentSummary} from "./components/Checkout/PaymentSummary";
 

@@ -9,7 +9,7 @@ export default function StepCircle({ stepNumber, label, isActive }) {
                 {stepNumber}
             </div>
             <span className={`text-xs font-semibold ${
-                isActive ? "text-[#5B3A21] dark:text-[#A68A64]" : "text-gray-400"
+                isActive ? "text-[#5B3A21] dark:text-[#A68A64]" : "text-gray-600"
             }`}>
                 {label}
             </span>

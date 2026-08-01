@@ -1,4 +1,8 @@
-import { CheckoutForm, CheckoutData, CheckoutItems, CheckoutStepper, PaymentForm, PaymentSummary } from "@/index"
+import { CheckoutForm, CheckoutData, CheckoutItems, CheckoutStepper, Pay } from "@/index";
+export const metadata = {
+  title: "Nexmart - checkout",
+  description: "Nexmart is your go-to online store for the best products at unbeatable prices. Fast shipping, secure checkout, and a seamless shopping experience.",
+};
 
 export default async function page({searchParams}) {
   const resolvedParams = await searchParams;
@@ -19,10 +23,7 @@ export default async function page({searchParams}) {
                   <CheckoutItems />
               </>
           ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                  <PaymentForm />
-                  <PaymentSummary />
-              </div>
+              <Pay />
           )}
       </div>  
     </div>

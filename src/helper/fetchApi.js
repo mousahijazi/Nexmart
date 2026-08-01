@@ -158,3 +158,46 @@ export async function getOrderById(orderId, userId) {
 
     return { success: true, order: data };
 }
+
+// update order
+export async function updateOrderPaymentStatus(orderId, userId, status, paymentId = null) {
+    const { data, error } = await supabase
+        .from("orders")
+        .update({ payment_status: status, payment_id: paymentId })
+        .eq("id", orderId)
+        .eq("user_id", userId)
+        .select()
+        .single();
+
+    if (error) {
+        return { success: false, message: error.message };
+    }
+
+    return { success: true, order: data };
+}
+
+// create pay
+export async function createMoyasarPayment(paymentData) {
+    try {
+        const body = new URLSearchParams({
+            ...paymentData,
+            publishable_api_key: process.env.NEXT_PUBLIC_MOYASAR_PUBLISHABLE_KEY,
+        });
+
+        const response = await fetch("https://api.moyasar.com/v1/payments", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: body.toString(),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { success: false, message: data.message || "Payment could not be started" };
+        }
+
+        return { success: true, payment: data };
+    } catch (error) {
+        return { success: false, message: "Network error, please try again" };
+    }
+}

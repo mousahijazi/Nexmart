@@ -1,14 +1,30 @@
 "use client"
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { useUserContext } from "@/Context/UserProvider";
+import { useAlertContext } from "@/Context/AlertProvider";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function CheckoutForm() {
-    const {user} = useUserContext();
-    const {shippingInfo, setShippingInfo, updateShippingField} = useCheckoutContext();
+    const {user, loading} = useUserContext();
+    const {showAlert} = useAlertContext();
+    const router = useRouter();
+    const {shippingInfo, setShippingInfo, updateShippingField, checkoutItems} = useCheckoutContext();
 
     useEffect(() => {
-        if (!user) return;
+        if (loading) return;
+
+        if (!user) {
+            showAlert("You must log in to purchase products.", "danger");
+            router.push("/");
+            return;
+        };
+
+        if(!checkoutItems || checkoutItems.length === 0) {
+            showAlert("You must select products in order to purchase them and view this page.", "danger");
+            router.push("/");
+            return;
+        }
 
         setShippingInfo(prev => ({
             ...prev,

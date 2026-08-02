@@ -62,9 +62,9 @@ export default function PaymentForm({ order, loading }) {
 
             const paymentResult = await createMoyasarPayment({
                 amount: Math.round(order.total_price * 100),
-                currency: "SAR",
+                currency: "USD",
                 description: `Nexmart Order #${order.id.slice(0, 8)}`,
-                callback_url: `${window.location.origin}/checkout?mode=pay`,
+                callback_url: `${window.location.origin}/checkout?mode=pay&order_id=${order.id}`,
                 "source[type]": "creditcard",
                 "source[name]": rawData.name,
                 "source[number]": rawData.number.replace(/\s/g, ""),

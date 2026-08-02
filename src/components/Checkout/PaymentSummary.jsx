@@ -76,6 +76,7 @@ export default function PaymentSummary({order, loading}) {
                 alt="secure payment"
                 width={180}
                 height={180}
+                priority
                 className="opacity-10 dark:opacity-60"
             />
 

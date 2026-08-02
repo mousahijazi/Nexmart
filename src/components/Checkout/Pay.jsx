@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { useUserContext } from "@/Context/UserProvider";
 import { useAlertContext } from "@/Context/AlertProvider";
-import { PaymentForm, PaymentSummary } from "@/index"; 
+import { PaymentForm, PaymentSummary, PaymentTestNotice } from "@/index"; 
 import { getOrderById, updateOrderPaymentStatus } from "@/helper/fetchApi";
 
 export default function Pay() {
@@ -36,7 +36,7 @@ export default function Pay() {
         if (!targetOrderId) {
             setLoadingPay(false);
             showAlert("You cannot access this page without selecting an order.", "danger");
-            router.push(user ? "/user" : "/");
+            router.push("/user");
             return;
         }
 
@@ -49,7 +49,7 @@ export default function Pay() {
 
                 if (!currentOrderData) {
                     showAlert("Order not found.", "danger");
-                    router.push(user ? "/user" : "/");
+                    router.push("/user");
                     return;
                 }
 
@@ -85,9 +85,14 @@ export default function Pay() {
     }, [loading, user, currentOrderId, paymentId, orderIdFromUrl]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2">
-        <PaymentForm order={order} loading={loadingPay} />
-        <PaymentSummary order={order} loading={loadingPay} />
-    </div>
+    <>
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+            <PaymentForm order={order} loading={loadingPay} />
+            <PaymentSummary order={order} loading={loadingPay} />
+        </div>
+        <div className="bg-[#f1f1f1] dark:bg-zinc-900">
+            <PaymentTestNotice />
+        </div>
+    </>
   )
 }

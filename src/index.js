@@ -88,6 +88,7 @@ export {default as StepCircle} from "./components/Checkout/StepCircle";
 export {default as Pay} from "./components/Checkout/Pay";
 export {default as PaymentForm} from "./components/Checkout/PaymentForm";
 export {default as PaymentSummary} from "./components/Checkout/PaymentSummary";
+export {default as PaymentTestNotice} from "./components/Checkout/PaymentTestNotice";
 
 // login
 export {default as LoginText} from "./components/Login/LoginText";

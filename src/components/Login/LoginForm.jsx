@@ -1,64 +1,67 @@
 "use client"
 import { useState } from "react";
 import {useUserContext} from "@/Context/UserProvider";
+import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
+import { RHFerrors } from "@/index";
 
 export default function LoginForm({isLogin}) {
-    const {login, firstName, setFirstName, lastName, setLastName} = useUserContext();
+    const {login} = useUserContext();
+    const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm();
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [submitting, setSubmitting] = useState(false);
+    let submitting = isSubmitting;
     
     const FormNameData = [
         {
             text: "First Name",
-            name: firstName,
-            setName: setFirstName,
+            apiKey: "firstName",
+            validation: { required: "First name is required" },
+            error: errors.firstName,
         },
         {
             text: "Last Name",
-            name: lastName,
-            setName: setLastName,
+            apiKey: "lastName",
+            validation: { required: "Last name is required" },
+            error: errors.firstName,
         },
     ];
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
-        const result = await login(email, password, isLogin);
-        setSubmitting(false);
+    const onSubmit = async (data) => {
+        const result = await login(data, isLogin);
     };
 
   return (
-    <form onSubmit={onSubmit} className="mt-10 grid grid-cols-1 items-end gap-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-10 grid grid-cols-1 items-end gap-5">
         {!isLogin && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {FormNameData.map(({text, name, setName}, index) => (
-                    <div key={index}>
-                        <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
-                            {text}
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={`Your ${text}`}
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="
-                                w-full
-                                text-[#5B3A21] dark:text-zinc-700
-                                dark:bg-[#f2f2f2]
-                                font-semibold
-                                px-4 py-3
-                                rounded-xl
-                                border-2 border-gray-200
-                                outline-none
-                                focus:border-[#5B3A21] dark:focus:border-zinc-700
-                                transition
-                            "
-                        />
-                    </div>
-                ))}
+                {FormNameData.map(({text, apiKey, validation, error}, index) => {
+                    const fieldRegister = register(apiKey, validation);
+                    return(
+                            <div key={index}>
+                                <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
+                                    {text}
+                                </label>
+                                <input
+                                    type="text"
+                                    {...fieldRegister}
+                                    placeholder={`Your ${text}`}
+                                    className="
+                                        w-full
+                                        text-[#5B3A21] dark:text-zinc-700
+                                        dark:bg-[#f2f2f2]
+                                        font-semibold
+                                        px-4 py-3
+                                        rounded-xl
+                                        border-2 border-gray-200
+                                        outline-none
+                                        focus:border-[#5B3A21] dark:focus:border-zinc-700
+                                        transition
+                                    "
+                                />
+                                <RHFerrors errors={error} />
+                            </div>
+                    )
+                })}
             </div>
         )}
 
@@ -68,8 +71,13 @@ export default function LoginForm({isLogin}) {
             </label>
             <input
                 type="text"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "Invalid email address"
+                    }
+                })}
                 placeholder="Enter email"
                 className="
                     w-full
@@ -85,6 +93,7 @@ export default function LoginForm({isLogin}) {
                 "
             />
         </div>
+        <RHFerrors errors={errors.email} />
 
         <div className="relative">
             <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
@@ -92,8 +101,13 @@ export default function LoginForm({isLogin}) {
             </label>
             <input
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                        value: 6,
+                        message: "Password must be at least 6 characters"
+                    }
+                })}
                 placeholder="Enter password"
                 className="
                     w-full
@@ -128,6 +142,7 @@ export default function LoginForm({isLogin}) {
                 {showPassword ? (<EyeOff size={27} />) : (<Eye size={27} />)}
             </button>
         </div>
+        <RHFerrors errors={errors.password} />
 
         <button className="cursor-pointer px-7 py-3 text-center bg-[#5B3A21] text-white rounded-full font-medium hover:opacity-90 transition">
             {submitting ? "Processing..." : isLogin ? "Sign In" : "Sign Up" }

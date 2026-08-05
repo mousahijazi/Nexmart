@@ -26,17 +26,6 @@ export default function CheckoutProvider({ children }) {
 
     const [coupon, setCoupon] = useState("");
     const [needShipping, setNeedShipping] = useState(true);
-    const [shippingInfo, setShippingInfo] = useState({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        city: "",
-        address: "",
-        notes: "",
-    });
-    const updateShippingField = (name, value) => {
-        setShippingInfo(prev => ({ ...prev, [name]: value }));
-    };
 
     const SHIPPING_PRICE = 5.5;
     const TAX_RATE = 0.10;
@@ -86,11 +75,6 @@ export default function CheckoutProvider({ children }) {
         setCurrentOrderId(null)
     };
 
-    const isShippingValid = () => {
-        const { firstName, lastName, phone, city, address } = shippingInfo;
-        return firstName.trim() && lastName.trim() && phone.trim() && city.trim() && address.trim();
-    };
-
     // Calculations
     const subtotal = useMemo(() => {
         return checkoutItems.reduce((total, product) => {
@@ -125,11 +109,6 @@ export default function CheckoutProvider({ children }) {
         setCheckoutItems,
         currentOrderId,
         setCurrentOrderId,
-
-        shippingInfo,
-        setShippingInfo,
-        updateShippingField,
-        isShippingValid,
 
         checkoutSingleProduct,
         checkoutCart,

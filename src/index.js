@@ -109,6 +109,7 @@ export {default as Loader} from "./components/loader/Loader";
 export {default as CartSkeleton} from "./components/loader/CartSkeleton";
 
 // elements
+export {default as RHFerrors} from "./components/element/RHFerrors";
 export {default as Button} from "./components/element/Button";
 export {default as BuyButton} from "./components/element/BuyButton";
 export {default as UserImage} from "./components/element/UserImage";

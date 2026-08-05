@@ -5,29 +5,13 @@ import { useState } from "react";
 export default function DashboardData() {
     const {cart} = useProductContext();
 
-    const [coupon, setCoupon] = useState("");
-    const [discount, setDiscount] = useState(0);
-    const handleCouponChange = (e) => {
-        const val = e.target.value;
-        setCoupon(val);
-        if(val.toLowerCase().trim() === "mousa") {
-            setDiscount(0.5); 
-        } else {
-            setDiscount(0); 
-        }
-    }
-
-    // todo Filter categories and show their total number
     const categoriesCount = new Set(
         cart.map(product => product.category)
     ).size;
 
-    // Discounts, taxes, and final total
     let totalPrice = cart.reduce((total, product) => total + product.price, 0);
     let taxes = totalPrice * 0.10;
-
-    let discountAmount = (totalPrice + taxes) * discount;
-    let total = (totalPrice + taxes) - discountAmount;
+    const total = totalPrice + taxes;
 
     const data = [
         {
@@ -59,21 +43,6 @@ export default function DashboardData() {
                 <p key={index} className="text-gray-600 dark:text-[#e5ded8] tracking-wider ">{ele.title}: <span className="text-[#5B3A21] dark:text-[#A68A64] font-semibold text-sm">{ele.value}</span></p>
             ))}
         </div>
-        {cart.length > 0 && (
-            <div className="flex flex-col gap-3">
-                <label className="text-sm font-bold tracking-widest text-[#5B3A21]/90 dark:text-[#A68A64] uppercase">Coubon</label>
-                <input 
-                    type="text" 
-                    placeholder="COUBON"
-                    value={coupon}
-                    onChange={handleCouponChange}
-                    className="dark:bg-[#f3f3f3] border-2 border-[#5B3A21] dark:border-zinc-700 rounded-lg px-3 py-2 text-[18px] text-gray-700 dark:text-zinc-700 font-semibold outline shadow-lg" 
-                />
-                {discount > 0 && (
-                    <p className="text-green-600 dark:text-[#A68A64] tracking-wider sm:text-[17px]">Discount ({(discount * 100)}%): <span className="font-semibold text-sm">-{discountAmount.toFixed(2)}$</span></p>
-                )}
-            </div>
-        )}
     </div>
   )
 }

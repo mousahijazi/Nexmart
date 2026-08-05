@@ -1,21 +1,10 @@
 "use client"
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
-import { useUserContext } from "@/Context/UserProvider";
-import { useAlertContext } from "@/Context/AlertProvider";
-import { useProductContext } from "@/Context/CartProvider";
-import { createOrder } from "@/helper/fetchApi";
-import { createOrderItems } from "@/helper/fetchApi";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Text } from "@/index";
 
 export default function CheckoutData() {
-  const {user} = useUserContext();
-  const {setCart} = useProductContext();
-  const {showAlert} = useAlertContext();
-  const router = useRouter();
-  const [placing, setPlacing] = useState(false);
+  const {subtotal, shippingPrice, taxes, discountAmount, grandTotal, totalItems, coupon, setCoupon, needShipping, setNeedShipping} = useCheckoutContext();
   
-  const {checkoutItems, setCheckoutItems, subtotal, shippingInfo, shippingPrice, taxes, discountAmount, grandTotal, totalItems, coupon, setCoupon, needShipping, setNeedShipping, setCurrentOrderId, isShippingValid} = useCheckoutContext();
   const ItemsData = [
     {
         type: "normal",
@@ -37,60 +26,10 @@ export default function CheckoutData() {
         text: "coupon",
     },
   ];
-
-  const handlePlaceOrder = async () => {
-        if (!user) {
-            showAlert("Please log in to place an order", "danger");
-            return;
-        }
-        if (checkoutItems.length === 0) {
-            showAlert("Please return to your cart and checkout !", "danger");
-            return;
-        }
-        if (!isShippingValid()) {
-            showAlert("Please fill in all required shipping fields", "danger");
-            return;
-        }
-
-        setPlacing(true);
-
-        const orderResult = await createOrder({ userId: user.id, shippingInfo, needShipping, grandTotal, checkoutItems });
-        if (!orderResult.success) {
-            setPlacing(false);
-            showAlert(orderResult.message, "danger");
-            return;
-        }
-
-        const itemsResult = await createOrderItems(orderResult.order.id, checkoutItems);
-        if (!itemsResult.success) {
-            setPlacing(false);
-            showAlert(itemsResult.message, "danger");
-            return;
-        }
-
-        setPlacing(false);
-
-        setCart((prevCart) => {
-            return prevCart.filter(
-                (cartItem) => !checkoutItems.some((checkoutItem) => checkoutItem.id === cartItem.id)
-            );
-        });
-
-        setCurrentOrderId(orderResult.order.id);
-        setCheckoutItems([]);
-        router.push("/checkout?mode=pay");
-    };
     
   return (
     <div className="px-3 min-[480px]:px-6 py-8">
-        <div className="pb-5">
-            <div className="flex items-center gap-3">
-                <button type="button" aria-label="cancel" className="p-3 border border-black dark:border-zinc-200 dark:bg-zinc-900 dark:text-white rounded-xl min-[480px]:w-1/2 cursor-pointer" onClick={() => router.back()}>cancel</button>
-                <button type="button" aria-label="Place Order" className="p-3 bg-[#5B3A21] rounded-xl w-full cursor-pointer text-white" disabled={placing} onClick={handlePlaceOrder}>{placing ? "Placing Order..." : "Place Order"}</button>
-            </div>
-            <p className="mt-5 text-gray-600 dark:text-zinc-300">By placing your order, you agree to our company Privacy policy and Conditions of use.</p>
-        </div>
-        <div className="py-5 border-t-2 border-t-gray-400 text-gray-600 dark:text-zinc-300">
+        <div className="py-5 text-gray-600 dark:text-zinc-300">
             <h1 className="text-xl font-bold text-[#5B3A21] dark:text-[#A68A64]">Order Summary</h1>
             <div className="mt-3 flex flex-col gap-3">
                 {ItemsData.map((ele) => {
@@ -148,6 +87,9 @@ export default function CheckoutData() {
         <div className="pt-5 border-t-2 border-t-gray-400 flex items-center justify-between">
             <h1 className="text-xl font-bold text-[#5B3A21] dark:text-[#A68A64]">Order Total</h1>
             <p className="text-gray-600 dark:text-zinc-300">{grandTotal.toFixed(2)}</p>
+        </div>
+        <div className="hidden lg:block mt-12">
+            <Text />
         </div>
     </div>
   )

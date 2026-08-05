@@ -3,16 +3,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/Context/UserProvider";
 import { useAlertContext } from "@/Context/AlertProvider";
-import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { updateOrderPaymentStatus, createMoyasarPayment } from "@/helper/fetchApi";
+import { useForm } from "react-hook-form";
+import { RHFerrors } from "@/index";
 import { Lock } from "lucide-react";
 
 export default function PaymentForm({ order, loading }) {
+    const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm();
     const { user } = useUserContext();
-    const {clearCheckout} = useCheckoutContext();
     const { showAlert } = useAlertContext();
     const router = useRouter();
-    const [submitting, setSubmitting] = useState(false);
+    const submitting = isSubmitting;
     const [errorMessage, setErrorMessage] = useState("");
 
     const formatCardNumber = (value) => {
@@ -23,61 +24,27 @@ export default function PaymentForm({ order, loading }) {
         e.target.value = formatCardNumber(e.target.value);
     };
 
-    const validateCardFields = (data) => {
-        const cardNumber = data.number.replace(/\s/g, "");
-        const month = data.month;
-        const year = data.year;
-        const cvc = data.cvc;
-        
-        if (cardNumber.length < 15 || cardNumber.length > 16) {
-            return "Card number must be 15-16 digits";
-        }
-        if (!month || month.length !== 2 || Number(month) < 1 || Number(month) > 12) {
-            return "Please enter a valid month (01-12)";
-        }
-        if (!year || year.length !== 2) {
-            return "Please enter a valid year";
-        }
-        if (!cvc || cvc.length < 3 || cvc.length > 4) {
-            return "CVC must be 3 or 4 digits";
-        }
-        return null;
-    };
-
-    const handlePayment = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
+    const handlePayment = async (data) => {
         setErrorMessage("");
 
         try {
-            const form = e.target;
-            const rawData = Object.fromEntries(new FormData(form));
-
-            const validationError = validateCardFields(rawData);
-            if (validationError) {
-                setSubmitting(false);
-                setErrorMessage(validationError);
-                return;
-            }
-
             const paymentResult = await createMoyasarPayment({
                 amount: Math.round(order.total_price * 100),
                 currency: "USD",
                 description: `Nexmart Order #${order.id.slice(0, 8)}`,
                 callback_url: `${window.location.origin}/checkout?mode=pay&order_id=${order.id}`,
                 "source[type]": "creditcard",
-                "source[name]": rawData.name,
-                "source[number]": rawData.number.replace(/\s/g, ""),
-                "source[month]": rawData.month,
-                "source[year]": rawData.year,
-                "source[cvc]": rawData.cvc,
+                "source[name]": data.name,
+                "source[number]": data.number.replace(/\s/g, ""),
+                "source[month]": data.month,
+                "source[year]": data.year,
+                "source[cvc]": data.cvc,
             });
 
             if (!paymentResult.success) {
                 setErrorMessage(paymentResult.message || "Payment could not be started.");
                 showAlert("Payment failed. Please review the details below.", "danger");
                 await updateOrderPaymentStatus(order.id, user.id, "failed", null);
-                setSubmitting(false);
                 return;
             }
 
@@ -101,52 +68,102 @@ export default function PaymentForm({ order, loading }) {
             console.error("Payment Process Error:", error);
             setErrorMessage("An unexpected error occurred during processing. Please try again.");
             showAlert("An unexpected error occurred. Please try again.", "danger");
-        } finally {
-            setSubmitting(false);
         }
     };
 
     const fields = [
         { 
           label: "Cardholder Name",
-          name: "name", 
           type: "text", 
           placeholder: "MOUSA HIJAZI", 
-          maxLength: 26,
+          apiKey: "name",
+          validation: {
+            required: "Cardholder name is required",
+            maxLength: {
+                value: 26,
+                message: "Maximum 26 characters",
+            },
+          },
+          error: errors.name,
         },
         {
-            label: "Card Number",
-            name: "number", 
+            label: "Card Number", 
             type: "text", 
             placeholder: "0000 0000 0000 0000", 
-            maxLength: 19, 
             action: handleCardNumberInput,
+            apiKey: "number",
+            validation: {
+                required: "Card number is required",
+                maxLength: {
+                    value: 19,
+                    message: "Card number is too long",
+                },
+
+                minLength: {
+                    value: 19,
+                    message: "Card number is too short",
+                },
+            },
+            error: errors.number,
         },
     ];
 
     const Data = [
         {
             label: "Month",
-            name: "month", 
             type: "text", 
             placeholder: "MM", 
-            maxLength: 2, 
+            apiKey: "month",
+            validation: {
+                required: "Month is required",
+                maxLength: {
+                    value: 2,
+                    message: "Maximum 2 characters",
+                },
+                minLength: {
+                    value: 2,
+                    message: "Minimum 2 characters",
+                },
+            },
+            error: errors.month,
         },
         {
             label: "Year",
-            name: "year", 
             type: "text", 
             placeholder: "YY", 
-            maxLength: 2, 
+            apiKey: "year",
+            validation: {
+                required: "Year is required",
+                maxLength: {
+                    value: 2,
+                    message: "Maximum 2 characters",
+                },
+                minLength: {
+                    value: 2,
+                    message: "Minimum 2 characters",
+                },
+            },
+            error: errors.year,
         },
         {
             label: "CVC",
-            name: "cvc", 
             type: "text", 
             placeholder: "123", 
-            maxLength: 3, 
+            apiKey: "cvc",
+            validation: {
+                required: "CVC is required",
+                maxLength: {
+                    value: 3,
+                    message: "Maximum 3 characters",
+                },
+                minLength: {
+                    value: 3,
+                    message: "Minimum 3 characters",
+                },
+            },
+            error: errors.cvc,
         },
-    ]
+    ];
 
     return (
         <div className="px-3 min-[480px]:px-6 py-8">
@@ -160,18 +177,16 @@ export default function PaymentForm({ order, loading }) {
                 Enter your card information to complete the purchase.
             </p>
 
-            <form onSubmit={handlePayment} className="mt-8 flex flex-col gap-4">
+            <form onSubmit={handleSubmit(handlePayment)} className="mt-8 flex flex-col gap-4">
                 {fields.map((ele) => (
-                    <div key={ele.name}>
+                    <div key={ele.apiKey}>
                         <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
                             {ele.label}
                         </label>
                         <input
+                            {...register(ele.apiKey, ele.validation)}
                             type={ele.type}
-                            name={ele.name}
-                            required
                             onInput={ele.action}
-                            maxLength={ele.maxLength}
                             placeholder={ele.placeholder}
                             className="
                                 w-full
@@ -186,19 +201,23 @@ export default function PaymentForm({ order, loading }) {
                                 transition
                             "
                         />
+                        <RHFerrors errors={ele.error}/>
                     </div>
                 ))}
 
                 <div className="grid grid-cols-1 min-[480px]:grid-cols-3 gap-3">
-                    {Data.map((ele, index) => (
-                        <div key={index}>
+                    {Data.map((ele) => (
+                        <div key={ele.apiKey}>
                             <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
                                 {ele.label}
                             </label>
                             <input
-                                type={ele.type} name={ele.name} required maxLength={ele.maxLength} placeholder={ele.placeholder}
+                                type={ele.type} 
+                                {...register(ele.apiKey, ele.validation)}
+                                placeholder={ele.placeholder}
                                 className="w-full text-[#5B3A21] dark:text-zinc-700 dark:bg-[#f2f2f2] font-semibold px-4 py-3 rounded-xl border-2 border-gray-200 outline-none focus:border-[#5B3A21] dark:focus:border-zinc-700 transition"
                             />
+                            <RHFerrors errors={ele.error}/>
                         </div>
                     ))}
                 </div>

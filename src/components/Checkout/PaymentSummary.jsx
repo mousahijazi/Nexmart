@@ -7,7 +7,7 @@ export default function PaymentSummary({order, loading}) {
         return (
             <div className="flex flex-col justify-center items-center gap-8 min-[480px]:bg-[#F9F7F3] min-[480px]:dark:bg-[#1f1b17] px-3 min-[480px]:px-6 py-12">
 
-                <div className="w-[180px] h-[180px] rounded-xl bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                <div className="w-[200px] h-[200px] rounded-xl bg-gray-200 dark:bg-zinc-800 animate-pulse" />
 
                 <div className="w-full max-w-md bg-white dark:bg-zinc-950 rounded-2xl shadow-md dark:shadow-black/60 p-6">
 
@@ -39,7 +39,7 @@ export default function PaymentSummary({order, loading}) {
 
                 </div>
 
-                <div className="h-4 w-72 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
+                <div className="text-xs h-4 w-72 rounded bg-gray-200 dark:bg-zinc-800 animate-pulse" />
 
             </div>
         );
@@ -74,9 +74,10 @@ export default function PaymentSummary({order, loading}) {
             <Image
                 src="/cart.svg"
                 alt="secure payment"
-                width={180}
-                height={180}
+                width={200}
+                height={200}
                 priority
+                unoptimized
                 className="opacity-10 dark:opacity-60"
             />
 

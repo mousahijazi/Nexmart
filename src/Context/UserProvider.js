@@ -12,8 +12,6 @@ export default function UserProvider({children}) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [userImage, setUserImage] = useState("");
   const {showAlert} = useAlertContext();
 
@@ -41,17 +39,17 @@ export default function UserProvider({children}) {
     };
   }, []);
 
-  const login = async (email, password, isLogin) => {
-    if (!isLogin && (!firstName.trim() || !lastName.trim())) {
+  const login = async (data, isLogin) => {
+    if (!isLogin && (!data.firstName.trim() || !data.lastName.trim())) {
       showAlert("Please enter both your First and Last name", "danger");
       return { success: false };
     }
 
     let result = null;
     if (isLogin) {
-      result = await loginUser(email, password);
+      result = await loginUser(data.email, data.password);
     } else {
-      result = await registerUser(email, password, firstName, lastName, userImage);
+      result = await registerUser(data.email, data.password, data.firstName, data.lastName, userImage);
     }
 
     if (!result.success) {
@@ -163,10 +161,6 @@ export default function UserProvider({children}) {
       logout,
       loading,
       isUploadingImage,
-      firstName,
-      setFirstName,
-      lastName,
-      setLastName,
       userImage,
       setUserImage,
       login,

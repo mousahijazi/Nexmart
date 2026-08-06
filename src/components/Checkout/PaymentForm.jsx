@@ -5,11 +5,13 @@ import { useUserContext } from "@/Context/UserProvider";
 import { useAlertContext } from "@/Context/AlertProvider";
 import { updateOrderPaymentStatus, createMoyasarPayment } from "@/helper/fetchApi";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { paymentSchema } from "@/lib/schemas/paymentSchema";
 import { RHFerrors } from "@/index";
 import { Lock } from "lucide-react";
 
 export default function PaymentForm({ order, loading }) {
-    const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm();
+    const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(paymentSchema),});
     const { user } = useUserContext();
     const { showAlert } = useAlertContext();
     const router = useRouter();
@@ -77,13 +79,6 @@ export default function PaymentForm({ order, loading }) {
           type: "text", 
           placeholder: "MOUSA HIJAZI", 
           apiKey: "name",
-          validation: {
-            required: "Cardholder name is required",
-            maxLength: {
-                value: 26,
-                message: "Maximum 26 characters",
-            },
-          },
           error: errors.name,
         },
         {
@@ -92,18 +87,6 @@ export default function PaymentForm({ order, loading }) {
             placeholder: "0000 0000 0000 0000", 
             action: handleCardNumberInput,
             apiKey: "number",
-            validation: {
-                required: "Card number is required",
-                maxLength: {
-                    value: 19,
-                    message: "Card number is too long",
-                },
-
-                minLength: {
-                    value: 19,
-                    message: "Card number is too short",
-                },
-            },
             error: errors.number,
         },
     ];
@@ -114,17 +97,6 @@ export default function PaymentForm({ order, loading }) {
             type: "text", 
             placeholder: "MM", 
             apiKey: "month",
-            validation: {
-                required: "Month is required",
-                maxLength: {
-                    value: 2,
-                    message: "Maximum 2 characters",
-                },
-                minLength: {
-                    value: 2,
-                    message: "Minimum 2 characters",
-                },
-            },
             error: errors.month,
         },
         {
@@ -132,17 +104,6 @@ export default function PaymentForm({ order, loading }) {
             type: "text", 
             placeholder: "YY", 
             apiKey: "year",
-            validation: {
-                required: "Year is required",
-                maxLength: {
-                    value: 2,
-                    message: "Maximum 2 characters",
-                },
-                minLength: {
-                    value: 2,
-                    message: "Minimum 2 characters",
-                },
-            },
             error: errors.year,
         },
         {
@@ -150,17 +111,6 @@ export default function PaymentForm({ order, loading }) {
             type: "text", 
             placeholder: "123", 
             apiKey: "cvc",
-            validation: {
-                required: "CVC is required",
-                maxLength: {
-                    value: 3,
-                    message: "Maximum 3 characters",
-                },
-                minLength: {
-                    value: 3,
-                    message: "Minimum 3 characters",
-                },
-            },
             error: errors.cvc,
         },
     ];
@@ -184,7 +134,7 @@ export default function PaymentForm({ order, loading }) {
                             {ele.label}
                         </label>
                         <input
-                            {...register(ele.apiKey, ele.validation)}
+                            {...register(ele.apiKey)}
                             type={ele.type}
                             onInput={ele.action}
                             placeholder={ele.placeholder}
@@ -213,7 +163,7 @@ export default function PaymentForm({ order, loading }) {
                             </label>
                             <input
                                 type={ele.type} 
-                                {...register(ele.apiKey, ele.validation)}
+                                {...register(ele.apiKey)}
                                 placeholder={ele.placeholder}
                                 className="w-full text-[#5B3A21] dark:text-zinc-700 dark:bg-[#f2f2f2] font-semibold px-4 py-3 rounded-xl border-2 border-gray-200 outline-none focus:border-[#5B3A21] dark:focus:border-zinc-700 transition"
                             />

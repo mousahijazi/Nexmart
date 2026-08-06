@@ -7,7 +7,9 @@ import { useProductContext } from "@/Context/CartProvider";
 import { createOrderItems } from "@/helper/fetchApi";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addressSchema } from "@/lib/schemas/paymentSchema";
 import { RHFerrors } from "@/index";
 
 export default function CheckoutForm() {
@@ -15,7 +17,7 @@ export default function CheckoutForm() {
     const {setCart} = useProductContext();
     const {showAlert} = useAlertContext();
     const {checkoutItems, setCheckoutItems, grandTotal, needShipping, setCurrentOrderId} = useCheckoutContext();
-    const {register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm();
+    const {register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(addressSchema)});
     const router = useRouter();
     const placing = isSubmitting;
 
@@ -82,30 +84,24 @@ export default function CheckoutForm() {
             text: "First Name",
             id: "FirstName",
             apiKey: "firstName",
-            validation: { required: "First name is required" },
             error: errors.firstName,
         },
         {
             text: "Last Name",
             id: "LastName",
             apiKey: "lastName",
-            validation: { required: "Last name is required" },
             error: errors.lastName,
         },
         {
             text: "Phone number",
             id: "PhoneNumber",
             apiKey: "phone",
-            validation: { 
-                required: "Phone number is required",
-            },
             error: errors.phone,
         },
         {
             text: "City",
             id: "City",
             apiKey: "city",
-            validation: { required: "City is required" },
             error: errors.city,
         },
     ];
@@ -121,7 +117,7 @@ export default function CheckoutForm() {
                             <input 
                                id={ele.id} 
                                 name={ele.name}
-                                {...register(ele.apiKey, ele.validation)}
+                                {...register(ele.apiKey)}
                                 type="text" 
                                 placeholder={ele.text} 
                                 className="
@@ -147,9 +143,7 @@ export default function CheckoutForm() {
                     <input 
                         id="address" 
                         name="address"
-                        {...register("address", {
-                            required: "Address is required"
-                        })}
+                        {...register("address")}
                         type="text" 
                         placeholder="Address" 
                         className="
@@ -172,12 +166,7 @@ export default function CheckoutForm() {
                     <textarea
                         rows={4}
                         name="notes"
-                        {...register("notes", {
-                            maxLength: {
-                                value: 200,
-                                message: "The text must be less than 200 words"
-                            }
-                        })}
+                        {...register("notes")}
                         placeholder="Write your message here..."
                         className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-zinc-800 bg-[#fcfbf9] dark:bg-[#f2f2f2] outline-none focus:border-[#5B3A21] dark:focus:border-zinc-600 transition resize-none"
                     />

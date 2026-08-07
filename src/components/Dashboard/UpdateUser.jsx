@@ -2,23 +2,26 @@
 import { useState, useEffect } from "react";
 import { useUserContext } from "@/Context/UserProvider";
 import { X, Edit3 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { updateProfileSchema } from "@/lib/schemas/paymentSchema";
+import { RHFerrors } from "@/index";
 
 export default function UpdateUser({isModalOpen, setIsModalOpen}) {
+  const {register, handleSubmit, reset, formState:{errors, isSubmitting}} = useForm({resolver: zodResolver(updateProfileSchema)});
   const { user, updateProfile } = useUserContext();
-  const [tempFirstName, setTempFirstName] = useState("");
-  const [tempLastName, setTempLastName] = useState("");
-  const [tempPhone, setTempPhone] = useState("");
   const [imageFile, setImageFile] = useState(null);
-  const [updating, setUpdating] = useState(false);
+  const updating = isSubmitting;
 
   useEffect(() => {
     if (user) {
-      setTempFirstName(user?.user_metadata?.first_name || "");
-      setTempLastName(user?.user_metadata?.last_name || "");
-      setTempPhone(user?.user_metadata?.phone || "");
-      setImageFile(null);
+      reset({
+          firstName: user.user_metadata.first_name,
+          lastName: user.user_metadata.last_name,
+          phone: user.user_metadata.phone || "",
+      })
     }
-  }, [user, isModalOpen]);
+  }, [user, isModalOpen, reset]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -27,20 +30,17 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
     }
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    setUpdating(true);
+  const handleSave = async (data) => {
 
     const localPreviewUrl = imageFile ? URL.createObjectURL(imageFile) : null;
     setIsModalOpen(false)
     
     const result = await updateProfile({
-      first_name: tempFirstName,
-      last_name: tempLastName,
-      phone: tempPhone,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      phone: data.phone,
     }, imageFile, localPreviewUrl);
 
-    setUpdating(false);
     if (!result.success) {
       setIsModalOpen(true);
     }
@@ -51,26 +51,23 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
       id: "first-name",
       label: "First Name",
       type: "text",
-      value: tempFirstName,
-      onChange: (e) => setTempFirstName(e.target.value),
-      required: true
+      apiKey: "firstName",
+      error: errors.firstName,
     },
     {
       id: "last-name",
       label: "Last Name",
       type: "text",
-      value: tempLastName,
-      onChange: (e) => setTempLastName(e.target.value),
-      required: true
+      apiKey: "lastName",
+      error: errors.lastName,
     },
     {
       id: "phone-number",
       label: "Phone Number",
       type: "tel",
-      value: tempPhone,
-      onChange: (e) => setTempPhone(e.target.value),
+      apiKey: "phone",
+      error: errors.lastName,
       placeholder: "+970 595560240",
-      required: false
     }
   ];
 
@@ -92,7 +89,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
                 </button>
             </div>
 
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={handleSubmit(handleSave)} className="space-y-4">
               {formFields.map((ele, index) => (
                 <div key={index}>
                     <label htmlFor={ele.id} className="block mb-1.5 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
@@ -101,12 +98,11 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
                     <input
                         id={ele.id}
                         type={ele.type}
-                        value={ele.value}
-                        onChange={ele.onChange}
+                        {...register(ele.apiKey)}
                         placeholder={ele.placeholder || ""}
                         className="w-full text-[#5B3A21] dark:text-zinc-700 dark:bg-gray-100 font-semibold px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#5B3A21] transition"
-                        required={ele.required}
                     />
+                    <RHFerrors errors={ele.error} />
                 </div>
               ))}
 

@@ -2,12 +2,14 @@
 import { useState } from "react";
 import {useUserContext} from "@/Context/UserProvider";
 import { useForm } from "react-hook-form";
+import { registerSchema } from "@/lib/schemas/paymentSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { RHFerrors } from "@/index";
 
 export default function LoginForm({isLogin}) {
     const {login} = useUserContext();
-    const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm();
+    const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(registerSchema(isLogin))});
     const [showPassword, setShowPassword] = useState(false);
     let submitting = isSubmitting;
     
@@ -15,27 +17,24 @@ export default function LoginForm({isLogin}) {
         {
             text: "First Name",
             apiKey: "firstName",
-            validation: { required: "First name is required" },
             error: errors.firstName,
         },
         {
             text: "Last Name",
             apiKey: "lastName",
-            validation: { required: "Last name is required" },
-            error: errors.firstName,
+            error: errors.lastName,
         },
     ];
 
     const onSubmit = async (data) => {
-        const result = await login(data, isLogin);
+        await login(data, isLogin);
     };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-10 grid grid-cols-1 items-end gap-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-10 grid grid-cols-1 items-end gap-3">
         {!isLogin && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {FormNameData.map(({text, apiKey, validation, error}, index) => {
-                    const fieldRegister = register(apiKey, validation);
+                {FormNameData.map(({text, apiKey, error}, index) => {
                     return(
                             <div key={index}>
                                 <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
@@ -43,7 +42,7 @@ export default function LoginForm({isLogin}) {
                                 </label>
                                 <input
                                     type="text"
-                                    {...fieldRegister}
+                                    {...register(apiKey)}
                                     placeholder={`Your ${text}`}
                                     className="
                                         w-full
@@ -71,13 +70,7 @@ export default function LoginForm({isLogin}) {
             </label>
             <input
                 type="text"
-                {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address"
-                    }
-                })}
+                {...register("email")}
                 placeholder="Enter email"
                 className="
                     w-full
@@ -101,13 +94,7 @@ export default function LoginForm({isLogin}) {
             </label>
             <input
                 type={showPassword ? "text" : "password"}
-                {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                        value: 6,
-                        message: "Password must be at least 6 characters"
-                    }
-                })}
+                {...register("password")}
                 placeholder="Enter password"
                 className="
                     w-full

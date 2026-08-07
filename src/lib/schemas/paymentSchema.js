@@ -11,23 +11,25 @@ export const paymentSchema = z.object({
 export const addressSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(20, "Maximum 20 characters").regex(/^[A-Za-z]+$/, "Only English letters are allowed"),
   lastName: z.string().trim().min(1, "Last name is required").max(20, "Maximum 20 characters").regex(/^[A-Za-z]+$/, "Only English letters are allowed"),
-  phone: z.string().trim().min(8, "Phone number is too short").max(15, "Phone number is too long").regex(/^[0-9]+$/, "Phone number must contain only digits"),
+  phone: z.string().trim().min(8, "Phone number is too short").max(15, "Phone number is too long").regex(/^\+?[0-9]+$/, "Invalid phone number"),
   city: z.string().trim().min(2, "City is required").max(40, "Maximum 40 characters").regex(/^[A-Za-z ]+$/, "Only English letters are allowed"),
   address: z.string().trim().min(5, "Address is too short").max(120, "Maximum 120 characters"),
   notes: z.string().trim().max(300, "Maximum 300 characters").optional().or(z.literal("")),
 });
 
-// todo
-export const registerSchema = z.object({
-  firstName: z.string().trim().min(2, "First name must be at least 2 characters").max(20, "Maximum 20 characters").regex(/^[A-Za-z]+$/, "Only English letters are allowed"),
-  lastName: z.string().trim().min(2, "Last name must be at least 2 characters").max(20, "Maximum 20 characters").regex(/^[A-Za-z]+$/, "Only English letters are allowed"),
-
+export const registerSchema = (isLogin) => z.object({
+  firstName:  isLogin
+            ? z.string().optional()
+            : z.string().trim().min(2, "First name must be at least 2 characters").max(20, "Maximum 20 characters").regex(/^[A-Za-z]+$/, "Only English letters are allowed"),
+  lastName: isLogin
+            ? z.string().optional()
+            : z.string().trim().min(2, "Last name must be at least 2 characters").max(20, "Maximum 20 characters").regex(/^[A-Za-z]+$/, "Only English letters are allowed"),
   email: z.string().trim().email("Invalid email address").max(100),
+  password: z.string().trim().min(6, "Password must contain at least 6 characters").max(50),
+});
 
-  password: z.string().trim().min(8, "Password must contain at least 8 characters").max(50),
-
-  confirmPassword: z.string().trim().min(8).max(50),
-}).refine((data) => data.password === data.confirmPassword, {
-  path: ["confirmPassword"],
-  message: "Passwords do not match",
+export const updateProfileSchema = z.object({
+    firstName: z.string().trim().min(2).max(20).regex(/^[A-Za-z]+$/),
+    lastName: z.string().trim().min(2).max(20).regex(/^[A-Za-z]+$/),
+    phone: z.string().trim().min(8).max(15).regex(/^\+?[0-9]+$/),
 });

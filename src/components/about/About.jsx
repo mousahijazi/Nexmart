@@ -1,4 +1,4 @@
-import { AboutHero, StorySection, ValuesSection, StatisticsSection, DeveloperSection } from "@/index";
+import { AboutHero, StorySection, ValuesSection, DeveloperSection } from "@/index";
  
 export default function About() {
   return (
@@ -6,7 +6,6 @@ export default function About() {
       <AboutHero />
       <StorySection />
       <ValuesSection />
-      <StatisticsSection />
       <DeveloperSection />
     </div>
   );

@@ -1,7 +1,8 @@
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import { data } from "./data";
 
 export default function NavLink() {
+
   return (
      <ul className="flex flex-col lg:flex-row items-center gap-6">
       {data.map((ele, index) => (

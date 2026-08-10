@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ButtonTheme, Auth, ProductsWishlistIcon } from "@/index";
-import { ShoppingCart } from "lucide-react";
+import { ButtonTheme, Auth } from "@/index";
+import { ShoppingCart, Languages, Heart} from "lucide-react";
 import { useProductContext } from "@/Context/CartProvider";
 import { useWishlistContext } from "@/Context/WishlistProvider";
-import { Heart } from "lucide-react";
+
 
 export default function Icon() {
     const {cart} = useProductContext();
@@ -12,7 +12,7 @@ export default function Icon() {
   return (
     <>
         <div className="flex min-[480px]:justify-center w-full max-[480px]:flex-col gap-3">
-            <div className="flex px-3.5 justify-center items-center gap-4">
+            <div className="flex flex-row-reverse px-3.5 justify-center items-center gap-4">
                 <Link href="/cart" className="flex items-center gap-1 relative text-gray-600 hover:text-gray-900 dark:text-[#D4C7BC] dark:hover:text-[#A68A64] transition-colors">
                     cart 
                     <ShoppingCart size={25} strokeWidth={2.5} />
@@ -27,6 +27,13 @@ export default function Icon() {
                     </span>
                 </Link>
                 <ButtonTheme />
+                <button
+                    type="button"
+                    className="cursor-pointer dark:text-[#A68A64]"
+                    aria-label="Switch to Arabic"
+                >
+                    <Languages size={22} />
+                </button>
             </div>
             <div className="flex justify-center">
                 <Auth />

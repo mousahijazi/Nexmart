@@ -29,7 +29,7 @@ export default function Nav({isOpen, setIsOpen, buttonRef}) {
         absolute lg:static
         top-24 left-0
         w-full lg:w-auto
-        max-lg:bg-white dark:bg-zinc-900 max-lg:dark:bg-zinc-800
+        max-lg:bg-white max-lg:dark:bg-zinc-800
         shadow-xl dark:shadow-black/60 lg:shadow-none
         items-center gap-6
         py-6 lg:py-0
@@ -38,7 +38,7 @@ export default function Nav({isOpen, setIsOpen, buttonRef}) {
         <NavLink />
         
         {/*todo*/}
-        <div className="flex md:hidden justify-center w-full pt-4 border-t-2 border-t-gray-400 dark:border-t-[#A68A64]">
+        <div className="max-[830px]:flex hidden justify-center w-full pt-4 border-t-2 border-t-gray-400 dark:border-t-[#A68A64]">
             <Icon />
         </div>
     </div>

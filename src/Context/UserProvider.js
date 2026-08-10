@@ -1,7 +1,7 @@
 "use client"
 import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from './AlertProvider';
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/routing";
 import { loginUser, registerUser } from "@/helper/fetchApi";
 import { supabase } from '@/lib/supabase';
 

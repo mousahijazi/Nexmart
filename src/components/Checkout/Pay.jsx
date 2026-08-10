@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/lib/i18n/routing";
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { useUserContext } from "@/Context/UserProvider";
 import { useAlertContext } from "@/Context/AlertProvider";

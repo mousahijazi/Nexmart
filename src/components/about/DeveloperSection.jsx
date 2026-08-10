@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import { Skills, Socials } from "./data";
 import AboutImage from "./AboutImage";
 

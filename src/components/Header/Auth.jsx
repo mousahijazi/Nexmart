@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import { UserImage, LogoutButton } from "@/index";
 import { useUserContext } from "@/Context/UserProvider";
 

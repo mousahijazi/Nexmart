@@ -1,16 +1,18 @@
 "use client"
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/routing";
 import { useUserContext } from "@/Context/UserProvider";
 import { useAlertContext } from "@/Context/AlertProvider";
 import { updateOrderPaymentStatus, createMoyasarPayment } from "@/helper/fetchApi";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "@/lib/schemas/paymentSchema";
+import { useLocale } from "next-intl";
 import { RHFerrors } from "@/index";
 import { Lock } from "lucide-react";
 
 export default function PaymentForm({ order, loading }) {
+    const locale = useLocale();
     const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(paymentSchema),});
     const { user } = useUserContext();
     const { showAlert } = useAlertContext();
@@ -34,7 +36,7 @@ export default function PaymentForm({ order, loading }) {
                 amount: Math.round(order.total_price * 100),
                 currency: "USD",
                 description: `Nexmart Order #${order.id.slice(0, 8)}`,
-                callback_url: `${window.location.origin}/checkout?mode=pay&order_id=${order.id}`,
+                callback_url: `${window.location.origin}/${locale}/checkout?mode=pay&order_id=${order.id}`,
                 "source[type]": "creditcard",
                 "source[name]": data.name,
                 "source[number]": data.number.replace(/\s/g, ""),

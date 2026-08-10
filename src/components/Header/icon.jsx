@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import { ButtonTheme, Auth } from "@/index";
 import { ShoppingCart, Languages, Heart} from "lucide-react";
 import { useProductContext } from "@/Context/CartProvider";

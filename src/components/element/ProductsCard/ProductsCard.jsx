@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import { ShowCard, ProductsWishlistIcon } from "@/index";
 
 export default function ProductsCard({data, showDiscount = false, showRating = false, showCard = true}) {
@@ -29,7 +29,7 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
                                 src={product.thumbnail}
                                 alt={product.title}
                                 fill
-                                priority
+                                priority={index < 4}
                                 className="object-contain p-6 group-hover:scale-95 transition duration-270"
                             />
                             <div className="absolute top-0 left-0 w-fit p-2 rounded-br-3xl flex items-center justify-between text-white bg-[#5B3A21]">

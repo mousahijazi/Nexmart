@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CategoriesButton } from "@/index";
 

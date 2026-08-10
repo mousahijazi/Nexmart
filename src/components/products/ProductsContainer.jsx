@@ -2,7 +2,8 @@
 import { ProductsFilter, ProductsCard } from "@/index";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { getProducts, getCategories } from "@/helper/fetchApi";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/lib/i18n/routing";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 export default function ProductsContainer({data, totalProducts, categories}) {

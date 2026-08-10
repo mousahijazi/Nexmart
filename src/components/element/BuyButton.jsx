@@ -1,5 +1,5 @@
 "use client"
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/routing";
 import { useProductContext } from "@/Context/CartProvider";
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { useAlertContext } from "@/Context/AlertProvider";

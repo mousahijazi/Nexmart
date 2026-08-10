@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useUserContext } from "@/Context/UserProvider";
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { getUserOrders } from "@/helper/fetchApi";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/routing";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { OrderDashboardButton } from "@/index";
 

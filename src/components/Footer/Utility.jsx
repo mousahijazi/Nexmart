@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import { UtilityData } from "./data";
 
 export default function Utility() {

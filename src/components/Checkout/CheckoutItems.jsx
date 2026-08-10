@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import Image from "next/image";
 
 const INITIAL_VISIBLE = 4;

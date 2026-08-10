@@ -5,7 +5,7 @@ import { useAlertContext } from "@/Context/AlertProvider";
 import { createOrder } from "@/helper/fetchApi";
 import { useProductContext } from "@/Context/CartProvider";
 import { createOrderItems } from "@/helper/fetchApi";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/routing";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";

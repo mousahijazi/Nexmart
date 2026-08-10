@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/lib/i18n/routing";
 import { HeaderNavItems } from "../../index";
 
 export default function Header() {

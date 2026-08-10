@@ -1,18 +1,18 @@
 export const data = [
     {
-        text: "Home",
+        text: "nav.home",
         link: "/",
     },
     {
-        text: "Shop",
+        text: "nav.shop",
         link: "/products",
     },
     {
-        text: "About",
+        text: "nav.about",
         link: "/about",
     },
     {
-        text: "Contact",
+        text: "nav.contact",
         link: "/contact",
     },
 ];

@@ -1,7 +1,10 @@
 import { Star } from "lucide-react";
 import { Stats } from "./data";
+import { useTranslations } from "next-intl";
 
 export default function StatisticsSection() {
+  const t = useTranslations();
+
   return (
     <section className="mx-auto max-w-7xl">
       <div className="grid grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -19,7 +22,7 @@ export default function StatisticsSection() {
               </span>
             )}
             <span className="text-sm text-[#5B3A21] font-bold dark:text-zinc-200">
-              {stat.label}
+              {t(stat.label)}
             </span>
           </div>
         ))}

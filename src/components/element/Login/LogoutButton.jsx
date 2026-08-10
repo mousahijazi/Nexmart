@@ -1,7 +1,9 @@
 import { useUserContext } from "@/Context/UserProvider";
 import { LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function LogoutButton() {
+    const t = useTranslations();
     const {logout, user} = useUserContext();
 
   return (
@@ -21,7 +23,7 @@ export default function LogoutButton() {
             aria-label="logout"
         >
             <LogOut size={18} />
-            Logout
+            {t("nav.logout")}
         </button>
     )
   )

@@ -1,18 +1,20 @@
 import { getCategories } from "@/helper/fetchApi";
 import { CategoriesSlider } from "@/index";
+import { getTranslations } from "next-intl/server";
 
 export default async function Categories() {
   const categories = await getCategories();
+  const t = await getTranslations();
 
   return (
     <section className="bg-[#e3dfd7] dark:bg-zinc-800 py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-12 flex flex-col gap-3">
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Shop by Categories
+            {t("home.categories.title")}
           </h2>
           <p className="max-w-md text-zinc-600 dark:text-zinc-400">
-            Discover our curated collections, crafted for every taste.
+            {t("home.categories.text")}
           </p>
         </div>
 

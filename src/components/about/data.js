@@ -38,10 +38,10 @@ export const Values = [
 
 // stats
 export const Stats = [
-  { value: "100+", label: "Products" },
-  { value: "24/7", label: "Support" },
-  { value: "100%", label: "Secure Payments" },
-  { value: "rating", label: "Customer Satisfaction" },
+  { value: "100+", label: "home.hero.statistics.productsLable" },
+  { value: "24/7", label: "home.hero.statistics.supportLabel" },
+  { value: "100%", label: "home.hero.statistics.securePaymentsLabel" },
+  { value: "rating", label: "home.hero.statistics.customerSatisfactionLabel" },
 ];
 
 // icons

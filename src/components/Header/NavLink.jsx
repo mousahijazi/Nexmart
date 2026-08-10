@@ -1,7 +1,9 @@
 import { Link } from "@/lib/i18n/routing";
 import { data } from "./data";
+import { useTranslations } from "next-intl";
 
 export default function NavLink() {
+  const t = useTranslations();
 
   return (
      <ul className="flex flex-col lg:flex-row items-center gap-6">
@@ -11,7 +13,7 @@ export default function NavLink() {
             href={ele.link}
             className="text-sm text-gray-600 hover:text-gray-900 dark:text-[#D4C7BC] dark:hover:text-[#A68A64] transition-colors"
           >
-            {ele.text}
+            {t(ele.text)}
           </Link>
         </li>
       ))}

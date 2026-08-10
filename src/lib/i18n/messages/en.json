@@ -10,9 +10,45 @@
         "register": "Register"
     },
     "home": {
-        "Hero": {
+        "hero": {
             "text": "Discover quality products, secure checkout, and fast delivery — all in one place.",
-            "title": "Your trusted care now and always" 
+            "title": "Your trusted care now and always",
+            "button": "shop now",
+            "statistics": {
+                "productsLable": "Products",
+                "supportLabel": "Support",
+                "securePaymentsLabel": "Secure Payments",
+                "customerSatisfactionLabel": "Customer Satisfaction",
+                "rating": "rating"
+            }
+        },
+        "categories": {
+            "title": "Shop by Categories",
+            "text": "Discover our curated collections, crafted for every taste."
+        },
+        "feature": {
+            "title": "Featured Products",
+            "text": "Discover our latest and most popular products.",
+            "button": "shop now"
+        },
+        "whyNexmart": {
+            "title": "Why",
+            "text": "We provide the best shopping experience for our customers.",
+            "button": "Learn More About Us",
+            "card": {
+                "delivery": {
+                    "title": "Fast Delivery",
+                    "Desc": "Get your products delivered quickly and safely."
+                },
+                "securePayment": {
+                    "title": "Secure Payment",
+                    "Desc": "100% safe and encrypted payment system."
+                },
+                "prices": {
+                    "title": "Best Prices",
+                    "Desc": "We offer competitive prices on all products."
+                }
+            }
         }
     }
 }

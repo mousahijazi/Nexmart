@@ -2,8 +2,10 @@
 import { Link } from "@/lib/i18n/routing";
 import { UserImage, LogoutButton } from "@/index";
 import { useUserContext } from "@/Context/UserProvider";
+import { useTranslations } from "next-intl";
 
 export default function AuthSection() {
+  const t = useTranslations();
   const { user, loading } = useUserContext();
 
   if (loading) {
@@ -23,13 +25,13 @@ export default function AuthSection() {
                 href="/auth?mode=login"
                 className="text-sm font-medium px-4 text-[#5B3A21] transition hover:opacity-80 dark:text-[#A68A64]"
             >
-                Login
+              {t("nav.login")}
             </Link>
             <Link
                 href="/auth?mode=register"
                 className="rounded-2xl bg-[#5B3A21] px-8 py-3 text-sm font-medium text-white transition hover:opacity-90"
             >
-                Register
+              {t("nav.register")}
             </Link>
           </> 
         : <>

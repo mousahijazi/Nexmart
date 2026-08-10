@@ -12,7 +12,7 @@ export default function Icon() {
 
   return (
     <>
-        <div className="flex min-[480px]:justify-center w-full max-[480px]:flex-col gap-3">
+        <div className="flex min-[480px]:justify-center w-full flex-wrap max-[480px]:flex-col gap-3">
             <div className="flex flex-row-reverse px-3.5 justify-center items-center gap-4">
                 <Link href="/cart" className="flex items-center gap-1 relative text-gray-600 hover:text-gray-900 dark:text-[#D4C7BC] dark:hover:text-[#A68A64] transition-colors">
                     {t("nav.cart")}

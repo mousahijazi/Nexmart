@@ -23,13 +23,13 @@ export default function AuthSection() {
         ? <>
             <Link
                 href="/auth?mode=login"
-                className="text-sm font-medium px-4 text-[#5B3A21] transition hover:opacity-80 dark:text-[#A68A64]"
+                className="inline-block text-sm font-medium px-4 text-[#5B3A21] transition hover:opacity-80 dark:text-[#A68A64]"
             >
               {t("nav.login")}
             </Link>
             <Link
                 href="/auth?mode=register"
-                className="rounded-2xl bg-[#5B3A21] px-8 py-3 text-sm font-medium text-white transition hover:opacity-90"
+                className="inline-block rounded-2xl bg-[#5B3A21] px-8 py-3 text-sm font-medium text-white transition hover:opacity-90"
             >
               {t("nav.register")}
             </Link>

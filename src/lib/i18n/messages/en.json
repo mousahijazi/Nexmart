@@ -1,4 +1,10 @@
 {
+    "element": {
+        "productCard": {
+            "newProduct": "New",
+            "viewDetails": "View Details"
+        }
+    },
     "nav": {
         "home": "Home",
         "shop": "Shop",
@@ -8,6 +14,24 @@
         "logout": "Logout",
         "login": "Login",
         "register": "Register"
+    },
+    "footer": {
+        "nexmartDesc": {
+            "text": "Your go-to online store for the best products at unbeatable prices."
+        },
+        "link": {
+            "reserved": "© 2026 Nexmart. All rights reserved.",
+            "contact": {
+                "title": "Gaza, Palestine"
+            },
+            "utility": {
+                "styleGuide": "Style Guide",
+                "changelog": "Changelog",
+                "licenses": "Licenses",
+                "link": "Link in bio",
+                "Error": "Error 404"
+            }
+        }
     },
     "home": {
         "hero": {
@@ -32,7 +56,7 @@
             "button": "shop now"
         },
         "whyNexmart": {
-            "title": "Why",
+            "title": "Why Nexmart?",
             "text": "We provide the best shopping experience for our customers.",
             "button": "Learn More About Us",
             "card": {
@@ -47,6 +71,18 @@
                 "prices": {
                     "title": "Best Prices",
                     "Desc": "We offer competitive prices on all products."
+                },
+                "trust": {
+                    "title": "Trust",
+                    "Desc": "Secure payments and transparent policies, every single order."
+                },
+                "quality": {
+                    "title": "Quality",
+                    "Desc": "Every product is selected with a strict quality standard."
+                },
+                "experience": {
+                    "title": "Fast Experience",
+                    "Desc": "From browsing to checkout, built to feel instant."
                 }
             }
         }

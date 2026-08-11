@@ -1,6 +1,9 @@
 import {Pages, Utility, Text, Contact} from "@/index";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
+  const t = useTranslations();
+
   return (
     <footer className="w-full bg-[#e3dfd7] dark:bg-zinc-900 mt-auto px-5">
       <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 min-[480px]:grid-cols-2 md:gap-12 md:grid-cols-4 gap-7">
@@ -11,7 +14,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-gray-200 dark:border-zinc-300 py-6 text-center">
         <p className="text-sm text-gray-700 dark:text-[#e5ded8]">
-          © 2026 Nexmart. All rights reserved.
+          {t("footer.link.reserved")}
         </p>
       </div>
     </footer>

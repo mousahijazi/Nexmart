@@ -1,7 +1,10 @@
 import { Link } from "@/lib/i18n/routing";
 import { UtilityData } from "./data";
+import { useTranslations } from "next-intl";
 
 export default function Utility() {
+    const t = useTranslations();
+
   return (
     <div>
         <h1 className="font-semibold text-gray-800 dark:text-[#F5EBE6] mb-6">Utility</h1>
@@ -9,7 +12,7 @@ export default function Utility() {
             {UtilityData.map((ele, index) => (
                 <li key={index}>
                     <Link href={ele.link} className="text-sm text-gray-600 hover:text-gray-900 dark:text-[#D4C7BC] dark:hover:text-[#A68A64] transition-colors">
-                        {ele.text}
+                        {t(ele.text)}
                     </Link>
                 </li>
             ))}

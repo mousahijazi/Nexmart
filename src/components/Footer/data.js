@@ -1,41 +1,41 @@
 export const PagesData = [
     {
-        text: "Home",
+        text: "nav.home",
         link: "/",
     },
     {
-        text: "Shop",
+        text: "nav.shop",
         link: "/products",
     },
     {
-        text: "About",
+        text: "nav.about",
         link: "/about",
     },
     {
-        text: "Contact",
+        text: "nav.contact",
         link: "/contact",
     },
 ];
 
 export const UtilityData = [
     {
-        text: "Style Guide",
+        text: "footer.link.utility.styleGuide",
         link: "/",
     },
     {
-        text: "Changelog",
+        text: "footer.link.utility.changelog",
         link: "/",
     },
     {
-        text: "Licenses",
+        text: "footer.link.utility.licenses",
         link: "/",
     },
     {
-        text: "Link in bio",
+        text: "footer.link.utility.link",
         link: "/",
     },
     {
-        text: "Error 404",
+        text: "footer.link.utility.Error",
         link: "/",
     },
 ];

@@ -1,14 +1,17 @@
 import { MapPin } from "lucide-react";
 import { ContactData } from "./data";
+import { useTranslations } from "next-intl";
 
 export default function Contact() {
+    const t = useTranslations();
+
   return (
     <div className="flex flex-col gap-8">
         <div>
             <h1 className="font-semibold text-gray-800 dark:text-[#F5EBE6] mb-4">Address</h1>
             <p className="text-sm text-gray-600 dark:text-[#e5ded8] flex items-center gap-2">
                 <MapPin size={18} strokeWidth={2.2} className="text-[#5B3A21] dark:text-[#A68A64]" />
-                Gaza, Palestine
+                {t("footer.link.contact.title")}
             </p>
         </div>
         <div>

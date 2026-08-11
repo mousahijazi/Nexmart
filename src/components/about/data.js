@@ -16,26 +16,6 @@ export const Milestones = [
   },
 ];
 
-// Values
-import { ShieldCheck, Gem, Zap } from "lucide-react";
-export const Values = [
-  {
-    icon: ShieldCheck,
-    title: "Trust",
-    description: "Secure payments and transparent policies, every single order.",
-  },
-  {
-    icon: Gem,
-    title: "Quality",
-    description: "Every product is selected with a strict quality standard.",
-  },
-  {
-    icon: Zap,
-    title: "Fast Experience",
-    description: "From browsing to checkout, built to feel instant.",
-  },
-];
-
 // stats
 export const Stats = [
   { value: "100+", label: "home.hero.statistics.productsLable" },

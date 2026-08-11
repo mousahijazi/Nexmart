@@ -35,7 +35,6 @@ export {default as AboutHero} from "./components/about/AboutHero";
 export {default as DeveloperSection} from "./components/about/DeveloperSection";
 export {default as StatisticsSection} from "./components/about/StatisticsSection";
 export {default as StorySection} from "./components/about/StorySection";
-export {default as ValuesSection} from "./components/about/ValuesSection";
 
 // products
 export {default as ProductsPage} from "./components/products/Products";

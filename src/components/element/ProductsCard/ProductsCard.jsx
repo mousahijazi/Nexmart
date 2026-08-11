@@ -1,8 +1,11 @@
 import Image from "next/image";
 import { Link } from "@/lib/i18n/routing";
 import { ShowCard, ProductsWishlistIcon } from "@/index";
+import { useTranslations } from "next-intl";
 
 export default function ProductsCard({data, showDiscount = false, showRating = false, showCard = true}) {
+    const t = useTranslations();
+    
   return (
     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {data.map((product, index) => {
@@ -10,6 +13,7 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
             return(
                 <div 
                     key={index} 
+                    dir="ltr"
                     className={`
                         w-full
                         max-w-[360px]
@@ -36,7 +40,7 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
                                 <div className="flex items-center gap-2">
                                     {showDiscount 
                                         ? <span className="text-sm text-white p-2 font-bold">
-                                            New 
+                                            {t("element.productCard.newProduct")} 
                                         </span>
                                         : 
                                         <>
@@ -68,12 +72,15 @@ export default function ProductsCard({data, showDiscount = false, showRating = f
                         </div>
                     </Link>
                     <div className="relative h-9">
-                        <Link href={`/products/${product.id}`} className="
+                        <Link 
+                            href={`/products/${product.id}`} 
+                            className="
                             absolute bottom-0 left-0 
                             bg-[#5B3A21] text-white font-semibold 
-                            p-2 rounded-tr-3xl cursor-pointer 
-                            hover:opacity-90 transition duration-300">
-                            View Details
+                            p-2 px-3.5 rounded-tr-3xl cursor-pointer 
+                            hover:opacity-90 transition duration-300"
+                        >
+                            {t("element.productCard.viewDetails")} 
                         </Link>
                         <div className="absolute bottom-0 right-0 flex items-center">
                             <ProductsWishlistIcon product={product} />

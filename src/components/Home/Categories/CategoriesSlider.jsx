@@ -33,7 +33,7 @@ export default function CategoriesSlider({categories}) {
         ))}
         </div>
 
-        <div className="mt-10 flex items-center justify-center gap-6">
+        <div dir="ltr" className="mt-10 flex items-center justify-center gap-6">
             <CategoriesButton action={prevPage} ariaLabel="Previous categories" icon={<ChevronLeft className="h-5 w-5" />} />
             <div className="flex items-center gap-2">
                 {Array.from({ length: totalPages }).map((_, index) => (

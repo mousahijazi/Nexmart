@@ -18,7 +18,7 @@ export const Milestones = [
 
 // stats
 export const Stats = [
-  { value: "100+", label: "home.hero.statistics.productsLable" },
+  { value: "100+", label: "home.hero.statistics.productslabel" },
   { value: "24/7", label: "home.hero.statistics.supportLabel" },
   { value: "100%", label: "home.hero.statistics.securePaymentsLabel" },
   { value: "rating", label: "home.hero.statistics.customerSatisfactionLabel" },

@@ -6,8 +6,11 @@ import { registerSchema } from "@/lib/schemas/paymentSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { RHFerrors } from "@/index";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function LoginForm({isLogin}) {
+    const t = useTranslations();
+    const locale = useLocale();
     const {login} = useUserContext();
     const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(registerSchema(isLogin))});
     const [showPassword, setShowPassword] = useState(false);
@@ -15,12 +18,12 @@ export default function LoginForm({isLogin}) {
     
     const FormNameData = [
         {
-            text: "First Name",
+            text: t("auth.form.firstName.label"),
             apiKey: "firstName",
             error: errors.firstName,
         },
         {
-            text: "Last Name",
+            text: t("auth.form.lastName.label"),
             apiKey: "lastName",
             error: errors.lastName,
         },
@@ -43,7 +46,7 @@ export default function LoginForm({isLogin}) {
                                 <input
                                     type="text"
                                     {...register(apiKey)}
-                                    placeholder={`Your ${text}`}
+                                    placeholder={t("auth.form.namePlaceholder", {text: text})}
                                     className="
                                         w-full
                                         text-[#5B3A21] dark:text-zinc-700
@@ -66,12 +69,12 @@ export default function LoginForm({isLogin}) {
 
         <div>
             <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
-                Email
+                {t("auth.form.email.label")}
             </label>
             <input
                 type="text"
                 {...register("email")}
-                placeholder="Enter email"
+                placeholder={t("auth.form.email.placeholder")}
                 className="
                     w-full
                     text-[#5B3A21] dark:text-zinc-700
@@ -90,12 +93,12 @@ export default function LoginForm({isLogin}) {
 
         <div className="relative">
             <label className="block mb-2 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
-                Password
+                {t("auth.form.password.placeholder")}
             </label>
             <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
-                placeholder="Enter password"
+                placeholder={t("auth.form.password.placeholder")}
                 className="
                     w-full
                     px-4 py-3
@@ -113,13 +116,13 @@ export default function LoginForm({isLogin}) {
             <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="
-                    absolute
-                    right-5
-                    top-2/3
-                    -translate-y-1/2
-                    cursor-pointer
-                "
+                className={`
+                        absolute
+                        ${locale === "en" ? "right-5" : "left-5"}
+                        top-2/3 -translate-y-1/2
+                        cursor-pointer
+                    `
+                }
                 aria-label={
                     showPassword
                         ? "Hide password"

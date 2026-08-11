@@ -4,9 +4,11 @@ import { useProductContext } from "@/Context/CartProvider";
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
 import { useAlertContext } from "@/Context/AlertProvider";
 import { useUserContext } from "@/Context/UserProvider";
+import { useTranslations } from "next-intl";
 
 export default function BuyButton({products = false, singleProduct}) {
   const router = useRouter();
+  const t = useTranslations();
   const {cart} = useProductContext();
   const {user} = useUserContext();
   const {showAlert} = useAlertContext();
@@ -30,7 +32,7 @@ export default function BuyButton({products = false, singleProduct}) {
   };
 
   return (
-    <button className="w-full font-semibold sm:w-1/2 bg-white text-[#5B3A21] border-2 border-[#5B3A21] px-6 py-3 rounded-2xl cursor-pointer" aria-label="checkout" onClick={handleCheckout}>Checkout</button>
+    <button className="w-full font-semibold sm:w-1/2 bg-white text-[#5B3A21] border-2 border-[#5B3A21] px-6 py-3 rounded-2xl cursor-pointer" aria-label={t("element.checkout")} onClick={handleCheckout}>{t("element.checkout")}</button>
   )
 }
 

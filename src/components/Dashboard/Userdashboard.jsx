@@ -4,8 +4,10 @@ import { LogoutButton, UserImage, UpdateUser } from "@/index";
 import { Edit3 } from "lucide-react";
 import { useUserContext } from "@/Context/UserProvider";
 import { useProductContext } from "@/Context/CartProvider";
+import { useTranslations } from "next-intl";
 
 export default function Userdashboard() {
+  const t = useTranslations();
   const { user, loading } = useUserContext();
   const { cart } = useProductContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,19 +62,19 @@ export default function Userdashboard() {
   const username = user?.user_metadata?.first_name ? `${user?.user_metadata?.first_name} ${user?.user_metadata?.last_name || ""}` : "Guest"
   const data = [
     {
-      title: "Email",
+      title: t("profile.data.emailLabel"),
       value: user?.email || "N/A",
     },
     {
-      title: "Username",
+      title: t("profile.data.userNameLabel"),
       value: username || "N/A",
     },
     {
-      title: "Phone",
+      title: t("profile.data.phoneLabel"),
       value: user?.user_metadata?.phone || "N/A",
     },
     {
-      title: "Products In Cart",
+      title: t("profile.data.productsInCartLabel"),
       value: cart.length,
     },
   ];
@@ -81,15 +83,15 @@ export default function Userdashboard() {
     <div className="min-[500px]:bg-white min-[500px]:dark:bg-zinc-950 min-[500px]:shadow-lg dark:shadow-black/90 py-12 px-6 rounded-2xl">
       {!user 
         ? <div className="flex items-center justify-center text-[#5B3A21] font-semibold text-lg py-12 px-6 h-[320px]">
-            Please log in to view this page.
+            {t("profile.userUndifinde")}
           </div>
         : <div className="flex flex-col justify-center items-start gap-8">
             <div className="w-full">
               <span className="text-xs font-bold tracking-widest text-[#5B3A21]/80 dark:text-[#A68A64]/80 uppercase">
-                Profile
+                {t("profile.title")}
               </span>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#5B3A21] dark:text-[#A68A64]">
-                Welcome Back
+                {t("profile.Desc")}
               </h1>
               <div className="flex max-md:flex-col items-start md:items-center justify-between gap-3 mt-4">
                 <div className="flex items-center gap-3">
@@ -105,7 +107,7 @@ export default function Userdashboard() {
                     className="cursor-pointer flex items-center gap-2 px-6 py-3 bg-[#5B3A21] dark:bg-[#A68A64] text-white dark:text-[#e5ded8] rounded-full font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg"
                   >
                     <Edit3 size={18} />
-                    Edit Profile
+                    {t("profile.editButton")}
                   </button>
                   <LogoutButton />
                   <UpdateUser isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />

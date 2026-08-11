@@ -3,7 +3,9 @@
         "productCard": {
             "newProduct": "جديد",
             "viewDetails": "عرض التفاصيل"
-        }
+        },
+        "checkout": "الدفع",
+        "addToCart": "أضف إلى السلة"
     },
     "nav": {
         "home": "الرئيسية",
@@ -39,7 +41,7 @@
             "title": "رعايتكم الموثوقة الآن ودائما",
             "button": "تسوق الان",
             "statistics": {
-                "productsLable": "منتجات",
+                "productslabel": "منتجات",
                 "supportLabel": "يدعم",
                 "securePaymentsLabel": "دفع امن",
                 "customerSatisfactionLabel": "رضا العملاء",
@@ -84,6 +86,139 @@
                     "title": "تجربة سريعة",
                     "Desc": "من التصفح وحتى إتمام الشراء، صُممت لتمنحك شعوراً بالسرعة الفورية."
                 }
+            }
+        }
+    },
+    "shop": {
+        "products": {
+            "title": "استكشف منتجاتنا",
+            "text": "تصفّح تشكيلتنا واكتشف منتجاتٍ اختيرت بعنايةٍ من أجلك.",
+            "availabel": "المنتجات المتاحة",
+            "filter": {
+                "button": {
+                    "showAllProducts": "عرض جميع المنتجات",
+                    "showLess": "عرض أقل",
+                    "showMore": "عرض أكثر",
+                    "productsFilter": "ابحث بين {count} من المنتجات...",
+                    "allCategories": "جميع الاصناف"
+                }
+            },
+            "product": {
+                "title": "الرئيسية / المنتجات / {count} /",
+                "stocks": "المخزون",
+                "Desc": "الوصف",
+                "reset": "إعادة ضبط",
+                "quantity": "تم اختيار {quantity} من {stock}",
+                "total": "المجموع"
+            },
+            "relatedProducts": {
+                "title": "منتجات مشابهة",
+                "button": "تسوق الان"
+            },
+            "rating": {
+                "title": "من 1,25 ألف مراجعة"
+            },
+            "reviews": {
+                "title": "مراجعة القوائم"
+            }
+        }
+    },
+    "cart": {
+        "title": "عربة التسوق",
+        "Desc": "أدِر عناصرك، أو حدِّث الكميات، أو أزِل المنتجات من عربة التسوق.",
+        "emptyCart": {
+            "title": "عربة التسوق الخاصة بك فارغة",
+            "Desc": "أضف بعض المنتجات للبدء في التسوق.",
+            "button": "تسوق الان"
+        },
+        "cartDashboard": {
+            "title": "عرض عربة التسوق",
+            "Desc": "عربة التسوق الخاصة بك",
+            "button": "تسوق الان",
+            "clearButton": "مسح السلة",
+            "dashboardData": {
+                "products": "المنتجات",
+                "price": "السعر",
+                "taxes": "الضرائب",
+                "categories": "الاصناف",
+                "total": "المجموع"
+            }
+        }
+    },
+    "wishlist": {
+        "emptyWishlist": {
+            "title": "قائمة رغباتك فارغة",
+            "Desc": "ابدأ بإضافة المنتجات التي تحبها لتجدها هنا لاحقاً.",
+            "button": "تصفح المنتجات"
+        },
+        "wishListDashboard": {
+            "title": "قائمة الرغبات",
+            "Desc": "احفظ منتجاتك المفضلة واشترِها لاحقاً."
+        },
+        "wishlistData": {
+            "totalProducts": "المنتجات",
+            "totalPrice": "السعر",
+            "rating": "التصنيف",
+            "brands": "العلامات التجارية"
+        }
+    },
+    "auth": {
+        "Desc": "وجهتك المفضلة لاكتشاف منتجات مذهلة.",
+        "login": {
+            "title": "مرحبًا بعودتك!",
+            "secondTitle": "سجّل الدخول إلى حسابك",
+            "Desc": "تابع التسوق وأدِر عربة التسوق باستخدام حسابك."
+        },
+        "register": {
+            "title": "إنشاء حساب",
+            "Desc": "ابدأ التسوق واستمتع بتجربتك مع Nexmart."
+        },
+        "form": {
+            "namePlaceholder": "{text} الخاص بك",
+            "firstName": {
+                "label": "الأسم الأول"
+            },
+            "lastName": {
+                "label": "الأسم الأخير"
+            },
+            "email": {
+                "label": "البريد الالكتروني",
+                "placeholder": "ادخل بريدك الاكلتروني"
+            },
+            "password": {
+                "label": "كلمة السر",
+                "placeholder": "ادخل كلمة سرك"
+            }
+        }
+    },
+    "profile": {
+        "userUndifinde": "يرجى تسجيل الدخول لعرض هذه الصفحة.",
+        "title": "حساب تعريفي",
+        "Desc": "مرحبًا بعودتك",
+        "editButton": "تعديل الملف الشخصي",
+        "data": {
+            "emailLabel": "البريد الالكتورني",
+            "userNameLabel": "اسم المستخدم",
+            "phoneLabel": "رقم الهاتف",
+            "productsInCartLabel": "المنتجات التي في السلة"
+        },
+        "updateProfile": {
+            "title": "تعديل معلومات الملف الشخصي",
+            "cancel": "الغاء",
+            "saveButton": "احفظ التغييرات",
+            "savingButton": "يتم الحفظ...",
+            "profileImage": {
+                "title": "رابط صورة الملف الشخصي",
+                "placeholder": "ألصق رابط الصورة هنا"
+            }
+        },
+        "orders": {
+            "title": "طلباتك",
+            "Desc": "تتبّع وراجع كل ما اشتريته.",
+            "data": {
+                "order": "الطلب",
+                "faildButton": "حل المشكلة وإعادة المحاولة",
+                "completeButton": "إتمام الدفع"
             }
         }
     }

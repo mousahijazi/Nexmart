@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { Purchases, ProductsTextButton } from "@/index";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function ProductText({data}) {
+    const t = useTranslations();
+    const locale = useLocale();
     const originalPrice = data.price + (data.price * (data.discountPercentage / 100));
 
   return (
@@ -21,7 +24,7 @@ export default function ProductText({data}) {
             </div>
             <div className="flex gap-3 items-center max-[300px]:flex-col max-[300px]:items-start">
                 <span className="text-gray-600 dark:text-zinc-300 text-lg">
-                    {data.stock} Stocks 
+                    {data.stock} {t("shop.products.product.stocks")}
                 </span>
                 <div className="flex gap-2 items-center">
                     <Image 
@@ -37,7 +40,7 @@ export default function ProductText({data}) {
             </div>
         </div>
         <div>
-            <h3 className="text-2xl font-bold text-[#5B3A21] dark:text-[#F5EBE6]">Description:</h3>
+            <h3 dir={locale === "ar" ? "rtl" : "ltr"} className="text-2xl font-bold text-[#5B3A21] dark:text-[#F5EBE6]">{t("shop.products.product.Desc")} :</h3>
             <p className="text-gray-600 leading-7 dark:text-[#e5ded8]">{data.description}</p>
         </div>
         <Purchases stock={data.stock} productPrice={data.price} discount={originalPrice} />

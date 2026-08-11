@@ -3,7 +3,9 @@
         "productCard": {
             "newProduct": "New",
             "viewDetails": "View Details"
-        }
+        },
+        "checkout": "Checkout",
+        "addToCart": "Add To Cart"
     },
     "nav": {
         "home": "Home",
@@ -39,7 +41,7 @@
             "title": "Your trusted care now and always",
             "button": "shop now",
             "statistics": {
-                "productsLable": "Products",
+                "productslabel": "Products",
                 "supportLabel": "Support",
                 "securePaymentsLabel": "Secure Payments",
                 "customerSatisfactionLabel": "Customer Satisfaction",
@@ -84,6 +86,139 @@
                     "title": "Fast Experience",
                     "Desc": "From browsing to checkout, built to feel instant."
                 }
+            }
+        }
+    },
+    "shop": {
+        "products": {
+            "title": "Explore Our Products",
+            "text": "Browse through our collection and discover products carefully selected for you.",
+            "availabel": "products availabel",
+            "filter": {
+                "button": {
+                    "showAllProducts": "Show All Products",
+                    "showLess": "Show Less",
+                    "showMore": "Show More",
+                    "productsFilter": "Search among {count} products...",
+                    "allCategories": "All Categories"
+                }
+            },
+            "product": {
+                "title": "Home / Products / {count} /",
+                "stocks": "Stocks",
+                "Desc": "Description",
+                "reset": "reset",
+                "quantity": "{quantity} of {stock} selected",
+                "total": "Total"
+            },
+            "relatedProducts": {
+                "title": "Related Products",
+                "button": "shop now"
+            },
+            "rating": {
+                "title": "from 1,25K reviews"
+            },
+            "reviews": {
+                "title": "Review Lists"
+            }
+        }
+    },
+    "cart": {
+        "title": "Shopping Cart",
+        "Desc": "Manage your items, update quantities, or remove products from your cart.",
+        "emptyCart": {
+            "title": "Your cart is empty",
+            "Desc": "Add some products to start shopping.",
+            "button": "Shop Now"
+        },
+        "cartDashboard": {
+            "title": "Show cart",
+            "Desc": "Your Shopping Cart",
+            "button": "Shoping Now",
+            "clearButton": "Clear Button",
+            "dashboardData": {
+                "products": "Products",
+                "price": "Price",
+                "taxes": "Taxes",
+                "categories": "Categories",
+                "total": "Total"
+            }
+        }
+    },
+    "wishlist": {
+        "emptyWishlist": {
+            "title": "Your Wishlist is Empty",
+            "Desc": "Start adding products you love to find them here later.",
+            "button": "Browse Products"
+        },
+        "wishListDashboard": {
+            "title": "Wishlist",
+            "Desc": "Save your favorite products and purchase them later."
+        },
+        "wishlistData": {
+            "totalProducts": "Products",
+            "totalPrice": "Price",
+            "rating": "Rating",
+            "brands": "Brands"
+        }
+    },
+    "auth": {
+        "Desc": "Your favorite place for discovering amazing products.",
+        "login": {
+            "title": "Welcome Back!",
+            "secondTitle": "Login To Your Account",
+            "Desc": "Continue shopping and manage your cart with your account."
+        },
+        "register": {
+            "title": "Create an Account",
+            "Desc": "Start shopping and enjoy your Nexmart experience."
+        },
+        "form": {
+            "namePlaceholder": "Your {text}",
+            "firstName": {
+                "label": "First Name"
+            },
+            "lastName": {
+                "label": "Last Name"
+            },
+            "email": {
+                "label": "Email",
+                "placeholder": "Enter your email"
+            },
+            "password": {
+                "label": "Password",
+                "placeholder": "Enter your password"
+            }
+        }
+    },
+    "profile": {
+        "userUndifinde": "Please log in to view this page.",
+        "title": "Profile",
+        "Desc": "Welcome Back",
+        "editButton": "Edit Profile",
+        "data": {
+            "emailLabel": "Email",
+            "userNameLabel": "Username",
+            "phoneLabel": "Phone",
+            "productsInCartLabel": "Products in cart"
+        },
+        "updateProfile": {
+            "title": "Edit Profile Information",
+            "cancel": "Cancel",
+            "saveButton": "Save Changes",
+            "savingButton": "Saving...",
+            "profileImage": {
+                "title": "Avatar Image URL",
+                "placeholder": "Paste image URL here"
+            }
+        },
+        "orders": {
+            "title": "Your Orders",
+            "Desc": "Track and review everything you've purchased.",
+            "data": {
+                "order": "Order",
+                "faildButton": "Resolve & Retry",
+                "completeButton": "Complete Payment"
             }
         }
     }

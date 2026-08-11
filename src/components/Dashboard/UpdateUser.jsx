@@ -6,10 +6,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateProfileSchema } from "@/lib/schemas/paymentSchema";
 import { RHFerrors } from "@/index";
+import { useTranslations } from "next-intl";
 
 export default function UpdateUser({isModalOpen, setIsModalOpen}) {
   const {register, handleSubmit, reset, formState:{errors, isSubmitting}} = useForm({resolver: zodResolver(updateProfileSchema)});
   const { user, updateProfile } = useUserContext();
+  const t = useTranslations();
   const [imageFile, setImageFile] = useState(null);
   const updating = isSubmitting;
 
@@ -49,21 +51,21 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
   const formFields = [
     {
       id: "first-name",
-      label: "First Name",
+      label: t("auth.form.firstName.label"),
       type: "text",
       apiKey: "firstName",
       error: errors.firstName,
     },
     {
       id: "last-name",
-      label: "Last Name",
+      label: t("auth.form.lastName.label"),
       type: "text",
       apiKey: "lastName",
       error: errors.lastName,
     },
     {
       id: "phone-number",
-      label: "Phone Number",
+      label: t("profile.data.phoneLabel"),
       type: "tel",
       apiKey: "phone",
       error: errors.lastName,
@@ -78,7 +80,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg sm:text-xl font-bold text-[#5B3A21] dark:text-[#A68A64] flex items-center gap-2">
                     <Edit3 size={22} />
-                    <span className="hidden min-[390px]:block">Edit Profile Information</span>
+                    <span className="hidden min-[390px]:block">{t("profile.updateProfile.title")}</span>
                 </h2>
                 <button 
                     onClick={() => setIsModalOpen(false)}
@@ -108,13 +110,13 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
 
               <div>
                 <label className="block mb-1.5 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">
-                  Avatar Image URL
+                  {t("profile.updateProfile.profileImage.title")}
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  placeholder="Paste image URL here"
+                  placeholder={t("profile.updateProfile.profileImage.placeholder")}
                   className="cursor-pointer w-full text-[#5B3A21] dark:text-zinc-700 dark:bg-gray-100 font-semibold px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#5B3A21] transition"
                 />
               </div>
@@ -126,7 +128,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
                   onClick={() => setIsModalOpen(false)}
                   className="cursor-pointer w-full py-2.5 border border-gray-300 dark:border-zinc-600 rounded-xl font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-700 transition"
                 >
-                  Cancel
+                  {t("profile.updateProfile.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -134,7 +136,7 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
                   disabled={updating}
                   className="cursor-pointer w-full py-2.5 bg-[#5B3A21] text-white rounded-xl font-medium hover:opacity-90 transition disabled:opacity-50"
                 >
-                  {updating ? "Saving..." : "Save Changes"}
+                  {updating ? t("profile.updateProfile.savingButton") : t("profile.updateProfile.saveButton")}
                 </button>
               </div>
             </form>

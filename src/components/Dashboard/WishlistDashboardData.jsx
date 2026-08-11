@@ -1,28 +1,30 @@
 "use client"
 import { useWishlistContext } from "@/Context/WishlistProvider";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function WishlistDashboardData() {
+    const t = useTranslations();
     const {wishlist} = useWishlistContext();
     const totalPrice = wishlist.reduce((total, product) => total + product.price, 0);
     const averageRating = wishlist.length === 0 ? 0 : (wishlist.reduce((sum, product) => sum + product.rating, 0) / wishlist.length).toFixed(1);
     const totalBrands = new Set(wishlist.map(product => product.brand)).size;
     const wishlistData = [
         {
-            title: "Total Products",
+            title: t("wishlist.wishlistData.totalProducts"),
             value: wishlist.length,
         },
         {
-            title: "Total Price",
+            title: t("wishlist.wishlistData.totalPrice"),
             value: `$${totalPrice.toFixed(2)}`,
         },
         {
-            title: "Average Rating",
+            title: t("wishlist.wishlistData.rating"),
             value: averageRating,
             icon: <Star />,
         },
         {
-            title: "Total Brands",
+            title: t("wishlist.wishlistData.brands"),
             value: totalBrands,
         },
     ];

@@ -1,6 +1,8 @@
 import { ProductStars } from "@/index"; 
+import { useTranslations } from "next-intl";
 
 export default function Rating({rating}) {
+    const t = useTranslations();
     const radius = 40; // The radius of the circle
     const circumference = 2 * Math.PI * radius; // Equation of circumference of a circle
     const percentage = (rating / 5) * 100; //Convert the rating to a value out of 100
@@ -38,7 +40,7 @@ export default function Rating({rating}) {
         </div>
         <div className="flex flex-col items-start gap-1">
             <ProductStars rating={rating} />
-            <span className="text-[16px] max-[400px]:text-sm text-gray-600 dark:text-[#e5ded8] font-semibold">from 1,25K reviews</span>
+            <span className="text-[16px] max-[400px]:text-sm text-gray-600 dark:text-[#e5ded8] font-semibold">{t("shop.products.rating.title")}</span>
         </div>
     </div>
   )

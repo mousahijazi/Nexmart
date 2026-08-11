@@ -1,10 +1,12 @@
 "use client"
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function ProductsFilter({data, search, setSearch, selectedCategory, setSelectedCategory, categories, categoryFromUrl, resetToAllProducts}) {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations();
   const currentCategoryName = selectedCategory === "all" 
-    ? "All Categories" 
+    ? t("shop.products.filter.button.allCategories") 
     : categories.find(cat => cat.slug === selectedCategory)?.name || selectedCategory;
 
   return (
@@ -16,7 +18,7 @@ export default function ProductsFilter({data, search, setSearch, selectedCategor
             onChange={(e) => {
               setSearch(e.target.value);
             }}
-            placeholder={`Search among ${data.length} products...`}
+            placeholder={t("shop.products.filter.button.productsFilter", { count: data.length })}
             className={`
               w-full md:max-w-md
               rounded-xl
@@ -64,7 +66,7 @@ export default function ProductsFilter({data, search, setSearch, selectedCategor
                     selectedCategory === "all" ? "bg-[#5B3A21] text-white" : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  All Categories
+                  {t("shop.products.filter.button.allCategories")}
                 </button>
 
                 {categories.map((category) => (

@@ -6,10 +6,13 @@ import { getUserOrders } from "@/helper/fetchApi";
 import { useRouter } from "@/lib/i18n/routing";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { OrderDashboardButton } from "@/index";
+import { useTranslations, useLocale } from "next-intl";
 
 const ORDERS_PER_PAGE = 2;
 
 export default function OrderDashboardData() {
+    const t = useTranslations();
+    const locale = useLocale();
     const { user } = useUserContext();
     const {setCurrentOrderId} = useCheckoutContext();
     const router = useRouter();
@@ -62,7 +65,7 @@ export default function OrderDashboardData() {
     }
 
     return (
-        <div className="mt-8 flex flex-col gap-5">
+        <div dir="ltr" className="mt-8 flex flex-col gap-5">
             {paginatedOrders.map((order) => {
                 const isPending = order.payment_status === "pending";
                 const isFailed = order.payment_status === "failed";
@@ -81,8 +84,8 @@ export default function OrderDashboardData() {
                             className="sm:w-full flex max-sm:flex-col sm:items-center sm:justify-between p-3.5 sm:p-5 cursor-pointer gap-3"
                         >
                             <div className="text-left">
-                                <p className="font-semibold text-[#5B3A21] dark:text-[#F5EBE6]">
-                                    Order #{order.id.slice(0, 8)}
+                                <p dir={locale === "ar" ? "rtl" : "ltr"} className="font-semibold text-[#5B3A21] dark:text-[#F5EBE6]">
+                                    {t("profile.orders.data.order")} #{order.id.slice(0, 8)}
                                 </p>
                                 <p className="text-sm text-gray-600 dark:text-zinc-400 max-sm:mt-1">
                                     {new Date(order.created_at).toLocaleDateString()}
@@ -102,7 +105,7 @@ export default function OrderDashboardData() {
                                     : <div className={`px-4 py-2 rounded-xl text-white text-sm font-semibold cursor-pointer ${
                                             isFailed ? "bg-red-600 hover:bg-red-700" : "bg-[#5B3A21] hover:opacity-90"
                                         }`}>
-                                            {isFailed ? "Resolve & Retry" : "Complete Payment"}
+                                            {isFailed ? t("profile.orders.data.faildButton") : t("profile.orders.data.completeButton")}
                                         </div>
                                 }
                             </div>

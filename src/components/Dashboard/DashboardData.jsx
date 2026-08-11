@@ -1,8 +1,9 @@
 "use client"
 import { useProductContext } from "@/Context/CartProvider";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function DashboardData() {
+    const t = useTranslations();
     const {cart} = useProductContext();
 
     const categoriesCount = new Set(
@@ -15,23 +16,23 @@ export default function DashboardData() {
 
     const data = [
         {
-            title: "products",
+            title: t("cart.cartDashboard.dashboardData.products"),
             value: cart.length,
         },
         {
-            title: "price",
+            title: t("cart.cartDashboard.dashboardData.price"),
             value: `${totalPrice.toFixed(2)}$`,
         },
         {
-            title: "taxes",
+            title: t("cart.cartDashboard.dashboardData.taxes"),
             value: `${taxes.toFixed(2)}$`,
         },
         {
-            title: "categories",
+            title: t("cart.cartDashboard.dashboardData.categories"),
             value: categoriesCount,
         },
         {
-            title: "total",
+            title: t("cart.cartDashboard.dashboardData.total"),
             value: `${total.toFixed(2)}$`,
         },
     ];
@@ -40,7 +41,7 @@ export default function DashboardData() {
     <div className="grid gap-7 grid-cols-1 sm:grid-cols-2 w-full">
         <div className="flex flex-col justify-center gap-6">
             {data.map((ele, index) => (
-                <p key={index} className="text-gray-600 dark:text-[#e5ded8] tracking-wider ">{ele.title}: <span className="text-[#5B3A21] dark:text-[#A68A64] font-semibold text-sm">{ele.value}</span></p>
+                <p key={index} className="text-gray-600 dark:text-[#e5ded8] tracking-wider ">{ele.title} : <span className="text-[#5B3A21] dark:text-[#A68A64] font-semibold text-sm">{ele.value}</span></p>
             ))}
         </div>
     </div>

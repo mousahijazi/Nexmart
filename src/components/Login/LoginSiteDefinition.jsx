@@ -1,6 +1,9 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function LoginSiteDefinition() {
+    const t = useTranslations();
+
   return (
     <div className="hidden min-[480px]:flex relative max-md:py-24 bg-[#F9F7F3] dark:bg-zinc-900 items-center justify-center p-10">
         <Image
@@ -17,7 +20,7 @@ export default function LoginSiteDefinition() {
             </h1>
 
             <p className="text-gray-600 dark:text-[#e5ded8] text-[17px] mt-2 max-w-xs">
-                Your favorite place for discovering amazing products.
+                {t("auth.Desc")}
             </p>
         </div>
     </div>

@@ -5,8 +5,10 @@ import { getProducts, getCategories } from "@/helper/fetchApi";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/lib/i18n/routing";
 import { ArrowDown, ArrowUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ProductsContainer({data, totalProducts, categories}) {
+  const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
@@ -124,7 +126,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
                   ref={buttonRef}
                   className="bg-[#5B3A21] text-white font-bold px-8 py-3 rounded-xl hover:opacity-90 transition duration-300 disabled:opacity-50 cursor-pointer"
                 >
-                  Show All Products
+                  {t("shop.products.filter.button.showAllProducts")}
                 </button>
               ) : (
                 <div ref={buttonRef} className="max-[400px]:w-full flex max-[400px]:flex-col gap-3">
@@ -133,7 +135,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
                       onClick={showLessProducts}
                       className="bg-gray-300 dark:text-zinc-900 px-8 py-3 rounded-xl cursor-pointer hover:opacity-70 transition duration-300"
                     >
-                      Show Less
+                      {t("shop.products.filter.button.showLess")}
                     </button>
                   )}
                   {products.length < totalProducts && (
@@ -141,7 +143,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
                       onClick={loadMoreProducts}
                       className="bg-[#5B3A21] text-white font-bold px-8 py-3 rounded-xl hover:opacity-90 transition duration-300 disabled:opacity-50 cursor-pointer"
                     >
-                      Show More
+                      {t("shop.products.filter.button.showMore")}
                     </button>
                   )}
                 </div>

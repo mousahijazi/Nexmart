@@ -10,6 +10,7 @@ export {default as Auth} from "./components/Header/Auth";
 export {default as Hero} from "./components/Home/Hero/Hero";
 export {default as HeroImage} from "./components/Home/Hero/HeroImage";
 export {default as HeroText} from "./components/Home/Hero/HeroText";
+export {default as HomeCard} from "./components/Home/Hero/HomeCard";
 
 // Categories
 export {default as Categories} from "./components/Home/Categories/Categories";

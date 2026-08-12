@@ -15,11 +15,10 @@ export default async function page({searchParams}) {
       <div className="mx-auto w-full max-w-7xl min-[480px]:bg-white min-[480px]:dark:bg-zinc-950 min-[480px]:rounded-2xl overflow-hidden min-[480px]:shadow-md">
           {isAddress ? (
               <>
-                  <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div dir="ltr" className="grid grid-cols-1 lg:grid-cols-2">
                       <CheckoutForm />
                       <CheckoutData />
                   </div>
-
                   <CheckoutItems />
               </>
           ) : (

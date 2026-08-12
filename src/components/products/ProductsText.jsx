@@ -13,7 +13,7 @@ export default function ProductsText({total}) {
                 <span>
                     {t("shop.products.text")}
                 </span>
-                <span className="text-[#8B5A2B] dark:text-[#A68A64] font-semibold">{total} {t("shop.products.available")}</span>
+                <span className="text-[#8B5A2B] dark:text-[#A68A64] font-semibold">{total} {t("shop.products.availabel")}</span>
             </div>
         </div>
     </div>

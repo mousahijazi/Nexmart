@@ -7,12 +7,13 @@ import { updateOrderPaymentStatus, createMoyasarPayment } from "@/helper/fetchAp
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "@/lib/schemas/paymentSchema";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { RHFerrors } from "@/index";
 import { Lock } from "lucide-react";
 
 export default function PaymentForm({ order, loading }) {
     const locale = useLocale();
+    const t = useTranslations();
     const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(paymentSchema),});
     const { user } = useUserContext();
     const { showAlert } = useAlertContext();
@@ -77,14 +78,14 @@ export default function PaymentForm({ order, loading }) {
 
     const fields = [
         { 
-          label: "Cardholder Name",
+          label: t("checkout.payPage.form.card.nameLabel"),
           type: "text", 
           placeholder: "MOUSA HIJAZI", 
           apiKey: "name",
           error: errors.name,
         },
         {
-            label: "Card Number", 
+            label: t("checkout.payPage.form.card.numberLabel"), 
             type: "text", 
             placeholder: "0000 0000 0000 0000", 
             action: handleCardNumberInput,
@@ -95,14 +96,14 @@ export default function PaymentForm({ order, loading }) {
 
     const Data = [
         {
-            label: "Month",
+            label: t("checkout.payPage.form.card.monthLabel"),
             type: "text", 
             placeholder: "MM", 
             apiKey: "month",
             error: errors.month,
         },
         {
-            label: "Year",
+            label: t("checkout.payPage.form.card.yearLabel"),
             type: "text", 
             placeholder: "YY", 
             apiKey: "year",
@@ -118,15 +119,15 @@ export default function PaymentForm({ order, loading }) {
     ];
 
     return (
-        <div className="px-3 min-[480px]:px-6 py-8">
+        <div dir={locale === "ar" ? "rtl" : "ltr"} className="px-3 min-[480px]:px-6 py-8">
             <span className="text-xs font-bold tracking-widest uppercase text-[#5B3A21]/80 dark:text-[#A68A64]/70">
-                Final Step
+                {t("checkout.payPage.form.title")}
             </span>
             <h1 className="mt-3 max-[360px]:text-[21px] text-2xl sm:text-3xl font-extrabold text-[#5B3A21] dark:text-[#A68A64]">
-                Payment Details
+                {t("checkout.payPage.form.secondTitle")}
             </h1>
             <p className="mt-3 text-gray-500 dark:text-[#e5ded8]">
-                Enter your card information to complete the purchase.
+                {t("checkout.payPage.form.Desc")}
             </p>
 
             <form onSubmit={handleSubmit(handlePayment)} className="mt-8 flex flex-col gap-4">
@@ -137,6 +138,7 @@ export default function PaymentForm({ order, loading }) {
                         </label>
                         <input
                             {...register(ele.apiKey)}
+                            dir="ltr"
                             type={ele.type}
                             onInput={ele.action}
                             placeholder={ele.placeholder}
@@ -165,6 +167,7 @@ export default function PaymentForm({ order, loading }) {
                             </label>
                             <input
                                 type={ele.type} 
+                                dir="ltr"
                                 {...register(ele.apiKey)}
                                 placeholder={ele.placeholder}
                                 className="w-full text-[#5B3A21] dark:text-zinc-700 dark:bg-[#f2f2f2] font-semibold px-4 py-3 rounded-xl border-2 border-gray-200 outline-none focus:border-[#5B3A21] dark:focus:border-zinc-700 transition"
@@ -182,7 +185,7 @@ export default function PaymentForm({ order, loading }) {
                             onClick={() => router.push("/user")}
                             className="text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64] underline cursor-pointer w-fit"
                         >
-                            Return to my account
+                            {t("checkout.payPage.form.card.return")}
                         </button>
                     </div>
                 )}
@@ -193,7 +196,7 @@ export default function PaymentForm({ order, loading }) {
                     className="mt-2 cursor-pointer px-7 py-3.5 text-center bg-[#5B3A21] text-white rounded-full font-medium hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                     <Lock size={16} />
-                    {submitting ? "Processing..." : loading ?  "Loading..." : order ? `Pay $${order.total_price.toFixed(2)}` : 0}
+                    {submitting ? t("checkout.payPage.form.payingButton") : loading ? t("element.loadingButton") : order ? t("checkout.payPage.form.payButton", {total: order.total_price.toFixed(2)}) : 0}
                 </button>
             </form>
         </div>

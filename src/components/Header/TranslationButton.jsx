@@ -1,20 +1,24 @@
 "use client"
-import { useLocale, useTranslations} from "next-intl";
+import { useLocale} from "next-intl";
 import { useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/lib/i18n/routing";
 import { Languages } from "lucide-react";
 
 export default function TranslationButton() {
-    const t = useTranslations();
     const locale = useLocale();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const pathname = usePathname();
     const [isPending, startTransition] = useTransition();
     const nextLocale = locale === "en" ? "ar" : "en";
 
     const toggleLanguage = () => {
+        const currentParams = searchParams.toString();
+        const targetUrl = currentParams ? `${pathname}?${currentParams}` : pathname;
+
         startTransition(() => {
-            router.replace(pathname, { locale: nextLocale, scroll: false });
+            router.replace(targetUrl, { locale: nextLocale, scroll: false });
         });
     };
 

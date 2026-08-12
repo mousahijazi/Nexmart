@@ -5,7 +5,8 @@
             "viewDetails": "View Details"
         },
         "checkout": "Checkout",
-        "addToCart": "Add To Cart"
+        "addToCart": "Add To Cart",
+        "loadingButton": "Loading..."
     },
     "nav": {
         "home": "Home",
@@ -219,6 +220,83 @@
                 "order": "Order",
                 "faildButton": "Resolve & Retry",
                 "completeButton": "Complete Payment"
+            }
+        }
+    },
+    "checkout": {
+        "addressPage": {
+            "data": {
+                "title": "Order Summary",
+                "itemsData": {
+                    "items": "Items ({totalItems})",
+                    "taxes": "Taxes",
+                    "shipping": {
+                        "title": "Shipping",
+                        "Desc": "Add delivery service",
+                        "label": "Need Shipping"
+                    },
+                    "coupon": {
+                        "title": "Coupon",
+                        "taxesRemoved": "Taxes Removed (-{Removed})"
+                    },
+                    "total": "Order Total"
+                }
+            },
+            "form": {
+                "cityLabel": "City",
+                "addressLabel": "Address",
+                "placeButton": "Place Order",
+                "placingButton": "Placing Order...",
+                "Desc": "By placing your order, you agree to our company Privacy policy and Conditions of use.",
+                "notes": {
+                    "label": "Message",
+                    "placeholder": "Write your message here..."
+                }
+            },
+            "items": {
+                "title": "Items in this order ({length})",
+                "quantity": "Qty ({quantity})"
+            }
+        },
+        "payPage": {
+            "data": {
+                "itemsLabel": "items",
+                "shippingTo": "Shipping to",
+                "securedBy": "Secured by `<Moyasar>Moyasar</Moyasar>` — Your card details never touch our servers"
+            },
+            "form": {
+                "title": "Final Step",
+                "secondTitle": "Payment Details",
+                "Desc": "Enter your card information to complete the purchase.",
+                "payButton": "Pay ${total}",
+                "payingButton": "Processing...",
+                "card": {
+                    "nameLabel": "Cardholder Name",
+                    "numberLabel": "Card Number",
+                    "monthLabel": "Month",
+                    "yearLabel": "Year",
+                    "return": "Return to my account"
+                }
+            },
+            "Test": {
+                "title": "Test Environment",
+                "secondTitle": "Encrypted",
+                "Desc": "All card details are encrypted and handled securely. Payments are currently running in <bold>Test Mode</bold>. Live payments will be enabled soon.",
+                "availableCard": "Mada cards are not available during the testing environment.",
+                "card": {
+                    "title": "Test Cards",
+                    "successfulCard": {
+                        "title": "Successful Payment",
+                        "approved": "Approved",
+                        "Desc": "You will be redirected to the bank's page, and then you will return with a response confirming that the payment has been completed."
+                    },
+                    "failedCard": {
+                        "title": "Failed Payment",
+                        "declined": "Declined",
+                        "Desc": "You'll be redirected to the bank page, then back with a declined payment response.",
+                        "declinedCard": "Declined Card"
+                    }
+                }
             }
         }
     }

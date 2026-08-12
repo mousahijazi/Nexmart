@@ -87,11 +87,11 @@ export default function Pay() {
 
   return (
     <>
-        <div className="grid grid-cols-1 lg:grid-cols-2">
+        <div dir="ltr" className="grid grid-cols-1 lg:grid-cols-2">
             <PaymentForm order={order} loading={loadingPay} />
             <PaymentSummary order={order} loading={loadingPay} />
         </div>
-        <div className="bg-[#f1f1f1] dark:bg-zinc-900">
+        <div className="min-[480px]:bg-[#f1f1f1] min-[480px]:dark:bg-zinc-900">
             <PaymentTestNotice />
         </div>
     </>

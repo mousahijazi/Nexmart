@@ -35,6 +35,7 @@ export default function AlertProvider({ children }) {
 
             {alert && (
                 <div
+                    dir="ltr"
                     className={`
                         fixed bottom-5 right-5
                         px-5 py-3 rounded-xl

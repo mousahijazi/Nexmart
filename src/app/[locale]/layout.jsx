@@ -25,7 +25,7 @@ export default async function RootLayout({ children, params }) {
 
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className="h-full antialiased">
-      <body className={`${selectedFont} min-h-screen flex flex-col bg-[#F7F4EF] dark:bg-zinc-900`}>
+      <body className={`${selectedFont} min-h-screen flex flex-col bg-[var(--color-cream)] text-[var(--color-ink)]`}>
         <NextIntlClientProvider messages={messages}>
           <ContextProviders>
             <Header />

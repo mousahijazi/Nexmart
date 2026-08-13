@@ -4,7 +4,7 @@ export default function Button({link, title = "shop now"}) {
   return (
     <Link
         href={`/${link}`}
-        className="inline-block mt-5 px-12 py-4 bg-[#5B3A21] text-white rounded-full font-medium hover:opacity-90 transition"
+        className="rounded-xl bg-[var(--color-gold)] text-[var(--color-green-dark)] font-bold px-[34px] py-[15px] text-[15px] hover:bg-[var(--color-gold-light)]"
     >
         <span>{title}</span>
     </Link>

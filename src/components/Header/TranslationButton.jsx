@@ -27,7 +27,7 @@ export default function TranslationButton() {
         type="button"
         disabled={isPending}
         onClick={toggleLanguage}
-        className="cursor-pointer dark:text-[#A68A64]"
+        className="cursor-pointer text-[#E8EDE9] dark:text-[var(--color-gold)] hover:text-[var(--color-gold-light)] transation duration-300"
         aria-label={`Switch to ${nextLocale}`}
     >
         <Languages size={22} />

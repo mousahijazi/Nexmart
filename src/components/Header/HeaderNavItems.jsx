@@ -12,7 +12,7 @@ export default function HeaderNavItems() {
       <Nav isOpen={isOpen} setIsOpen={setIsOpen} buttonRef={buttonRef} />
 
       {/* todo */}
-      <div className="hidden min-[830px]:flex">
+      <div className="hidden min-md:flex">
         <Icon />
       </div>
       
@@ -22,7 +22,7 @@ export default function HeaderNavItems() {
           aria-label="menu"
           onClick={() => setIsOpen(!isOpen)}
       >
-          <Menu size={60} strokeWidth={3} className="dark:text-[#f1f1f1]" />
+          <Menu size={48} strokeWidth={3} className="dark:text-[#f1f1f1]" />
       </button>
     </>
   )

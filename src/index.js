@@ -1,16 +1,23 @@
 // Header
 export {default as Header} from "./components/Header/Header";
+export {default as TopBar} from "./components/Header/TopBar";
+export {default as NavSearch} from "./components/Header/NavSearch";
+export {default as TranslationButton} from "./components/Header/TranslationButton";
+
 export {default as HeaderNavItems} from "./components/Header/HeaderNavItems";
 export {default as Nav} from "./components/Header/Nav";
 export {default as Icon} from "./components/Header/icon";
-export {default as TranslationButton} from "./components/Header/TranslationButton";
 export {default as Auth} from "./components/Header/Auth";
+
+// StorePerks
+export {default as StorePerks} from "./components/Home/StorePerks/StorePerks";
 
 // Hero
 export {default as Hero} from "./components/Home/Hero/Hero";
+export {default as SaleSeason} from "./components/Home/Hero/SaleSeason";
+export {default as SidePromotions} from "./components/Home/Hero/SidePromotions";
+
 export {default as HeroImage} from "./components/Home/Hero/HeroImage";
-export {default as HeroText} from "./components/Home/Hero/HeroText";
-export {default as HomeCard} from "./components/Home/Hero/HomeCard";
 
 // Categories
 export {default as Categories} from "./components/Home/Categories/Categories";

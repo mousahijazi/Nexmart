@@ -1,13 +1,5 @@
 export const data = [
     {
-        text: "nav.home",
-        link: "/",
-    },
-    {
-        text: "nav.shop",
-        link: "/products",
-    },
-    {
         text: "nav.about",
         link: "/about",
     },
@@ -16,3 +8,7 @@ export const data = [
         link: "/contact",
     },
 ];
+
+export const DATA = {
+    navCats: ["إلكترونيات", "أزياء", "جمال وعطور", "المنزل والمطبخ", "أجهزة منزلية", "رياضة", "أطفال", "بقالة"],
+};

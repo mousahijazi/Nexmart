@@ -38,7 +38,6 @@ export default function AuthSection() {
             <Link href="/user">
                 <UserImage />
             </Link>
-            <LogoutButton />
           </>
       }
     </div>

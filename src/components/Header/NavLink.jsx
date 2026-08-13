@@ -6,7 +6,7 @@ export default function NavLink() {
   const t = useTranslations();
 
   return (
-     <ul className="flex flex-col lg:flex-row items-center gap-6">
+     <ul className="flex items-center gap-6">
       {data.map((ele, index) => (
         <li key={index}>
           <Link

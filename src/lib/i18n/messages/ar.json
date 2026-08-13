@@ -6,14 +6,29 @@
         },
         "checkout": "الدفع",
         "addToCart": "أضف إلى السلة",
-        "loadingButton": "جاري التحميل..."
+        "loadingButton": "جاري التحميل...",
+        "button": "تسوّق الحين"
+    },
+    "header": {
+        "TopBar": {
+            "linkTitle": "توصيل مجاني للطلبات فوق ٢٠٠ ر.س",
+            "secondLink": "تتبع طلبك",
+            "thirdLink": "خدمة العملاء ٩٢٠٠٠٠٠٠٠"
+        },
+        "logo": "ن",
+        "title": "نكسمارت",
+        "secondtitle": "Nexmart",
+        "discountsTitle": "تخفيضات الأسبوع",
+        "search": {
+            "title": "كل الأقسام",
+            "placeholder": "وش تدور عليه اليوم؟"
+        }
     },
     "nav": {
         "home": "الرئيسية",
         "shop": "المتجر",
         "about": "من نحن",
         "contact": "اتصل بنا",
-        "cart": "السلة",
         "logout": "تسجيل الخروج",
         "login": "تسجيل الدخول",
         "register": "انشاء حساب"
@@ -38,15 +53,53 @@
     },
     "home": {
         "hero": {
-            "text": "اكتشف منتجات عالية الجودة، وعملية دفع آمنة، وتوصيلاً سريعاً — كل ذلك في مكان واحد.",
-            "title": "رعايتكم الموثوقة الآن ودائما",
-            "button": "تسوق الان",
-            "statistics": {
-                "productslabel": "منتجات",
-                "supportLabel": "يدعم",
-                "securePaymentsLabel": "دفع امن",
-                "customerSatisfactionLabel": "رضا العملاء",
-                "rating": "تصنيف"
+            "title": "موسم العروض · صنع في السعودية",
+            "secondTitle": "كل اللي تحتاجه في مكان واحد",
+            "Desc": "أكثر من ٤٠ ألف منتج من علامات موثوقة، توصيل سريع لكل مدن المملكة، ودفع آمن عبر ميسر.",
+            "button": "شوف التصنيفات",
+            "data": {
+                "products": {
+                    "label": "منتج",
+                    "value": "+٤٠ ألف"
+                },
+                "customer": {
+                    "label": "عميل سعيد",
+                    "value": "١٨٠ ألف"
+                },
+                "rating": {
+                    "label": "تقييم المتجر",
+                    "value": "٤٫٨/٥"
+                }
+            },
+            "SidePromotions": {
+                "cardOun": {
+                    "title": "إلكترونيات",
+                    "Desc": "خصم حتى ٤٠٪",
+                    "button": "اكتشف ←"
+                },
+                "cardTwo": {
+                    "title": "عروض العطلة",
+                    "Desc": "شحن مجاني لكل الطلبات",
+                    "button": "استفد الحين ←"
+                }
+            },
+            "perks": {
+                "return": {
+                    "title": "إرجاع مجاني خلال ١٤ يوم",
+                    "Desc": "بدون أسئلة"
+                },
+                "pay": {
+                    "title": "دفع آمن عبر ميسر",
+                    "Desc": "مدى وفيزا وماستركارد"
+                },
+                "delivery": {
+                    "title": "توصيل ١-٣ أيام",
+                    "Desc": "لكل مدن المملكة"
+                },
+                "support": {
+                    "title": "دعم بالعربي",
+                    "Desc": "٧ أيام في الأسبوع"
+                }
             }
         },
         "categories": {

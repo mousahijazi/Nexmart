@@ -11,8 +11,8 @@ export default function ThemeButton() {
       className="
         p-2
         rounded-full
-        bg-[#5B3A21]
-        text-white
+        text-[#E8EDE9] dark:text-[var(--color-gold)]
+        hover:text-[var(--color-gold-light)] transation duration-300
         cursor-pointer
       "
       aria-label="Theme mood"

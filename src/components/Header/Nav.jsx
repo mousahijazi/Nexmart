@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useEffect } from "react";
 import NavLink from "./NavLink";
-import {Icon} from "@/index";
+import {Icon, NavSearch} from "@/index";
 
 export default function Nav({isOpen, setIsOpen, buttonRef}) {
   const menuRef = useRef(null);
@@ -27,9 +27,9 @@ export default function Nav({isOpen, setIsOpen, buttonRef}) {
         lg:flex
         flex-col
         absolute lg:static
-        top-24 left-0
+        top-24 max-[500px]:top-40 left-0
         w-full lg:w-auto
-        max-lg:bg-white max-lg:dark:bg-zinc-800
+        max-lg:bg-[var(--color-cream)]
         shadow-xl dark:shadow-black/60 lg:shadow-none
         items-center gap-6
         py-6 lg:py-0
@@ -38,8 +38,11 @@ export default function Nav({isOpen, setIsOpen, buttonRef}) {
         <NavLink />
         
         {/*todo*/}
-        <div className="max-[830px]:flex hidden justify-center w-full pt-4 border-t-2 border-t-gray-400 dark:border-t-[#A68A64]">
-            <Icon />
+        <div className="max-md:flex flex-col hidden justify-center w-full pt-4 border-t-2 border-t-gray-400 dark:border-t-[#A68A64]">
+          <div className="px-8 pb-4">
+            <NavSearch />
+          </div>
+          <Icon />
         </div>
     </div>
   )

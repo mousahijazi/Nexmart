@@ -36,30 +36,39 @@
 }
 
 .dark {
-  --color-green-dark: #071F18;
+  /* Brand */
+  --color-green-dark: #061C16;
   --color-green: #0A3A2C;
-  --color-green-light: #12604A;
-  --color-green-deep: #E8E4D9;
+  --color-green-light: #12513F;
+  --color-green-deep: #DDE5DF;
+
+  /* Text */
   --color-ink: #F3F1E9;
 
+  /* Gold */
   --color-gold: #D4A94A;
   --color-gold-light: #E9C876;
 
-  --color-cream: #101815;
-  --color-surface: #17211D;
-  --color-sand: #F2EFE9;
+  /* Backgrounds */
+  --color-cream: #0B1512;
+  --color-surface: #12201B;
+  --color-sand: #192721;
 
-  --color-border: #2B3832;
-  --color-divider: #26332E;
-  --color-field: #202A25;
+  /* Borders */
+  --color-border: #263831;
+  --color-divider: #20332B;
+  --color-field: #182821;
 
-  --color-muted: #A6AAA2;
-  --color-muted-2: #929991;
-  --color-muted-3: #7F8881;
+  /* Muted text */
+  --color-muted: #9BA8A1;
+  --color-muted-2: #87958E;
+  --color-muted-3: #718078;
 
-  --color-soft: #C3CAC4;
-  --color-soft-2: #AAB3AD;
+  /* Secondary text / UI */
+  --color-soft: #C2CCC6;
+  --color-soft-2: #A9B5AF;
 
+  /* Errors */
   --color-red: #D05A3D;
 }
 

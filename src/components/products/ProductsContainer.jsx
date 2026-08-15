@@ -35,7 +35,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
     );
 
     if (buttonRef.current) {
-        observer.observe(buttonRef.current);
+      observer.observe(buttonRef.current);
     }
 
     return () => observer.disconnect();
@@ -65,7 +65,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
   }, [categoryFromUrl, data]);
 
   const resetToAllProducts = () => {
-    router.push("/products"); 
+    router.push("/products#products"); 
   };
 
   // This function that I used on the "Show More Products" button, I did not put it as a useEffect function because I do not want it to work with a value that changes, but rather with a button that is pressed!

@@ -1,91 +1,24 @@
 "use client"
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Search } from "lucide-react";
 
-export default function ProductsFilter({data, search, setSearch, selectedCategory, setSelectedCategory, categories, categoryFromUrl, resetToAllProducts}) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ProductsFilter({search, setSearch}) {
   const t = useTranslations();
-  const currentCategoryName = selectedCategory === "all" 
-    ? t("shop.products.filter.button.allCategories") 
-    : categories.find(cat => cat.slug === selectedCategory)?.name || selectedCategory;
 
   return (
     <div className="max-w-7xl mx-auto px-6">
-        <div className="text-[#5B3A21] dark:text-zinc-700 font-bold flex flex-col md:flex-row justify-between items-center gap-4">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            placeholder={t("shop.products.filter.button.productsFilter", { count: data.length })}
-            className={`
-              w-full md:max-w-md
-              rounded-xl
-              bg-white dark:bg-[#f3f3f3]
-              px-5 py-3
-              outline-none
-              text-md
-              sm:text-lg
-              duration-300
-              border-2 border-transparent
-            focus:border-[#5B3A21] dark:focus:border-zinc-700
-            `}
-          />
-          
-          <div className="relative w-full md:w-64">
-            <button
-              aria-label="open categories filter"
-              onClick={() => setIsOpen(!isOpen)}
-              className="w-full flex items-center justify-between bg-white text-[#5B3A21] dark:bg-[#f2f2f2] dark:text-zinc-700 font-bold px-5 py-3 rounded-xl border-2 border-transparent hover:border-[#5B3A21] dark:hover:border-zinc-700 shadow-sm cursor-pointer transition duration-300"
-            >
-              <span>{currentCategoryName}</span>
-              <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {isOpen && (
-              <div className="absolute right-0 left-0 mt-2 max-h-60 overflow-y-auto bg-white dark:bg-[#f2f2f2] rounded-xl shadow-xl border border-gray-100 z-50 p-2 flex flex-col gap-1 transition-all duration-300">
-                <button
-                  onClick={() => {
-                    if (categoryFromUrl) {
-                      resetToAllProducts()
-                      return;
-                    }
-                    
-                    setSelectedCategory("all");
-                    setIsOpen(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 cursor-pointer rounded-lg text-sm font-semibold transition ${
-                    selectedCategory === "all" ? "bg-[#5B3A21] text-white" : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  {t("shop.products.filter.button.allCategories")}
-                </button>
-
-                {categories.map((category) => (
-                  <button
-                    key={category.slug}
-                    onClick={() => {
-                      setSelectedCategory(category.slug);
-                      setIsOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 cursor-pointer rounded-lg text-sm font-semibold transition ${
-                      selectedCategory === category.slug ? "bg-[#5B3A21] text-white" : "text-gray-700 hover:bg-gray-100 dark:hover:text-white dark:hover:bg-zinc-400"
-                    }`}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+      <div className="flex-1 min-w-[200px] flex items-center gap-[10px] bg-surface border border-[var(--color-field)] rounded-xl px-[14px] py-[10px] focus-within:border-green">
+            <span className="text-[var(--color-muted)] text-[15px]"><Search size={18} /></span>
+            <input 
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              placeholder={t("header.search.placeholder")} 
+              className="border-0 bg-transparent outline-none text-sm w-full text-[var(--color-muted)] dark:text-[var(--color-ink)]"
+            />
         </div>
     </div>
   )

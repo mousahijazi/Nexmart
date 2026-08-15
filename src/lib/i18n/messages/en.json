@@ -34,22 +34,48 @@
         "register": "Register"
     },
     "footer": {
-        "nexmartDesc": {
-            "text": "Your go-to online store for the best products at unbeatable prices."
-        },
-        "link": {
-            "reserved": "© 2026 Nexmart. All rights reserved.",
-            "contact": {
-                "title": "Gaza, Palestine"
+        "Desc": "Your Saudi store for all categories. Delivery to all cities across the Kingdom and secure payment via Moyasar.",
+        "contact": "Commercial Registration 1010xxxxxx · Tax Number 300xxxxxxxxxxx",
+        "reserved": "© 2026 Nexmart. All rights reserved.",
+        "payBadges": [
+            "Mada",
+            "VISA",
+            "Mastercard",
+            "Cash on Delivery",
+            "Moyasar"
+        ],
+        "columns": [
+            {
+                "title": "Shop",
+                "links": [
+                    "All Categories",
+                    "Deals",
+                    "New Arrivals",
+                    "Brands",
+                    "Gift Cards"
+                ]
             },
-            "utility": {
-                "styleGuide": "Style Guide",
-                "changelog": "Changelog",
-                "licenses": "Licenses",
-                "link": "Link in bio",
-                "Error": "Error 404"
+            {
+                "title": "Help",
+                "links": [
+                    "Track Order",
+                    "Shipping & Delivery",
+                    "Returns & Exchanges",
+                    "Payment Methods",
+                    "FAQs"
+                ]
+            },
+            {
+                "title": "Nexmart",
+                "links": [
+                    "About Us",
+                    "Sell With Us",
+                    "Careers",
+                    "Privacy Policy",
+                    "Terms & Conditions"
+                ]
             }
-        }
+        ]
     },
     "home": {
         "hero": {
@@ -104,7 +130,17 @@
         },
         "categories": {
             "title": "Shop by Categories",
-            "text": "Discover our curated collections, crafted for every taste."
+            "text": "Over 20 categories where you can find everything.",
+            "button": "All Sections →",
+            "count": "{count} Product"
+        },
+        "deal": {
+            "hours": "hours",
+            "minutes": "minutes",
+            "seconds": "seconds",
+            "title": "DEAL OF THE DAY",
+            "secondTitle": "End-of-Day Offers",
+            "Desc": "Hurry—quantities are limited, and prices will revert once the timer expires."
         },
         "feature": {
             "title": "Featured Products",

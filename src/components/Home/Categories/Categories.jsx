@@ -1,24 +1,26 @@
 import { getCategories } from "@/helper/fetchApi";
-import { CategoriesSlider } from "@/index";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/lib/i18n/routing";
+import { CategoriesCard } from "@/index";
 
 export default async function Categories() {
   const categories = await getCategories();
   const t = await getTranslations();
-
+  const displayedCategories = categories?.slice(0, 6) || [];
+  
   return (
-    <section className="bg-[#e3dfd7] dark:bg-zinc-800 py-20 lg:py-28">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-12 flex flex-col gap-3">
-          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            {t("home.categories.title")}
-          </h2>
-          <p className="max-w-md text-zinc-600 dark:text-zinc-400">
-            {t("home.categories.text")}
-          </p>
+    <section className="max-w-[1280px] mx-auto px-6 py-14">
+      <div className="flex items-end justify-between mb-[22px] gap-4 flex-wrap">
+        <div>
+          <h2 className="text-[28px] font-bold text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">{t("home.categories.title")}</h2>
+          <p className="mt-2 text-[var(--color-muted)] text-sm">{t("home.categories.text")}</p>
         </div>
-
-        <CategoriesSlider categories={categories} />
+        <Link href="/products">
+          <div className="text-sm text-[var(--color-green)] dark:text-[var(--color-gold)] font-semibold cursor-pointer whitespace-nowrap">{t("home.categories.button")}</div>
+        </Link>
+      </div>
+      <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-[14px]">
+        <CategoriesCard categories={displayedCategories} />
       </div>
     </section>
   )

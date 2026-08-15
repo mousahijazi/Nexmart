@@ -22,7 +22,7 @@ export default function HeaderNavItems() {
           aria-label="menu"
           onClick={() => setIsOpen(!isOpen)}
       >
-          <Menu size={48} strokeWidth={3} className="dark:text-[#f1f1f1]" />
+          <Menu size={40} strokeWidth={3} className="dark:text-[#f1f1f1]" />
       </button>
     </>
   )

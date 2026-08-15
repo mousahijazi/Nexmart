@@ -24,6 +24,10 @@ export {default as Categories} from "./components/Home/Categories/Categories";
 export {default as CategoriesSlider} from "./components/Home/Categories/CategoriesSlider";
 export {default as CategoriesButton} from "./components/Home/Categories/CategoriesButton";
 
+// FlashDeals
+export {default as FlashDeals} from "./components/Home/FlashDeals/FlashDeals";
+export {default as DealCountdown} from "./components/Home/FlashDeals/DealCountdown";
+
 // Feature
 export {default as Feature} from "./components/Home/Feature/Feature";
 export {default as Products} from "./components/Home/Feature/Products";
@@ -105,6 +109,9 @@ export {default as LoginSiteDefinition} from "./components/Login/LoginSiteDefini
 
 // footer
 export {default as Footer} from "./components/Footer/Footer";
+export {default as PayList} from "./components/Footer/PayList";
+export {default as FooterColsList} from "./components/Footer/FooterColsList";
+
 export {default as Pages} from "./components/Footer/Pages";
 export {default as Utility} from "./components/Footer/Utility";
 export {default as Contact} from "./components/Footer/Contact";
@@ -124,6 +131,8 @@ export {default as UserImage} from "./components/element/UserImage";
 export {default as ButtonTheme} from "./components/element/DarkTheme/ButtonTheme";
 export {default as LogoutButton} from "./components/element/Login/LogoutButton";
 export {default as Text} from "./components/element/NexmartText/Text";
+
+export {default as CategoriesCard} from "./components/element/CategoriesCard";
 export {default as ProductsCard} from "./components/element/ProductsCard/ProductsCard";
 export {default as ProductsWishlistIcon} from "./components/element/ProductsCard/ProductsWishlistIcon";
 export {default as ProductsButton} from "./components/element/ProductsCard/ProductsButton";

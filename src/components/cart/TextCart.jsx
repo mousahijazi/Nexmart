@@ -1,21 +1,25 @@
-import { useTranslations } from "next-intl"
+"use client"
+import { CartProducts } from "@/index";
+import { useProductContext } from "@/Context/CartProvider";
+import { useTranslations, useLocale } from "next-intl";
+import Link from "next/link";
 
 export default function TextCart() {
-    const t = useTranslations();
+    const t = useTranslations("cart");
+    const locale = useLocale();
+    const {cart} = useProductContext();
 
   return (
-    <div className="mb-16 pb-4 border-b border-[#5B3A21]/10 dark:border-b-2 dark:border-[#A68A64] flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div>
-            <span className="text-xs font-bold tracking-widest text-[#5B3A21]/80 dark:text-[#A68A64] uppercase mb-1 ">
-                {t("cart.title")}
-            </span>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-[#5B3A21] dark:text-[#F5EBE6] tracking-tight">
-                {t("cart.title")}
-            </h1>
+    <>
+        <div className="text-[13px] text-[var(--color-muted)] mb-[18px]">{t("title")}</div>
+        <h1 className="font-bold text-[30px] mb-6 text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">{t("secondTitle")}<small className={`text-base text-[var(--color-muted)] font-normal ${locale === "ar" ? "mr-2" : "ml-2"}`}>{t("itemsCount", {count: cart.length})}</small></h1>
+        <div dir="ltr">
+            <CartProducts />
         </div>
-        <p className="text-sm text-gray-600 dark:text-[#e5ded8] md:max-w-3/5 md:text-right">
-            {t("cart.Desc")}
-        </p>
-    </div>
+        <div className="px-5 pt-12 flex justify-between items-center flex-wrap gap-2">
+            <Link href="/products#products" className="text-sm text-[var(--color-green)] font-semibold cursor-pointer">{t("button")}</Link>
+            <div className="text-[13px] text-[var(--color-muted)]">{t("Desc")}</div>
+        </div>
+    </>
   )
 }

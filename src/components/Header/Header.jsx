@@ -1,10 +1,17 @@
 import { Link } from "@/lib/i18n/routing";
 import { HeaderNavItems, TopBar, NavSearch } from "@/index";
-import { DATA } from "./data";
-import { useTranslations } from "next-intl";
+import { getCategories } from "@/helper/fetchApi";
+import { getTranslations } from "next-intl/server";
 
-export default function Header() {
-  const t = useTranslations();
+export default async function Header() {
+  const t = await getTranslations();
+  const categories = await getCategories();
+  const tabs = [
+      ...categories.slice(0, 6).map((cat) => ({
+      name: cat.name || cat.slug || cat,
+      slug: cat.slug || cat,
+      })),
+  ];
 
   return (
     <>
@@ -29,9 +36,9 @@ export default function Header() {
         </div>
         <div className="border-t border-divider">
           <div className="max-w-[1280px] mx-auto px-6 flex items-center gap-[26px] text-sm text-[var(--color-soft)] overflow-x-auto custom-scrollbar">
-            {DATA.navCats.map((ele, index) => (
-              <Link key={index} className="contents">
-                <div className="py-3 whitespace-nowrap cursor-pointer hover:text-[var(--color-gold)] transition duration-300">{ele}</div>
+            {tabs.map((ele, index) => (
+              <Link key={index} className="contents" href={`/products?category=${ele.slug}#products`}>
+                <div className="py-3 whitespace-nowrap cursor-pointer hover:text-[var(--color-gold)] transition duration-300">{ele.name}</div>
               </Link>
             ))}
             <Link href="/" className="contents">

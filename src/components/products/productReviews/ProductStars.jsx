@@ -11,7 +11,7 @@ export default function ProductStars({rating}) {
                     key={index}
                     className={`text-2xl ${
                     starNumber <= fullStars 
-                        ? "text-orange-400" 
+                        ? "text-[var(--color-gold)]" 
                         : "text-gray-300 dark:text-[#F5EBE6]"
                     }`}
                     >

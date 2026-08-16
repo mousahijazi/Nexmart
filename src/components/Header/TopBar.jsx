@@ -12,7 +12,7 @@ export default function TopBar() {
                 <span className="flex items-center gap-[7px]"><span className="w-1.5 h-1.5 rounded-full bg-[var(--color-gold)] inline-block"></span>{t("header.TopBar.linkTitle")}</span>
             </div>
             <div className="flex max-[480px]:flex-col min-[480px]:items-center gap-4 text-[#B9C7C0] dark:text-[#f9f4f4]">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                     <Link href="/" className="hover:text-[var(--color-gold)] transation duration-300"><span>{t("header.TopBar.secondLink")}</span></Link>
                     <Link href="/" className="hover:text-[var(--color-gold)] transation duration-300"><span>{t("header.TopBar.thirdLink")}</span></Link>
                 </div>

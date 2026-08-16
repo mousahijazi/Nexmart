@@ -11,11 +11,11 @@ export default function ContextProviders({children}) {
       <AlertProvider>
         <CheckoutProvider>
           <UserProvider>
-            <WishlistProvider>
-              <ProductProvider>
+            <ProductProvider>
+              <WishlistProvider>
                 {children}
-              </ProductProvider>
-            </WishlistProvider>
+              </WishlistProvider>
+            </ProductProvider>
           </UserProvider>
         </CheckoutProvider>
       </AlertProvider>

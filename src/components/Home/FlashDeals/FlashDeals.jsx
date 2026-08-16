@@ -10,7 +10,7 @@ export default async function FlashDeals() {
 
   return (
     <section className="max-w-[1280px] mx-auto px-6 py-14">
-        <div className="rounded-[22px] bg-[var(--color-green-deep)] dark:bg-[var(--color-sand)] text-white p-5 md:p-[34px] grid grid-cols-1 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] gap-[34px] items-center">
+        <div className="rounded-[22px] bg-[var(--color-green-deep)] dark:bg-[var(--color-sand)] text-white p-5 md:p-[34px] grid grid-cols-1 xl:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] gap-[34px] items-center">
         <div>
             <div className="text-[var(--color-gold)] font-semibold text-[13px] tracking-[.12em] mb-[10px]">{t("title")}</div>
             <h2 className="text-[30px] font-bold mb-[10px] leading-[1.4]">{t("secondTitle")}</h2>
@@ -38,7 +38,7 @@ export default async function FlashDeals() {
                         </div>
                         <div className="text-[13.5px] font-semibold my-[11px] leading-[1.5] line-clamp-2 min-h-[41px]">{product.title}</div>
                         <div className="flex flex-wrap items-baseline gap-2">
-                            <span className="font-bold text-[var(--color-green)]">{product.price.toFixed(2)} <span className="text-xs">ر.س</span></span>
+                            <span className="font-bold text-[var(--color-green)] dark:text-white">{product.price.toFixed(2)} <span className="text-xs">ر.س</span></span>
                             <span className="text-xs text-[var(--color-muted-3)] line-through">{originalPrice.toFixed(2)}</span>
                         </div>
                     </div>

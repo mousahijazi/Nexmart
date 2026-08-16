@@ -1,6 +1,7 @@
 "use client"
 import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from "./AlertProvider";
+import { useProductContext } from './CartProvider';
 import { useUserContext } from './UserProvider';
 
 const WishlistContext = createContext();
@@ -11,6 +12,7 @@ export default function WishlistProvider({children}) {
 
     const {showAlert} = useAlertContext();
     const {user} = useUserContext();
+    const {setCart} = useProductContext();
     const wishlistKey = user?.id ? `wishlist-${user.id}` : "wishlist-guest";
 
     useEffect(() => {
@@ -42,6 +44,28 @@ export default function WishlistProvider({children}) {
         showAlert(`${product.title} added to wishlist`);
     };
 
+    const resetWishlist = () => {
+        if (wishlist.length === 0) {
+            showAlert("Your wishlist is empty", "danger");
+            return;
+        }
+
+        setWishlist([]);
+        showAlert("Favorites cleared", "danger");
+    }
+
+    const moveToCart = () => {
+        if (wishlist.length === 0) {
+            showAlert("Your wishlist is empty", "danger");
+            return;
+        }
+
+        setCart(prev => [...prev, ...wishlist]);
+        setWishlist([]);
+
+        showAlert("Products moved successfully to cart");
+    }
+
     const removeFromWishlist = (product) => {
         setWishlist(prev => prev.filter(item => item.id !== product.id));
         showAlert(`${product.title} removed from wishlist`, "danger");
@@ -60,6 +84,8 @@ export default function WishlistProvider({children}) {
     const value = {
         wishlist,
         loadingWishlist,
+        moveToCart,
+        resetWishlist,
         isInWishlist,
         toggleWishlist,
     }

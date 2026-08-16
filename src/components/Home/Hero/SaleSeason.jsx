@@ -12,7 +12,7 @@ export default function SaleSeason() {
         
         <div className="relative max-w-[520px]">
             <div className="inline-flex items-center gap-2 text-[#E9C876] rounded-full min-sm:px-[14px] py-[6px] text-[13px] mb-[22px]">{t("home.hero.title")}</div>
-            <h1 className="max-[480px]:max-w-2xl font-extrabold text-3xl sm:text-4xl md:text-[52px] leading-[1.25] m-0 mb-4 max-sm:text-[var(--color-green)] dark:text-[var(--color-soft)]">{t("home.hero.secondTitle")}</h1>
+            <h1 className="max-[480px]:max-w-2xl font-extrabold text-3xl sm:text-4xl md:text-[52px] leading-[1.25] mb-4 max-sm:text-[var(--color-green)] dark:text-[var(--color-soft)]">{t("home.hero.secondTitle")}</h1>
             <p className="text-[17px] leading-[1.8] text-gray-600 min-sm:text-[#C6D6CF] mb-[30px] max-w-[420px]">{t("home.hero.Desc")}</p>
             <div className="flex items-center gap-3 flex-wrap">
                 <Button title={t("element.button")} link="products" />

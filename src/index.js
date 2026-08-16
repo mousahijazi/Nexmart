@@ -30,7 +30,18 @@ export {default as DealCountdown} from "./components/Home/FlashDeals/DealCountdo
 
 // Feature
 export {default as Feature} from "./components/Home/Feature/Feature";
-export {default as Products} from "./components/Home/Feature/Products";
+
+// NewArrivalsBanner
+export {default as NewArrivalsBanner} from "./components/Home/NewArrivalsBanner/NewArrivalsBanner";
+
+// Brand
+export {default as Brand} from "./components/Home/Brand/Brand";
+
+// Reviews
+export {default as Reviews} from "./components/Home/Reviews/Reviews";
+
+// Blog
+export {default as BlogSection} from "./components/Home/Blog/BlogSection";
 
 // Why section
 export {default as WhySection} from "./components/Home/WhySection/WhySection";
@@ -70,6 +81,7 @@ export {default as CartProducts} from "./components/cart/CartProducts";
 
 // wishlist
 export {default as Wishlist} from "./components/Wishlist/Wishlist"; 
+export {default as WhishlistText} from "./components/Wishlist/WhishlistText"; 
 export {default as WishlistProducts} from "./components/Wishlist/WishlistProducts"; 
 export {default as EmptyWishlist} from "./components/Wishlist/EmptyWishlist";
 

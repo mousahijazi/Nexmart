@@ -1,26 +1,36 @@
-import { Products, Button, Loader } from "@/index";
+import { getProducts, getCategories } from "@/helper/fetchApi";
+import { ProductsCard, Loader } from "@/index";
 import { Suspense } from "react";
-import { useTranslations } from "next-intl";
+import { Link } from "@/lib/i18n/routing";
+import { getTranslations } from "next-intl/server";
 
-export default function FeaturedProducts() {
-    const t = useTranslations();
+export default async function Feature() {
+    const t = await getTranslations();
+    const products =  await getProducts(5);
+    const categories = await getCategories();
+    const tabs = [
+        { name: "الكل", slug: "all" },
+        ...categories.slice(0, 4).map((cat) => ({
+        name: cat.name || cat.slug || cat,
+        slug: cat.slug || cat,
+        })),
+    ];
 
-    return (
-        <div className="bg-[#F7F4EF] dark:bg-zinc-950 py-20 sm:py-24 lg:py-36 px-3 sm:px-6 md:px-12">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-12">
-                    <h1 className="text-4xl font-bold text-[#5B3A21] dark:text-[#F5EBE6]"> {t("home.feature.title")} </h1>
-                    <p className="mt-3 text-gray-700 dark:text-[#e5ded8] text-lg">
-                        {t("home.feature.text")}
-                    </p>
-                </div>
-                <Suspense fallback={<Loader />}>
-                    <Products />
-                </Suspense>
-                <div className="mt-7">
-                    <Button title={t("home.feature.button")} link="products" />
-                </div>
+  return (
+    <section className="max-w-[1280px] mx-auto px-6 py-14">
+        <div className="flex items-end justify-between mb-[22px] gap-4 flex-wrap">
+            <h2 className="text-[28px] text-[var(--color-green-dark)] dark:text-[var(--color-gold)] font-bold">{t("home.feature.title")}</h2>
+            <div className="flex gap-2 flex-wrap">
+                {tabs.map((ele, index) => (
+                    <Link key={index} href={ele.slug === "all" ? "/products#products" :`/products?category=${ele.slug}#products`}>
+                        <div className="border border-[var(--color-field)] bg-white dark:bg-[var(--color-gold)] dark:text-white rounded-full px-4 py-[7px] text-[13.5px] cursor-pointer hover:border-[var(--color-green)] hover:text-[var(--color-green)] transition duration-300">{ele.name}</div>
+                    </Link>
+                ))}
             </div>
         </div>
-    );
+        <Suspense fallback={<Loader />}>
+            <ProductsCard data={products.products} />
+        </Suspense>
+    </section>
+  )
 }

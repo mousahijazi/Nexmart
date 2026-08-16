@@ -143,9 +143,20 @@
             "Desc": "Hurry—quantities are limited, and prices will revert once the timer expires."
         },
         "feature": {
-            "title": "Featured Products",
-            "text": "Discover our latest and most popular products.",
-            "button": "shop now"
+            "title": "best seller"
+        },
+        "NewArrivalsBanner": {
+            "title": "New Arrivals",
+            "secondTitle": "New Season Collection",
+            "Desc": "Over 300 new items have arrived this week across all departments.",
+            "button": "See What's New"
+        },
+        "Brand": {
+            "title": "Brands You Trust"
+        },
+        "Blog": {
+            "title": "From the Nexmart Blog",
+            "button": "All Articles →"
         },
         "whyNexmart": {
             "title": "Why Nexmart?",
@@ -214,8 +225,11 @@
         }
     },
     "cart": {
-        "title": "Shopping Cart",
-        "Desc": "Manage your items, update quantities, or remove products from your cart.",
+        "title": "Home / Shopping Cart",
+        "secondTitle": "Shopping Cart",
+        "itemsCount": "({count} items)",
+        "Desc": "Prices include 15% VAT",
+        "button": "Continue Shopping →",
         "emptyCart": {
             "title": "Your cart is empty",
             "Desc": "Add some products to start shopping.",
@@ -226,6 +240,7 @@
             "Desc": "Your Shopping Cart",
             "button": "Shoping Now",
             "clearButton": "Clear Button",
+            "brandInfo": "Mousa - Nexmart for a unique shopping experience",
             "dashboardData": {
                 "products": "Products",
                 "price": "Price",
@@ -236,6 +251,9 @@
         }
     },
     "wishlist": {
+        "urlTitle": "Home / Favorites",
+        "title": "Favorites",
+        "Desc": "Saved products · We'll notify you when the price drops",
         "emptyWishlist": {
             "title": "Your Wishlist is Empty",
             "Desc": "Start adding products you love to find them here later.",

@@ -1,12 +1,16 @@
-import { Dashbaord, WishlistProducts } from "@/index";
+import { WishlistProducts, WhishlistText } from "@/index";
+import { useTranslations } from "next-intl";
 
 export default function Wishlist() {
+  const t = useTranslations("wishlist");
+
   return (
-    <section className="bg-[#F7F4EF] dark:bg-zinc-950 min-h-screen py-32 md:py-36 px-3 sm:px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
-        <Dashbaord showData="wishlistDashboard" />
+    <div className="max-w-[1280px] mx-auto px-6 py-8">
+      <div className="text-[13px] text-[var(--color-muted)] mb-[18px]">{t("urlTitle")}</div>
+      <WhishlistText />
+      <div dir="ltr">
         <WishlistProducts />
       </div>
-    </section>
+    </div>
   )
 }

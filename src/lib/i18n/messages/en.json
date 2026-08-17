@@ -301,8 +301,6 @@
     },
     "profile": {
         "userUndifinde": "Please log in to view this page.",
-        "title": "Profile",
-        "Desc": "Welcome Back",
         "editButton": "Edit Profile",
         "data": {
             "emailLabel": "Email",

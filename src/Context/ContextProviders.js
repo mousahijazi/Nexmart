@@ -9,15 +9,15 @@ export default function ContextProviders({children}) {
   return (
     <ThemeProvider>
       <AlertProvider>
-        <CheckoutProvider>
-          <UserProvider>
+        <UserProvider>
+          <CheckoutProvider>
             <ProductProvider>
               <WishlistProvider>
                 {children}
               </WishlistProvider>
             </ProductProvider>
-          </UserProvider>
-        </CheckoutProvider>
+          </CheckoutProvider>
+        </UserProvider>
       </AlertProvider>
     </ThemeProvider>
   )

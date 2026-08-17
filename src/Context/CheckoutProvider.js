@@ -1,5 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { useUserContext } from "./UserProvider";
+import { getUserOrders } from "@/helper/fetchApi";
 
 const CheckoutContext = createContext();
 const STORAGE_KEY = "checkout-items";
@@ -8,6 +10,32 @@ export default function CheckoutProvider({ children }) {
     const [checkoutItems, setCheckoutItems] = useState([]);
     const [currentOrderId, setCurrentOrderId] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
+
+    const {user} = useUserContext();
+    const [orders, setOrders] = useState([]);
+    const [ordersLoading, setOrdersLoading] = useState(true);
+
+    useEffect(() => {
+        if (!user) {
+            setOrders([]);
+            setOrdersLoading(true);
+            return;
+        }
+
+        setOrdersLoading(true);
+
+        getUserOrders(user.id)
+            .then((result) => {
+                setOrders(result.orders || []);
+            })
+            .catch((error) => {
+                console.error("Failed to fetch orders:", error);
+                setOrders([]);
+            })
+            .finally(() => {
+                setOrdersLoading(false);
+            });
+    }, [user]);
 
     useEffect(() => {
         const stored = sessionStorage.getItem("current-order-id");
@@ -109,6 +137,9 @@ export default function CheckoutProvider({ children }) {
         setCheckoutItems,
         currentOrderId,
         setCurrentOrderId,
+
+        orders,
+        ordersLoading,
 
         checkoutSingleProduct,
         checkoutCart,

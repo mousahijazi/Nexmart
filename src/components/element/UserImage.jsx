@@ -9,8 +9,8 @@ export default function UserImage() {
       <Image
           src={user?.user_metadata?.image || `/Profile.jpg`}
           alt={user?.firstName || "Guest"}
-          width={40}
-          height={40}
+          width={45}
+          height={45}
           unoptimized
           className="rounded-full aspect-square shrink-0 object-cover bg-gray-400 dark:border dark:border-zinc-300 cursor-pointer"
       />

@@ -160,6 +160,7 @@ export default function UserProvider({children}) {
       setUser,
       logout,
       loading,
+      setLoading,
       isUploadingImage,
       userImage,
       setUserImage,

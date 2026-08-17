@@ -88,8 +88,10 @@ export {default as EmptyWishlist} from "./components/Wishlist/EmptyWishlist";
 // dashboard
 export {default as Dashbaord} from "./components/Dashboard/Dashbaord";
 
-export {default as Userdashboard} from "./components/Dashboard/Userdashboard";
-export {default as UpdateUser} from "./components/Dashboard/UpdateUser";
+export {default as Userdashboard} from "./components/Dashboard/UserDashboard/Userdashboard";
+export {default as UserProfileInfo} from "./components/Dashboard/UserDashboard/UserProfileInfo";
+export {default as UserNav} from "./components/Dashboard/UserDashboard/UserNav";
+export {default as UpdateUser} from "./components/Dashboard/UserDashboard/UpdateUser";
 
 export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
 export {default as DashboardData} from "./components/Dashboard/DashboardData";
@@ -98,9 +100,10 @@ export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton
 export {default as WishlistDashboard} from "./components/Dashboard/WishlistDashboard";
 export {default as WishlistDashboardData} from "./components/Dashboard/WishlistDashboardData";
 
-export {default as OrderDashboard} from "./components/Dashboard/OrderDashboard";
-export {default as OrderDashboardData} from "./components/Dashboard/OrderDashboardData";
-export {default as OrderDashboardButton} from "./components/Dashboard/OrderDashboardButton";
+export {default as OrderDashboard} from "./components/Dashboard/UserDashboard/OrderDashboard";
+export {default as OrderSummaryRow} from "./components/Dashboard/UserDashboard/OrderSummaryRow";
+export {default as StatsSection} from "./components/Dashboard/UserDashboard/StatsSection";
+export {default as OrderDashboardButton} from "./components/Dashboard/UserDashboard/OrderDashboardButton";
 
 // checkout
 export {default as CheckoutForm} from "./components/Checkout/CheckoutForm";

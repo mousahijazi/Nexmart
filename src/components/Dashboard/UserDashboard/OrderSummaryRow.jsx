@@ -1,6 +1,7 @@
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function OrderSummaryRow({isPaid, isPending, isFailed, order}) {
+    const t = useTranslations("profile.orders");
     const locale = useLocale();
 
   return (
@@ -13,7 +14,7 @@ export default function OrderSummaryRow({isPaid, isPending, isFailed, order}) {
         <div>
             {isPaid && (
                 <span className="inline-block text-[12.5px] rounded-lg px-[11px] py-[5px] bg-[#E7F0EC] text-[var(--color-green-dark)] dark:bg-[#16382e] dark:text-[#A7D0BF]">
-                    تم التوصيل
+                    {t("tabs.delivered")}
                 </span>
             )}
 
@@ -36,7 +37,7 @@ export default function OrderSummaryRow({isPaid, isPending, isFailed, order}) {
                         transition
                     "
                 >
-                    قيد التجهيز
+                    {t("tabs.processing")}
                 </button>
             )}
 
@@ -59,7 +60,7 @@ export default function OrderSummaryRow({isPaid, isPending, isFailed, order}) {
                         transition
                     "
                 >
-                    مرتجع
+                    {t("tabs.returned")}
                 </button>
             )}
         </div>

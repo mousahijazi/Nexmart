@@ -20,7 +20,7 @@ export default function CheckoutForm() {
     const {setCart} = useProductContext();
     const {showAlert} = useAlertContext();
     const isProcessingRef = useRef(false);
-    const {checkoutItems, setCheckoutItems, grandTotal, needShipping, setCurrentOrderId} = useCheckoutContext();
+    const {checkoutItems, setCheckoutItems, grandTotal, needShipping, setCurrentOrderId, setOrders} = useCheckoutContext();
     const {register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(addressSchema)});
     const router = useRouter();
     const placing = isSubmitting;
@@ -52,6 +52,8 @@ export default function CheckoutForm() {
                 isProcessingRef.current = false;
                 return;
             }
+
+            setOrders((prevOrders) => [orderResult.order, ...(prevOrders || [])]);
 
             setCart((prevCart) => {
                 return prevCart.filter(

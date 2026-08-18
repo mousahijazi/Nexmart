@@ -302,6 +302,67 @@
     "profile": {
         "userUndifinde": "Please log in to view this page.",
         "editButton": "Edit Profile",
+        "guest": "Guest",
+        "notSpecified": "Not specified",
+        "settingsDashboard": {
+            "title": "Settings",
+            "subtitle": "Manage your account information and preferences",
+            "personalInfoTitle": "Personal Information",
+            "edit": "Edit",
+            "phone": "Phone",
+            "securityTitle": "Security",
+            "securitySubtitle": "Account security and details",
+            "emailAccountLabel": "Email Address",
+            "emailLinkedDesc": "Your account is linked to this email {email}",
+            "protected": "Protected",
+            "logoutTitle": "Sign Out",
+            "logoutSubtitle": "You will be signed out from this device"
+        },
+        "accountDashboard": {
+            "badge": "Account Dashboard",
+            "welcome": "Welcome, {name}",
+            "subtitle": "From here you can track your orders, manage your account, and access all your information easily.",
+            "recentOrdersTitle": "Recent Orders",
+            "recentOrdersDesc": "A quick overview of your latest orders",
+            "noOrders": "No orders yet",
+            "productsCount": "{count} products",
+            "statusPaid": "Completed",
+            "statusPending": "Processing",
+            "statusFailed": "Returned"
+        },
+        "nav": {
+            "dashboard": "Dashboard",
+            "orders": "My Orders",
+            "wishlist": "Wishlist",
+            "addresses": "Addresses",
+            "payments": "Payment Methods",
+            "returns": "Returns",
+            "settings": "Settings"
+        },
+        "latestOrderTracking": {
+            "noOrdersTitle": "No Previous Orders",
+            "noOrdersDesc": "When you place a new order, you can track it directly here.",
+            "trackingTitle": "Shipment Tracking · NX-",
+            "stepReceived": "Order Received",
+            "stepPaymentDone": "Payment Confirmed via Moyasar",
+            "stepPaymentFailed": "Payment Refunded / Canceled",
+            "stepPaymentPending": "Awaiting Payment Completion",
+            "stepShipped": "Shipment Out for Delivery",
+            "stepDelivered": "Delivered to Customer",
+            "stepDelivery": "Delivery to Customer"
+        },
+        "statsSection": {
+            "activeOrders": "Active Orders",
+            "totalOrders": "Total Orders",
+            "loyaltyPoints": "Loyalty Points",
+            "availableCoupons": "Available Coupons"
+        },
+        "loyaltyPoints": {
+            "title": "Loyalty Points",
+            "points": "1,240",
+            "description": "Equivalent to 124 SAR you can use on your next order.",
+            "redeemButton": "Redeem Points"
+        },
         "data": {
             "emailLabel": "Email",
             "userNameLabel": "Username",
@@ -319,12 +380,25 @@
             }
         },
         "orders": {
-            "title": "Your Orders",
-            "Desc": "Track and review everything you've purchased.",
-            "data": {
-                "order": "Order",
-                "faildButton": "Resolve & Retry",
-                "completeButton": "Complete Payment"
+            "title": "My Orders",
+            "noOrders": "No orders yet.",
+            "loginRequired": "Please log in to view this page.",
+            "details": "Details",
+            "completePayment": "Complete Payment",
+            "currency": "SAR",
+            "previousPage": "Previous page",
+            "nextPage": "Next page",
+            "tabs": {
+                "all": "All",
+                "processing": "Processing",
+                "delivered": "Delivered",
+                "returned": "Returned"
+            },
+            "table": {
+                "orderNumber": "Order ID",
+                "date": "Date",
+                "status": "Status",
+                "total": "Total"
             }
         }
     },

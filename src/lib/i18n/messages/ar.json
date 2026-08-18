@@ -302,6 +302,67 @@
     "profile": {
         "userUndifinde": "يرجى تسجيل الدخول لعرض هذه الصفحة.",
         "editButton": "تعديل الملف الشخصي",
+        "guest": "زائر",
+        "notSpecified": "غير محدد",
+        "settingsDashboard": {
+            "title": "الإعدادات",
+            "subtitle": "إدارة معلومات حسابك وتفضيلاتك",
+            "personalInfoTitle": "المعلومات الشخصية",
+            "edit": "تعديل",
+            "phone": "رقم الهاتف",
+            "securityTitle": "الأمان",
+            "securitySubtitle": "معلومات وأمان حسابك",
+            "emailAccountLabel": "البريد الإلكتروني",
+            "emailLinkedDesc": "حسابك مرتبط بهذا البريد الإلكتروني {email}",
+            "protected": "محمي",
+            "logoutTitle": "تسجيل الخروج",
+            "logoutSubtitle": "سيتم تسجيل خروجك من هذا الجهاز"
+        },
+        "accountDashboard": {
+            "badge": "لوحة الحساب",
+            "welcome": "أهلاً بك، {name}",
+            "subtitle": "من هنا يمكنك متابعة طلباتك، إدارة حسابك، والوصول إلى جميع معلوماتك بسهولة.",
+            "recentOrdersTitle": "آخر الطلبات",
+            "recentOrdersDesc": "نظرة سريعة على آخر طلباتك",
+            "noOrders": "لا توجد طلبات حتى الآن",
+            "productsCount": "{count} منتجات",
+            "statusPaid": "مكتمل",
+            "statusPending": "قيد التجهيز",
+            "statusFailed": "مرتجع"
+        },
+        "nav": {
+            "dashboard": "لوحة الحساب",
+            "orders": "طلباتي",
+            "wishlist": "المفضلة",
+            "addresses": "عناويني",
+            "payments": "طرق الدفع",
+            "returns": "المرتجعات",
+            "settings": "الإعدادات"
+        },
+        "statsSection": {
+            "activeOrders": "طلبات نشطة",
+            "totalOrders": "إجمالي الطلبات",
+            "loyaltyPoints": "نقاط الولاء",
+            "availableCoupons": "قسائم متاحة"
+        },
+        "latestOrderTracking": {
+            "noOrdersTitle": "لا توجد طلبات سابقة",
+            "noOrdersDesc": "عندما تقوم بإنشاء طلب جديد، ستتمكن من تتبعه هنا مباشرة.",
+            "trackingTitle": "تتبع الشحنة · NX-",
+            "stepReceived": "تم استلام الطلب",
+            "stepPaymentDone": "تم تأكيد الدفع عبر ميسر",
+            "stepPaymentFailed": "عملية الدفع مرجعة / ملغاة",
+            "stepPaymentPending": "في انتظار إتمام الدفع",
+            "stepShipped": "خرجت الشحنة من المستودع",
+            "stepDelivered": "تم التسليم للعميل",
+            "stepDelivery": "التسليم للعميل"
+        },
+        "loyaltyPoints": {
+            "title": "نقاط الولاء",
+            "points": "١٬٢٤٠",
+            "description": "تعادل ١٢٤ ر.س تقدر تستخدمها في طلبك الجاي.",
+            "redeemButton": "استبدال النقاط"
+        },
         "data": {
             "emailLabel": "البريد الالكتورني",
             "userNameLabel": "اسم المستخدم",
@@ -319,12 +380,25 @@
             }
         },
         "orders": {
-            "title": "طلباتك",
-            "Desc": "تتبّع وراجع كل ما اشتريته.",
-            "data": {
-                "order": "الطلب",
-                "faildButton": "حل المشكلة وإعادة المحاولة",
-                "completeButton": "إتمام الدفع"
+            "title": "طلباتي",
+            "noOrders": "لا توجد طلبات حتى الآن.",
+            "loginRequired": "يرجى تسجيل الدخول لعرض هذه الصفحة.",
+            "details": "التفاصيل",
+            "completePayment": "إكمال الدفع",
+            "currency": "ر.س",
+            "previousPage": "الصفحة السابقة",
+            "nextPage": "الصفحة التالية",
+            "tabs": {
+                "all": "الكل",
+                "processing": "قيد التجهيز",
+                "delivered": "تم التوصيل",
+                "returned": "مرتجع"
+            },
+            "table": {
+                "orderNumber": "رقم الطلب",
+                "date": "التاريخ",
+                "status": "الحالة",
+                "total": "الإجمالي"
             }
         }
     },

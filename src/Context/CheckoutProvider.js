@@ -139,6 +139,7 @@ export default function CheckoutProvider({ children }) {
         setCurrentOrderId,
 
         orders,
+        setOrders,
         ordersLoading,
 
         checkoutSingleProduct,

@@ -13,6 +13,7 @@ export default function UserProvider({children}) {
   const [loading, setLoading] = useState(true);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [userImage, setUserImage] = useState("");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const {showAlert} = useAlertContext();
 
 
@@ -156,16 +157,22 @@ export default function UserProvider({children}) {
   };
 
   const value = {
-      user, 
-      setUser,
-      logout,
-      loading,
-      setLoading,
-      isUploadingImage,
-      userImage,
-      setUserImage,
-      login,
-      updateProfile,
+    user, 
+    setUser,
+    
+    loading,
+    setLoading,
+
+    isUploadingImage,
+    userImage,
+    setUserImage,
+
+    login,
+    updateProfile,
+    logout,
+
+    activeTab,
+    setActiveTab,
   }
 
   return (

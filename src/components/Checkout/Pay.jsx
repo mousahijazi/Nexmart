@@ -11,7 +11,7 @@ import { getOrderById, updateOrderPaymentStatus } from "@/helper/fetchApi";
 export default function Pay() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { currentOrderId, clearCheckout } = useCheckoutContext();
+    const { currentOrderId, clearCheckout, setOrders } = useCheckoutContext();
     const { user, loading } = useUserContext();
     const {showAlert} = useAlertContext();
     const [order, setOrder] = useState(null);
@@ -65,6 +65,15 @@ export default function Pay() {
                     if (verifyResult.success && verifyResult.payment?.status === "paid") {
                         hasFinishedRef.current = true;
                         await updateOrderPaymentStatus(targetOrderId, user.id, "paid", paymentId);
+
+                        setOrders((prevOrders) =>
+                            (prevOrders).map((ord) =>
+                                ord.id === targetOrderId
+                                    ? { ...ord, payment_status: "paid", payment_id: paymentId }
+                                    : ord
+                            )
+                        );
+
                         clearCheckout();
                         showAlert("Payment successful! Your order is confirmed.", "success");
                         router.push("/user");
@@ -72,6 +81,15 @@ export default function Pay() {
                     } else {
                         hasFinishedRef.current = true;
                         await updateOrderPaymentStatus(targetOrderId, user.id, "failed", paymentId);
+
+                        setOrders((prevOrders) =>
+                            (prevOrders).map((ord) =>
+                                ord.id === targetOrderId
+                                    ? { ...ord, payment_status: "failed", payment_id: paymentId }
+                                    : ord
+                            )
+                        );
+
                         showAlert("Payment verification failed or declined.", "danger");
                     }
                 }
@@ -83,7 +101,7 @@ export default function Pay() {
         };
 
         processPayPage();
-    }, [loading, user, currentOrderId, paymentId, orderIdFromUrl]);
+    }, [loading, user, currentOrderId, paymentId, orderIdFromUrl, setOrders]);
 
   return (
     <>

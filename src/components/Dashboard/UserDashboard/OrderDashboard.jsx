@@ -171,7 +171,7 @@ export default function OrderDashboardData() {
                                         NX-{order.id.slice(0, 8)}
                                     </p>
                                     <div className="flex flex-wrap items-center gap-3 md:contents">
-                                        <OrderSummaryRow isPaid={isPaid} isFailed={isFailed} isPending={isPending} order={order} />
+                                        <OrderSummaryRow goToPayment={goToPayment} isPaid={isPaid} isFailed={isFailed} isPending={isPending} order={order} />
                                     </div>
                                     <div className="text-start md:text-end">
                                         {isPaid ? (

@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 export default function StatsSection() {
     const t = useTranslations("profile");
     const tStats = useTranslations("profile.statsSection");
-    const { user, loading } = useUserContext();
-    const { orders } = useCheckoutContext();
+    const { user } = useUserContext();
+    const { orders, ordersLoading } = useCheckoutContext();
 
     const activeOrdersCount = orders?.filter(
         (order) => order.payment_status === "pending" || order.payment_status === "paid"
@@ -22,13 +22,13 @@ export default function StatsSection() {
         { label: tStats("availableCoupons"), value: user?.coupons?.length || 0 },
     ];
 
-    if (loading) {
+    if (ordersLoading) {
         return (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px]">
                 {Array.from({ length: 4 }).map((_, index) => (
                     <div key={index} className="bg-white dark:bg-[#18221f] border border-[var(--color-border)] dark:border-[#22332e] rounded-2xl p-5 animate-pulse">
-                        <div className="h-3.5 bg-gray-200 dark:bg-[#22332e] rounded-md w-20"></div>
-                        <div className="h-7 bg-gray-200 dark:bg-[#22332e] rounded-md w-12 mt-3"></div>
+                        <div className="h-5 text-[13px] bg-gray-200 dark:bg-[#22332e] rounded-md w-20"></div>
+                        <div className="h-8 text-2xl bg-gray-200 dark:bg-[#22332e] rounded-md w-16 mt-3"></div>
                     </div>
                 ))}
             </div>

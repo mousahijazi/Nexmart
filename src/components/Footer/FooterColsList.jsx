@@ -15,7 +15,7 @@ export default function FooterColsList() {
             {col.links.map((link, linkIndex) => (
               <span
                 key={linkIndex}
-                className="cursor-pointer w-fit text-[var(--color-muted)] hover:text-[var(--color-gold)] transition-colors"
+                className="cursor-pointer w-fit text-gray-300 hover:text-[var(--color-gold)] transition-colors"
               >
                 {link}
               </span>

@@ -23,7 +23,7 @@ export default async function Header() {
               <div className="w-[38px] h-[38px] rounded-[11px] bg-[linear-gradient(145deg,#0E4D3A,#0B3B2E)] flex items-center justify-center text-[var(--color-gold)] font-extrabold text-[19px]">{t("header.logo")}</div>
               <div className="leading-[1.1]">
                 <div className="font-extrabold text-[19px] text-[var(--color-green)]">{t("header.title")}</div>
-                <div className="text-[10px] tracking-[.22em] text-[var(--color-muted)]">{t("header.secondtitle")}</div>
+                <div className="text-[10px] tracking-[.22em] text-gray-600">{t("header.secondtitle")}</div>
               </div>
             </div>
           </Link>

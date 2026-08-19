@@ -11,8 +11,7 @@ export default function AuthSection() {
   if (loading) {
     return (
       <div className="flex items-center gap-3">
-        <div className="h-[60px] w-[60px] shrink-0 animate-pulse rounded-full bg-gray-200 dark:bg-zinc-700" />
-        <div className="hidden h-12 w-[117px] animate-pulse rounded-full bg-gray-200 dark:bg-zinc-700 sm:block" />
+        <div className="h-11 w-11 shrink-0 animate-pulse rounded-full bg-gray-200 dark:bg-zinc-700" />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 
-export default function OrderSummaryRow({isPaid, isPending, isFailed, order}) {
+export default function OrderSummaryRow({isPaid, isPending, isFailed, order, goToPayment}) {
     const t = useTranslations("profile.orders");
     const locale = useLocale();
 

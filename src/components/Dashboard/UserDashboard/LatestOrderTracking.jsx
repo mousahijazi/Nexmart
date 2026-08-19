@@ -16,12 +16,31 @@ export default function LatestOrderTracking() {
 
   if (ordersLoading) {
     return (
-      <div className="bg-white dark:bg-[#18221f] border border-[var(--color-border)] dark:border-[#22332e] rounded-2xl p-6 animate-pulse">
-        <div className="h-5 bg-gray-200 dark:bg-zinc-700 rounded w-1/2 mb-3"></div>
-        <div className="h-4 bg-gray-200 dark:bg-zinc-700 rounded w-1/3 mb-6"></div>
-        <div className="space-y-4">
-          <div className="h-10 bg-gray-100 dark:bg-zinc-800 rounded-xl"></div>
-          <div className="h-10 bg-gray-100 dark:bg-zinc-800 rounded-xl"></div>
+      <div className="bg-white dark:bg-[#18221f] border border-[var(--color-border)] dark:border-[#22332e] rounded-2xl p-6">
+        <div className="h-7 w-60 text-[17px] rounded bg-gray-200 dark:bg-zinc-700 animate-pulse mb-[6px]" />
+        <div className="h-5 w-56 text-[13px] rounded bg-gray-100 dark:bg-zinc-800 animate-pulse mb-[22px]" />
+
+        <div>
+          {[0, 1, 2, 3].map((step, index) => {
+            const isLast = index === 3;
+
+            return (
+              <div key={step} className="grid grid-cols-[22px_1fr] gap-[14px]">
+                <div className="flex flex-col items-center">
+                  <div className="w-3.5 h-3.5 rounded-full shrink-0 bg-gray-200 dark:bg-zinc-700 animate-pulse" />
+
+                  {!isLast && (
+                    <div className="flex-1 w-0.5 min-h-9 bg-gray-100 dark:bg-zinc-800" />
+                  )}
+                </div>
+
+                <div className="pb-2">
+                  <div className="h-5 w-32 rounded bg-gray-200 dark:bg-zinc-700 animate-pulse" />
+                  <div className="h-4 w-20 rounded bg-gray-100 dark:bg-zinc-800 animate-pulse mt-1" />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -91,7 +110,7 @@ export default function LatestOrderTracking() {
       <div className="font-bold text-[17px] mb-[6px] dark:text-gray-100">
         {t("trackingTitle")}{latestOrder.id.slice(0, 8)}
       </div>
-      <div className="text-[13px] text-[var(--color-muted)] dark:text-gray-400 mb-[22px]">
+      <div className="text-[13px] text-gray-600 dark:text-gray-400 mb-[22px]">
         متوقع الوصول اليوم بين ٤ و ٧ مساءً
       </div>
 
@@ -112,7 +131,7 @@ export default function LatestOrderTracking() {
                 <div style={{ color: style.fg }} className="text-sm font-semibold dark:!text-gray-200">
                   {step.title}
                 </div>
-                <div className="text-[12.5px] text-[var(--color-muted)] dark:text-gray-400 mt-[3px]">
+                <div className="text-[12.5px] text-gray-600 dark:text-gray-400 mt-[3px]">
                   {step.time}
                 </div>
               </div>

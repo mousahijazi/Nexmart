@@ -1,12 +1,11 @@
-import { getProducts } from "@/helper/fetchApi";
+import { getJSONProducts } from "@/helper/fetchApi";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/routing";
 import Image from "next/image";
 
 export default async function NewArrivalsBanner() {
     const t = await getTranslations("home.NewArrivalsBanner");
-    const products = await getProducts(3);
-    const data = products.products;
+    const { products } = await getJSONProducts(3);
 
   return (
     <section className="max-w-[1280px] mx-auto px-6 py-14">
@@ -18,12 +17,12 @@ export default async function NewArrivalsBanner() {
                 <div className="inline-block bg-[var(--color-green)] text-white px-[30px] py-[13px] rounded-[11px] text-[14.5px] cursor-pointer hover:bg-[var(--color-green-dark)]">{t("button")}</div>
             </div>
             <div className="grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 gap-3 p-6">
-                    {data.map((ele, index) => (
+                    {products.map((ele, index) => (
                         <div key={index} className="bg-white dark:bg-[var(--color-muted)] rounded-[14px] p-3">
                             <div className="relative group h-[120px] mb-5">
                                 <Link href={`/products/${ele.id}`}>
                                     <Image
-                                        src={ele.thumbnail}
+                                        src={ele.image}
                                         alt={ele.title}
                                         fill
                                         priority

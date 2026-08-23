@@ -24,7 +24,7 @@ export default async function RootLayout({ children, params }) {
   const selectedFont = locale === "ar" ? cairo.className : inter.className;
 
   return (
-    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className="h-full antialiased">
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className="h-full antialiased scroll-smooth">
       <body className={`${selectedFont} min-h-screen flex flex-col bg-[var(--color-cream)] text-[var(--color-ink)]`}>
         <NextIntlClientProvider messages={messages}>
           <ContextProviders>

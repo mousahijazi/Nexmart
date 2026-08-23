@@ -38,12 +38,15 @@ export default function ProductProvider({children}) {
       showAlert(`${product.title} removed from cart`, "danger");
   };
 
+  let totalPrice = cart.reduce((total, product) => total + product.price, 0);
+
   const value = {
       cart, 
       setCart,
       removeFromCart,
       addToStorage,
       loadingCart,
+      totalPrice,
   }
 
   useEffect(() => {

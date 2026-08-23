@@ -16,7 +16,7 @@ export default async function FlashDeals() {
     const locale = await getLocale();
 
   return (
-    <section className="max-w-[1280px] mx-auto px-6 py-14">
+    <section id="FlashDeals" className="max-w-[1280px] mx-auto px-6 py-14">
         <div className="rounded-[22px] bg-[var(--color-green-deep)] dark:bg-[var(--color-sand)] text-white p-5 md:p-[34px] grid grid-cols-1 xl:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] gap-[34px] items-center">
         <div>
             <div className="text-[var(--color-gold)] font-semibold text-[13px] tracking-[.12em] mb-[10px]">{t("title")}</div>
@@ -49,7 +49,7 @@ export default async function FlashDeals() {
                         <div className="text-[13.5px] font-semibold my-[11px] leading-[1.5] line-clamp-2 min-h-[41px]">{getLocalizedField(product, "title", locale)}</div>
                         <div className="flex flex-wrap items-baseline gap-2">
                             <span className="font-bold text-[var(--color-green)] dark:text-white">{finalPrice.toFixed(2)} <span className="text-xs">ر.س</span></span>
-                            <span className="text-xs text-[var(--color-muted-3)] line-through">{originalPrice.toFixed(2)}</span>
+                            <span className="text-xs text-[var(--color-muted-3)] line-through">{originalPrice.toFixed(2)} <span className="text-xs">ر.س</span></span>
                         </div>
                     </div>
                 )

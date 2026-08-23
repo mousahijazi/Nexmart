@@ -1,11 +1,11 @@
 import { Link } from "@/lib/i18n/routing";
-import { HeaderNavItems, TopBar, NavSearch } from "@/index";
-import { getCategories } from "@/helper/fetchApi";
+import { HeaderNavItems, TopBar, NavSearch, SmoothNavLink } from "@/index";
+import { getJSONCategories } from "@/helper/fetchApi";
 import { getTranslations } from "next-intl/server";
 
 export default async function Header() {
   const t = await getTranslations();
-  const categories = await getCategories();
+  const categories = await getJSONCategories();
   const tabs = [
       ...categories.slice(0, 6).map((cat) => ({
       name: cat.name || cat.slug || cat,
@@ -41,9 +41,11 @@ export default async function Header() {
                 <div className="py-3 whitespace-nowrap cursor-pointer hover:text-[var(--color-gold)] transition duration-300">{ele.name}</div>
               </Link>
             ))}
-            <Link href="/" className="contents">
-              <div className="py-3 whitespace-nowrap text-[var(--color-red)] font-semibold ms-auto">{t("header.discountsTitle")}</div>
-            </Link>
+            <SmoothNavLink href="/#FlashDeals" targetId="FlashDeals" className="contents">
+              <div className="py-3 whitespace-nowrap text-[var(--color-red)] font-semibold ms-auto">
+                {t("header.discountsTitle")}
+              </div>
+            </SmoothNavLink>
           </div>
         </div>
       </header>

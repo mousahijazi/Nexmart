@@ -31,6 +31,7 @@
         "contact": "Contact",
         "logout": "Logout",
         "login": "Login",
+        "account": "Account",
         "register": "Register"
     },
     "footer": {
@@ -151,6 +152,14 @@
             "secondTitle": "New Season Collection",
             "Desc": "Over 300 new items have arrived this week across all departments.",
             "button": "See What's New"
+        },
+        "NewsletterBanner": {
+            "title": "10% off your first order",
+            "Desc": "Subscribe to the newsletter to get the latest offers and discounts.",
+            "Input": {
+                "placeholder": "Your email address",
+                "label": "Subscribe"
+            }
         },
         "Brand": {
             "title": "Brands You Trust"

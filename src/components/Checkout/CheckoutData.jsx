@@ -1,10 +1,10 @@
 "use client"
 import { useCheckoutContext } from "@/Context/CheckoutProvider";
-import { Text } from "@/index";
+import { Text, Coupon } from "@/index";
 import { useLocale, useTranslations } from "next-intl";
 
 export default function CheckoutData() {
-  const {subtotal, shippingPrice, taxes, discountAmount, grandTotal, totalItems, coupon, setCoupon, needShipping, setNeedShipping} = useCheckoutContext();
+  const {subtotal, shippingPrice, taxes, grandTotal, totalItems, needShipping, setNeedShipping} = useCheckoutContext();
   const locale = useLocale();
   const t = useTranslations();
 
@@ -62,19 +62,7 @@ export default function CheckoutData() {
 
                     if (ele.type === "coupon") {
                         return (
-                            <div key={ele.text} className="min-[480px]:w-fit flex flex-col gap-3">
-                                <label className="text-sm font-bold tracking-widest text-[var(--color-green)]/90 dark:text-[var(--color-gold)] uppercase">{t("checkout.addressPage.data.itemsData.coupon.title")}</label>
-                                <input 
-                                    type="text" 
-                                    placeholder={t("checkout.addressPage.data.itemsData.coupon.title").toUpperCase()}
-                                    value={coupon}
-                                    onChange={(e) => setCoupon(e.target.value)}
-                                    className="dark:bg-[var(--color-field)] border-2 border-[var(--color-green)] dark:border-[var(--color-border)] rounded-lg px-3 py-2 text-[18px] text-[var(--color-ink)] dark:text-[var(--color-ink)] font-semibold outline shadow-lg" 
-                                />
-                                {discountAmount > 0 && (
-                                    <p className="text-[var(--color-green)] dark:text-[var(--color-gold)] tracking-wider sm:text-[17px]">{t("checkout.addressPage.data.itemsData.coupon.taxesRemoved", {Removed: discountAmount.toFixed(2)})}</p>
-                                )}
-                            </div>
+                            <Coupon />
                         );
                     }
 

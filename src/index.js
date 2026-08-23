@@ -2,6 +2,7 @@
 export {default as Header} from "./components/Header/Header";
 export {default as TopBar} from "./components/Header/TopBar";
 export {default as NavSearch} from "./components/Header/NavSearch";
+export {default as SmoothNavLink} from "./components/Header/SmoothNavLink";
 export {default as TranslationButton} from "./components/Header/TranslationButton";
 
 export {default as HeaderNavItems} from "./components/Header/HeaderNavItems";
@@ -33,6 +34,10 @@ export {default as Feature} from "./components/Home/Feature/Feature";
 
 // NewArrivalsBanner
 export {default as NewArrivalsBanner} from "./components/Home/NewArrivalsBanner/NewArrivalsBanner";
+
+//NewsletterBanner
+export {default as NewsletterBanner} from "./components/Home/NewsletterBanner/NewsletterBanner";
+export {default as NewsletterForm} from "./components/Home/NewsletterBanner/NewsletterForm";
 
 // Brand
 export {default as Brand} from "./components/Home/Brand/Brand";
@@ -76,7 +81,6 @@ export {default as ProductStars} from "./components/products/productReviews/Prod
 
 // cart 
 export {default as Cart} from "./components/cart/Cart";
-export {default as TextCart} from "./components/cart/TextCart";
 export {default as CartProducts} from "./components/cart/CartProducts";
 
 // wishlist
@@ -98,8 +102,9 @@ export {default as AccountDashboard} from "./components/Dashboard/UserDashboard/
 export {default as SettingsDashboard} from "./components/Dashboard/UserDashboard/SettingsDashboard";
 
 export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
-export {default as DashboardData} from "./components/Dashboard/DashboardData";
+export {default as CartDashboardData} from "./components/Dashboard/CartDashboardData";
 export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton";
+export {default as CartTotal} from "./components/Dashboard/CartTotal";
 
 export {default as WishlistDashboard} from "./components/Dashboard/WishlistDashboard";
 export {default as WishlistDashboardData} from "./components/Dashboard/WishlistDashboardData";
@@ -147,6 +152,7 @@ export {default as CartSkeleton} from "./components/loader/CartSkeleton";
 export {default as RHFerrors} from "./components/element/RHFerrors";
 export {default as Button} from "./components/element/Button";
 export {default as BuyButton} from "./components/element/BuyButton";
+export {default as Coupon} from "./components/element/Coupon";
 export {default as UserImage} from "./components/element/UserImage";
 export {default as ButtonTheme} from "./components/element/DarkTheme/ButtonTheme";
 export {default as LogoutButton} from "./components/element/Login/LogoutButton";

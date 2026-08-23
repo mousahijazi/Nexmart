@@ -55,9 +55,9 @@ export default function DealCountdown({ endDate }) {
   ];
 
   return (
-    <div className="flex gap-[10px]">
+    <div className="flex flex-wrap gap-[10px]">
         {units.map((unit) => (
-        <div key={unit.label} className="min-w-[68px] rounded-xl border border-[var(--color-gold)]/30 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
+        <div key={unit.label} className="min-w-[75px] rounded-xl border border-[var(--color-gold)]/30 bg-white/5 px-3 py-3 text-center backdrop-blur-sm">
           <div className="text-2xl font-bold tabular-nums text-[var(--color-gold)]">
             {String(unit.value).padStart(2, "0")}
           </div>

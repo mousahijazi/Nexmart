@@ -28,6 +28,14 @@ export const registerSchema = (isLogin) => z.object({
   password: z.string().trim().min(6, "Password must contain at least 6 characters").max(50),
 });
 
+export const SubscribeToNewsletter = z.object({
+  email: z.string().trim().email("Invalid email address").max(100),
+});
+
+export const couponSchema = z.object({
+    coupon: z.string().trim().min(1, "يرجى إدخال كود الخصم").max(30, "كود الخصم غير صالح"),
+});
+
 export const updateProfileSchema = z.object({
     firstName: z.string().trim().min(2).max(20).regex(/^[A-Za-z]+$/),
     lastName: z.string().trim().min(2).max(20).regex(/^[A-Za-z]+$/),

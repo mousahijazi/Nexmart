@@ -35,7 +35,10 @@ export default function AuthSection() {
           </>  
         : <> 
             <Link href="/user"> 
-                <UserImage /> 
+              <div className="border rounded-2xl border-[var(--color-muted)] flex items-center gap-5 px-3 py-1 transition-opacity duration-200 hover:opacity-80">
+                <UserImage />
+                <p className="xs text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">{t("nav.account")}</p>
+              </div> 
             </Link> 
           </> 
       } 

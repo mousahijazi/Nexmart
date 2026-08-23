@@ -1,4 +1,4 @@
-import { Hero, StorePerks, FlashDeals, Feature, Categories, NewArrivalsBanner, Brand, Reviews, BlogSection } from "@/index"
+import { Hero, StorePerks, FlashDeals, Feature, Categories, NewArrivalsBanner, Brand, Reviews, BlogSection, NewsletterBanner } from "@/index"
 
 export default function Home() {
   return (
@@ -12,6 +12,7 @@ export default function Home() {
       <Brand />
       <Reviews />
       <BlogSection />
+      <NewsletterBanner />
     </div>
   )
 }

@@ -109,7 +109,7 @@ export default function Pay() {
             <PaymentForm order={order} loading={loadingPay} />
             <PaymentSummary order={order} loading={loadingPay} />
         </div>
-        <div className="min-[480px]:bg-[#f1f1f1] min-[480px]:dark:bg-zinc-900">
+        <div className="min-[480px]:bg-[var(--color-surface)] min-[480px]:dark:bg-[var(--color-surface)]">
             <PaymentTestNotice />
         </div>
     </>

@@ -1,10 +1,10 @@
-import { getCategories } from "@/helper/fetchApi";
+import { getJSONCategories } from "@/helper/fetchApi";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/routing";
 import { CategoriesCard } from "@/index";
 
 export default async function Categories() {
-  const categories = await getCategories();
+  const categories = await getJSONCategories();
   const t = await getTranslations();
   const displayedCategories = categories?.slice(0, 6) || [];
   

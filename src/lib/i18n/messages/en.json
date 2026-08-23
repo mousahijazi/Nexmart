@@ -135,6 +135,7 @@
             "count": "{count} Product"
         },
         "deal": {
+            "days": "days",
             "hours": "hours",
             "minutes": "minutes",
             "seconds": "seconds",

@@ -18,26 +18,26 @@ export default function CheckoutItems() {
     const hasMore = checkoutItems.length > INITIAL_VISIBLE;
 
     return (
-        <div className="px-3 min-[480px]:px-6 py-8 border-t-2 border-t-gray-200 dark:border-zinc-800">
-            <h2 className="text-xl font-bold text-[#5B3A21] dark:text-[#A68A64] mb-5">
+        <div className="px-3 min-[480px]:px-6 py-8 border-t-2 border-t-[var(--color-border)] dark:border-[var(--color-border)]">
+            <h2 className="text-xl font-bold text-[var(--color-green)] dark:text-[var(--color-gold)] mb-5">
                 {t("checkout.addressPage.items.title", {length: checkoutItems.length})}
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {visibleItems.map((item) => (
-                    <div key={item.id} className="relative flex items-center gap-3 bg-[#f7f7f7] dark:bg-[#1F1B17] rounded-xl p-3">
-                        <Link href={`/products/${item.id}`} className="relative w-14 h-14 shrink-0 bg-white dark:bg-zinc-900 rounded-lg overflow-hidden">
+                    <div key={item.id} className="relative flex items-center gap-3 bg-[var(--color-surface)] dark:bg-[var(--color-sand)] rounded-xl p-3">
+                        <Link href={`/products/${item.id}`} className="relative w-14 h-14 shrink-0 bg-[var(--color-cream)] dark:bg-[var(--color-field)] rounded-lg overflow-hidden">
                             <Image src={item.thumbnail} alt={item.title} fill className="object-contain p-1" />
                         </Link>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-[#5B3A21] dark:text-[#F5EBE6] line-clamp-1">
+                            <p className="text-sm font-semibold text-[var(--color-green-deep)] dark:text-[var(--color-ink)] line-clamp-1">
                                 {item.title}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-zinc-400">
+                            <p className="text-xs text-[var(--color-muted)] dark:text-[var(--color-muted)]">
                                 {t("checkout.addressPage.items.quantity", {quantity: item.quantity || 1})}
                             </p>
                         </div>
-                        <span className="text-sm font-bold text-[#5B3A21] dark:text-[#A68A64]">
+                        <span className="text-sm font-bold text-[var(--color-green)] dark:text-[var(--color-gold)]">
                             ${item.price}
                         </span>
                     </div>
@@ -47,7 +47,7 @@ export default function CheckoutItems() {
             {hasMore && (
                 <button
                     onClick={() => setShowAll((prev) => !prev)}
-                    className="mt-5 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64] underline cursor-pointer"
+                    className="mt-5 text-sm font-semibold text-[var(--color-green)] dark:text-[var(--color-gold)] underline cursor-pointer"
                 >
                     {showAll ? "Show less" : `Show ${checkoutItems.length - INITIAL_VISIBLE} more`}
                 </button>

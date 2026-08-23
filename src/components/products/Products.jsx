@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import { getProducts, getCategories } from "@/helper/fetchApi";
+import { getCategories, getJSONProducts } from "@/helper/fetchApi";
 import { ProductsContainer, ProductsText, Loader } from "@/index";
 
 export default async function ProductsPage() {
-  const { products, total } = await getProducts();
+  const { products, total } = await getJSONProducts();
   const categories = await getCategories();
 
   return (

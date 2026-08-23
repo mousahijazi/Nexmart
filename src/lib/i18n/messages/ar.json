@@ -135,6 +135,7 @@
             "count": "{count} منتج"
         },
         "deal": {
+            "days": "أيام",
             "hours": "ساعة",
             "minutes": "دقائق",
             "seconds": "ثواني",

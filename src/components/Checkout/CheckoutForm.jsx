@@ -125,28 +125,28 @@ export default function CheckoutForm() {
 
   return (
     <div dir={locale === "ar" ? "rtl" : "ltr"} className="px-3 min-[480px]:px-6 py-8">
-        <h1 className="pb-7 sm:pb-11 text-2xl sm:text-3xl font-extrabold text-[#5B3A21] dark:text-[#A68A64]">Shipping Address</h1>
+        <h1 className="pb-7 sm:pb-11 text-2xl sm:text-3xl font-extrabold text-[var(--color-green)] dark:text-[var(--color-gold)]">Shipping Address</h1>
         <form onSubmit={handleSubmit(handlePlaceOrder)}>
             <div className="grid min-[480px]:grid-cols-2 gap-4">
                 {checkoutFields.map((ele) => (
                         <div key={ele.id}>
-                            <label htmlFor={ele.id} className="block mb-2 pl-1.5 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">{ele.text}</label>
+                            <label htmlFor={ele.id} className="block mb-2 pl-1.5 text-sm font-semibold text-[var(--color-green)] dark:text-[var(--color-gold)]">{ele.text}</label>
                             <input 
-                               id={ele.id} 
+                            id={ele.id} 
                                 name={ele.name}
                                 {...register(ele.apiKey)}
                                 type="text" 
                                 placeholder={ele.text} 
                                 className="
                                     w-full
-                                    text-[#5B3A21] dark:text-zinc-700
-                                    dark:bg-[#f2f2f2]
+                                    text-[var(--color-ink)] dark:text-[var(--color-ink)]
+                                    dark:bg-[var(--color-field)]
                                     font-semibold
                                     px-4 py-3
                                     rounded-xl
-                                    border-2 border-gray-200
+                                    border-2 border-[var(--color-border)]
                                     outline-none
-                                    focus:border-[#5B3A21] dark:focus:border-zinc-700
+                                    focus:border-[var(--color-green)] dark:focus:border-[var(--color-gold)]
                                     transition
                                 " 
                             />
@@ -156,7 +156,7 @@ export default function CheckoutForm() {
             </div>
             <div className="mt-4 flex flex-col gap-4">
                 <div>
-                    <label htmlFor="address" className="block mb-2 pl-1.5 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">{t("checkout.addressPage.form.addressLabel")}</label>
+                    <label htmlFor="address" className="block mb-2 pl-1.5 text-sm font-semibold text-[var(--color-green)] dark:text-[var(--color-gold)]">{t("checkout.addressPage.form.addressLabel")}</label>
                     <input 
                         id="address" 
                         name="address"
@@ -165,37 +165,37 @@ export default function CheckoutForm() {
                         placeholder={t("checkout.addressPage.form.addressLabel")}
                         className="
                             w-full
-                            text-[#5B3A21] dark:text-zinc-700
-                            dark:bg-[#f2f2f2]
+                            text-[var(--color-ink)] dark:text-[var(--color-ink)]
+                            dark:bg-[var(--color-field)]
                             font-semibold
                             px-4 py-3
                             rounded-xl
-                            border-2 border-gray-200
+                            border-2 border-[var(--color-border)]
                             outline-none
-                            focus:border-[#5B3A21] dark:focus:border-zinc-700
+                            focus:border-[var(--color-green)] dark:focus:border-[var(--color-gold)]
                             transition
                         " 
                     />
                     <RHFerrors errors={errors.address} />
                 </div>
                 <div>
-                    <label className="block mb-2 pl-1.5 text-sm font-semibold text-[#5B3A21] dark:text-[#A68A64]">{t("checkout.addressPage.form.notes.label")}</label>
+                    <label className="block mb-2 pl-1.5 text-sm font-semibold text-[var(--color-green)] dark:text-[var(--color-gold)]">{t("checkout.addressPage.form.notes.label")}</label>
                     <textarea
                         rows={4}
                         name="notes"
                         {...register("notes")}
                         placeholder={t("checkout.addressPage.form.notes.placeholder")}
-                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-zinc-800 bg-[#fcfbf9] dark:bg-[#f2f2f2] outline-none focus:border-[#5B3A21] dark:focus:border-zinc-600 transition resize-none"
+                        className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] dark:border-[var(--color-border)] bg-[var(--color-cream)] dark:bg-[var(--color-field)] outline-none focus:border-[var(--color-green)] dark:focus:border-[var(--color-gold)] transition resize-none"
                     />
                     <RHFerrors errors={errors.notes} />
                 </div>
             </div>
             <div className="pt-5">
                 <div className="flex items-center gap-3">
-                    <button type="button" aria-label="cancel" className="p-3 border border-black dark:border-zinc-200 dark:bg-zinc-900 dark:text-white rounded-xl min-[480px]:w-1/2 cursor-pointer" onClick={() => router.back()}>{t("profile.updateProfile.cancel")}</button>
-                    <button type="submit" aria-label="Place Order" className="p-3 bg-[#5B3A21] rounded-xl w-full cursor-pointer text-white" disabled={placing || isProcessingRef.current}>{isSubmitting || isProcessingRef.current ? t("checkout.addressPage.form.placingButton") : t("checkout.addressPage.form.placeButton")}</button>
+                    <button type="button" aria-label="cancel" className="p-3 border border-[var(--color-border)] dark:border-[var(--color-border)] dark:bg-[var(--color-surface)] dark:text-[var(--color-ink)] rounded-xl min-[480px]:w-1/2 cursor-pointer" onClick={() => router.back()}>{t("profile.updateProfile.cancel")}</button>
+                    <button type="submit" aria-label="Place Order" className="p-3 bg-[var(--color-green)] rounded-xl w-full cursor-pointer text-white" disabled={placing || isProcessingRef.current}>{isSubmitting || isProcessingRef.current ? t("checkout.addressPage.form.placingButton") : t("checkout.addressPage.form.placeButton")}</button>
                 </div>
-                <p className="mt-5 text-gray-600 dark:text-zinc-300">{t("checkout.addressPage.form.Desc")}</p>
+                <p className="mt-5 text-[var(--color-soft-2)] dark:text-[var(--color-soft)]">{t("checkout.addressPage.form.Desc")}</p>
             </div>
         </form>
     </div>

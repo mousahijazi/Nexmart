@@ -1,17 +1,18 @@
 "use client" 
 import { ProductsFilter, ProductsCard } from "@/index"; 
 import { useState, useEffect, useMemo, useRef } from "react"; 
-import { getProducts, getCategories } from "@/helper/fetchApi"; 
+import { getJSONProducts, getJSONCategories } from "@/helper/fetchApi"; 
 import { useSearchParams } from "next/navigation"; 
 import { useRouter } from "@/lib/i18n/routing"; 
 import { ArrowDown, ArrowUp } from "lucide-react"; 
 import { useTranslations } from "next-intl"; 
  
-export default function ProductsContainer({data, totalProducts, categories}) { 
+export default function ProductsContainer({data, totalProducts}) { 
   const t = useTranslations(); 
   const router = useRouter(); 
   const searchParams = useSearchParams(); 
   const categoryFromUrl = searchParams.get("category"); 
+  
   const [isLoadingCategory, setIsLoadingCategory] = useState(false); 
  
   const productsRef = useRef(null); 
@@ -43,20 +44,17 @@ export default function ProductsContainer({data, totalProducts, categories}) {
    
   const [products, setProducts] = useState(data); 
   const [search, setSearch] = useState(""); 
-  const [selectedCategory, setSelectedCategory] = useState("all"); 
   const PRODUCTS_PER_PAGE = 20; 
  
   useEffect(() => { 
     async function handleCategoryChange() { 
       if (categoryFromUrl) { 
         setIsLoadingCategory(true); 
-        setSelectedCategory(categoryFromUrl); 
  
-        const categoryProducts = await getCategories(categoryFromUrl); 
-        setProducts(categoryProducts.products); 
-        setIsLoadingCategory(false); 
+        const categoryProducts = await getJSONCategories(categoryFromUrl); 
+        setProducts(categoryProducts); 
+        setIsLoadingCategory(false);
       } else { 
-        setSelectedCategory("all"); 
         setProducts(data); 
       } 
     } 
@@ -72,7 +70,7 @@ export default function ProductsContainer({data, totalProducts, categories}) {
     if (products.length >= totalProducts) return; 
      
     const nextSkip = products.length;  
-    const res = await getProducts(PRODUCTS_PER_PAGE, nextSkip); 
+    const res = await getJSONProducts(PRODUCTS_PER_PAGE, nextSkip); 
      
     setProducts((prev) => [...prev, ...res.products]); 
   }; 
@@ -85,36 +83,18 @@ export default function ProductsContainer({data, totalProducts, categories}) {
     ); 
   }; 
  
-  // Filter categories 
-  const filteredCategories = useMemo(() => {      
-    if (categoryFromUrl) { 
-      return categories.filter(category => category.slug === categoryFromUrl); 
-    } 
- 
-    const visibleCategories = [ 
-      ...new Set( 
-        products.map(product => product.category) 
-      ) 
-    ]; 
- 
-    return categories.filter(category => 
-      visibleCategories.includes(category.slug) 
-    ); 
-  }, [products, categories]); 
- 
   // Filter products 
   const filteredProducts = useMemo(() => { 
     return products.filter((product) => { 
-      const matchesSearch = product.title.toLowerCase().includes(search.toLowerCase()); 
-      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory; 
+      const matchesSearch = product.title_en.toLowerCase().includes(search.toLowerCase()); 
  
-      return matchesSearch && matchesCategory; 
+      return matchesSearch; 
     }); 
-  }, [products, search, selectedCategory]); 
+  }, [products, search]); 
  
   return ( 
     <> 
-      <ProductsFilter data={products} search={search} setSearch={setSearch} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} categories={filteredCategories} categoryFromUrl={categoryFromUrl} resetToAllProducts={resetToAllProducts} /> 
+      <ProductsFilter search={search} setSearch={setSearch} /> 
       <div ref={productsRef} className="max-w-7xl mx-auto px-6 pt-12 pb-7"> 
           <ProductsCard data={filteredProducts} showRating={true} /> 
           <div className="mt-12 flex gap-2 items-center justify-center"> 

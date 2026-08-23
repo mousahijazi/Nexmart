@@ -1,5 +1,5 @@
 import { ProductsPage, CategoriesSlider } from "@/index";
-import { getCategories } from "@/helper/fetchApi";
+import { getJSONCategories } from "@/helper/fetchApi";
 import { getTranslations } from "next-intl/server";
 
 export const metadata = {
@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function page() {
-  const categories = await getCategories();
+  const categories = await getJSONCategories();
   const t = await getTranslations();
 
   return (

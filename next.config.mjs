@@ -29,6 +29,16 @@ const nextConfig = {
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
+      {
+        protocol: 'http',
+        hostname: process.env.NEXT_PUBLIC_API_URL,
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com'
+      },
     ],
   },
 };

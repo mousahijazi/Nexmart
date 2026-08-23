@@ -1,4 +1,4 @@
-import { getProducts, getCategories } from "@/helper/fetchApi";
+import { getJSONProducts, getJSONCategories } from "@/helper/fetchApi";
 import { ProductsCard, Loader } from "@/index";
 import { Suspense } from "react";
 import { Link } from "@/lib/i18n/routing";
@@ -6,13 +6,13 @@ import { getTranslations } from "next-intl/server";
 
 export default async function Feature() {
     const t = await getTranslations();
-    const products =  await getProducts(5);
-    const categories = await getCategories();
+    const {products} =  await getJSONProducts(5);
+    const categories = await getJSONCategories();
     const tabs = [
         { name: "الكل", slug: "all" },
         ...categories.slice(0, 4).map((cat) => ({
-        name: cat.name || cat.slug || cat,
-        slug: cat.slug || cat,
+            name: cat.name_en || cat.slug || cat,
+            slug: cat.slug || cat,
         })),
     ];
 
@@ -29,7 +29,7 @@ export default async function Feature() {
             </div>
         </div>
         <Suspense fallback={<Loader />}>
-            <ProductsCard data={products.products} />
+            <ProductsCard data={products} />
         </Suspense>
     </section>
   )

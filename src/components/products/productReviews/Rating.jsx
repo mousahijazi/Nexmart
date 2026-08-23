@@ -3,10 +3,10 @@ import { useTranslations } from "next-intl";
 
 export default function Rating({rating}) {
     const t = useTranslations();
-    const radius = 40; // The radius of the circle
-    const circumference = 2 * Math.PI * radius; // Equation of circumference of a circle
-    const percentage = (rating / 5) * 100; //Convert the rating to a value out of 100
-    const strokeDashoffset = circumference - (percentage / 100) * circumference; // Calculate the space that the value will occupy from an SVG element.
+    const radius = 40;
+    const circumference = 2 * Math.PI * radius;
+    const percentage = (rating / 5) * 100;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
     <div className="flex items-center gap-6">

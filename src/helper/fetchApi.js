@@ -1,3 +1,152 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+function normalizeListResponse(json, res) {
+  if (Array.isArray(json)) {
+    const total = Number(res.headers.get("X-Total-Count")) || json.length;
+    return { items: json, total };
+  }
+ 
+  return { items: json.data || [], total: json.items ?? (json.data?.length || 0) };
+}
+
+export async function getBrand(limit) {
+    try {
+        const res = await fetch(`${API_URL}/brand${limit ? `?_per_page=${limit}` : ""}`, {cache: "no-store"});
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const json = await res.json();
+        const {items} = normalizeListResponse(json, res);
+        return items;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
+export async function getJSONProducts(limit = 20, skip = 0) {
+  try {
+    const page = Math.floor(skip / limit) + 1;
+ 
+    const res = await fetch(`${API_URL}/products?_page=${page}&_per_page=${limit}`, {
+      cache: "no-store",
+    });
+ 
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+ 
+    const json = await res.json();
+    const { items: products, total } = normalizeListResponse(json, res);
+ 
+    return { products, total };
+  } catch (error) {
+    console.log(error);
+    return { products: [], total: 0 };
+  }
+}
+ 
+export async function getJSONProduct(id) {
+  try {
+    const res = await fetch(`${API_URL}/products/${id}`, { cache: "no-store" });
+ 
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+ 
+    return await res.json();
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+ 
+export async function getJSONCategories(category = "", limit) {
+  try {
+    const url = category
+      ? `${API_URL}/products?category=${category}${limit ? `&_page=1&_per_page=${limit}` : ""}`
+      : `${API_URL}/categories`;
+ 
+    const categoriesFetch = await fetch(url, { cache: "no-store" });
+ 
+    if (!categoriesFetch.ok) {
+      throw new Error(`HTTP error! status: ${categoriesFetch.status}`);
+    }
+ 
+    const json = await categoriesFetch.json();
+    const { items } = normalizeListResponse(json, categoriesFetch);
+ 
+    return items;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+// todo
+export function endOfDay(dateInput) {
+  const date = new Date(dateInput);
+  date.setHours(23, 59, 59, 999);
+  return date;
+}
+
+// todo
+export async function getActiveOffer() {
+  try {
+    const res = await fetch(`${API_URL}/offers`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+ 
+    const json = await res.json();
+    const { items: offers } = normalizeListResponse(json, res);
+ 
+    const now = new Date();
+ 
+    const activeOffer = offers.find((offer) => {
+      if (!offer.isActive) return false;
+ 
+      const start = new Date(offer.startDate);
+      const end = endOfDay(offer.endDate);
+ 
+      return now >= start && now <= end;
+    });
+ 
+    return activeOffer || null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+// todo
+export async function getOfferProducts(offer, limit = 4) {
+  if (!offer) return [];
+ 
+  try {
+    let url;
+ 
+    if (offer.targetType === "category" && offer.targetId) {
+      url = `${API_URL}/products?category=${offer.targetId}&_page=1&_per_page=${limit}`;
+    } else {
+      url = `${API_URL}/products?_page=1&_per_page=${limit}`;
+    }
+ 
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+ 
+    const json = await res.json();
+    const { items } = normalizeListResponse(json, res);
+ 
+    return items.filter((p) => p.discountPrice != null).slice(0, limit);
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+
+
+
 export async function getProducts(limit = 20, skip = 0) {
     try {
         const productsFetch = await fetch(

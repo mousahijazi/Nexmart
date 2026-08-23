@@ -18,8 +18,9 @@ export default function CartProducts() {
             <p className="mt-3 text-gray-600 dark:text-[#e5ded8] md:text-lg">
               {t("cart.emptyCart.Desc")}
             </p>
-
-            <Button title={t("cart.emptyCart.button")} link="products" />
+            <div className="mt-7">
+              <Button title={t("cart.emptyCart.button")} link="products" />
+            </div>
         </div>
     :  <ProductsCard data={cart} showCard={false} />
   )

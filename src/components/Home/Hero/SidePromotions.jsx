@@ -13,7 +13,7 @@ export default function SidePromotions() {
                 <p className="text-[26px] font-bold text-[var(--color-green-light)] dark:text-[var(--color-soft)] mt-2 leading-[1.4]">{t("home.hero.SidePromotions.cardOun.Desc")}</p>
             </div>
             <div className="flex items-end justify-between">
-                <Link href="/">
+                <Link href="/products#products">
                     <div className="text-[var(--color-green-light)] font-semibold text-sm">{t("home.hero.SidePromotions.cardOun.button")}</div>
                 </Link>
             </div>
@@ -24,7 +24,7 @@ export default function SidePromotions() {
                 <h1 className="text-xs font-semibold text-[var(--color-gold)] tracking-[.1em]">{t("home.hero.SidePromotions.cardTwo.title")}</h1>
                 <p className="md:max-w-[170px] lg:max-w-[200px] text-[26px] font-bold my-2 leading-[1.4] dark:text-[var(--color-soft)]">{t("home.hero.SidePromotions.cardTwo.Desc")}</p>
             </div>
-            <Link href="/">
+            <Link href="/products#products">
                 <div className="text-[var(--color-gold)] font-semibold text-sm">{t("home.hero.SidePromotions.cardTwo.button")}</div>
             </Link>
         </div>

@@ -1,22 +1,25 @@
-import { ContactForm, ContactLink } from '@/index';
+import { ContactForm, ContactLink } from '@/index'; 
+import { useTranslations } from 'next-intl';
+ 
+export default function ContactPage() { 
+    const t = useTranslations("contact");
 
-export default function ContactPage() {
-  return (
-    <div className="bg-[#fcfbf9] dark:bg-zinc-950 text-[#5B3A21] dark:text-zinc-100 min-h-screen py-28 md:py-28 lg:py-36 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-        <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 text-[#5B3A21] dark:text-[#A68A64]">
-                Get In Touch
-            </h1>
-            <p className="text-lg max-w-xl mx-auto text-stone-600 dark:text-stone-300">
-                Have a question or feedback? We'd love to hear from you. Fill out the form or reach out via our channels.
-            </p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <ContactLink />
-                <ContactForm />
-            </div>
-        </div>
-    </div>
-  );
+  return ( 
+    <div className="bg-[var(--color-cream)] dark:bg-[var(--color-green-dark)] text-[var(--color-ink)] dark:text-[var(--color-ink)] min-h-screen px-6 py-14 transition-colors duration-300"> 
+        <div className="max-w-5xl mx-auto"> 
+            <div className="text-center mb-16"> 
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 text-[var(--color-green)] dark:text-[var(--color-gold)]"> 
+                {t("title")} 
+            </h1> 
+            <p className="text-lg max-w-xl mx-auto text-[var(--color-soft-2)] dark:text-[var(--color-soft)]"> 
+                {t("Desc")}
+            </p> 
+            </div> 
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10"> 
+                <ContactLink /> 
+                <ContactForm /> 
+            </div> 
+        </div> 
+    </div> 
+  ); 
 }

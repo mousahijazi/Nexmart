@@ -116,7 +116,7 @@ export default function CheckoutProvider({ children }) {
         }, 0);
     }, [checkoutItems]);
 
-    const shippingPrice = needShipping ? SHIPPING_PRICE : 0;
+    const shippingPrice = subtotal > 300 ? 0 : needShipping ? SHIPPING_PRICE : 0;
     const taxes = subtotal * TAX_RATE;
 
 

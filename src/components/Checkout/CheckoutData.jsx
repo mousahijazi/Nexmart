@@ -41,7 +41,10 @@ export default function CheckoutData() {
                             <div key={ele.text} className="py-3 flex max-[480px]:flex-col min-[480px]:items-center justify-between gap-3">
                                 <div>
                                     <p className="font-semibold">{t("checkout.addressPage.data.itemsData.shipping.title")}</p>
-                                    <p className="text-xs text-[var(--color-muted)]">{t("checkout.addressPage.data.itemsData.shipping.Desc")}</p>
+                                    {subtotal > 300 
+                                        ? <p className="text-xs text-[var(--color-muted)]">{t("checkout.addressPage.data.itemsData.shipping.DescTwo")}</p>
+                                        : <p className="text-xs text-[var(--color-muted)]">{t("checkout.addressPage.data.itemsData.shipping.Desc")}</p>
+                                    }
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <span>${ele.value}</span>
@@ -50,6 +53,7 @@ export default function CheckoutData() {
                                         <input
                                             id={ele.text}
                                             type="checkbox"
+                                            disabled={subtotal > 300}
                                             checked={needShipping}
                                             className="w-5 h-5 rounded accent-[var(--color-green)] cursor-pointer"
                                             onChange={(e) => setNeedShipping(e.target.checked)}

@@ -14,7 +14,7 @@ export default async function NewArrivalsBanner() {
                 <div className="text-[var(--color-muted)] text-[13px] tracking-[.1em] mb-3">{t("title")}</div>
                 <h2 className="font-bold text-[32px] mb-[14px] text-[var(--color-green-dark)] dark:text-[var(--color-gold)] leading-[1.4]">{t("secondTitle")}</h2>
                 <p className="text-[var(--color-soft-2)] text-[15px] leading-[1.85] m-0 mb-6 max-w-[380px]">{t("Desc")}</p>
-                <div className="inline-block bg-[var(--color-green)] text-white px-[30px] py-[13px] rounded-[11px] text-[14.5px] cursor-pointer hover:bg-[var(--color-green-dark)]">{t("button")}</div>
+                <Link href="/products#products" className="inline-block bg-[var(--color-green)] text-white px-[30px] py-[13px] rounded-[11px] text-[14.5px] cursor-pointer hover:bg-[var(--color-green-dark)]">{t("button")}</Link>
             </div>
             <div className="grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 gap-3 p-6">
                     {products.map((ele, index) => (
@@ -26,7 +26,7 @@ export default async function NewArrivalsBanner() {
                                         alt={ele.title}
                                         fill
                                         priority
-                                        className="cursor-pointer object-contain p-3 bg-black/20 dark:bg-black/40 rounded-xl group-hover:bg-black/10 group-hover:scale-95 transition duration-300"
+                                        className="cursor-pointer object-cover bg-black/20 dark:bg-black/40 rounded-xl group-hover:bg-black/10 group-hover:scale-95 transition duration-300"
                                     />
                                 </Link>
                             </div>

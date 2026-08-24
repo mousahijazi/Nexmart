@@ -5,11 +5,18 @@ import { useTranslations, useLocale } from "next-intl";
 import { getLocalizedField } from "@/lib/locale";
 import { Link } from "@/lib/i18n/routing";
 import Image from "next/image";
+import { useState } from "react";
+
+const INITIAL_VISIBLE = 4;
 
 export default function CartProducts() {
   const t = useTranslations();
   const locale = useLocale();
   const {cart, loadingCart} = useProductContext();
+  const [showAll, setShowAll] = useState(false);
+  
+  const visibleItems = showAll ? cart : cart.slice(0, INITIAL_VISIBLE);
+  const hasMore = cart.length > INITIAL_VISIBLE;
 
   return (
     loadingCart 
@@ -30,7 +37,7 @@ export default function CartProducts() {
           )
       :  (
           <div className="grid grid-cols-1 xs:grid-cols-[80px_1fr_auto] sm:grid-cols-[96px_1fr_auto] gap-[18px] p-5 border-b border-[var(--color-divider)] items-center">
-            {cart.map((ele, index) => (
+            {visibleItems.map((ele, index) => (
               <div key={index} className="flex flex-col items-center gap-3 xs:contents max-sm:bg-[var(--color-sand)] px-2.5 py-3 rounded-2xl">
                   <Link href={`/products/${ele.id}`} className="relative w-[180px] h-[120px] xs:w-full xs:h-full rounded-2xl overflow-hidden">
                     <Image 
@@ -60,6 +67,14 @@ export default function CartProducts() {
                   </div>
               </div>
             ))}
+            {hasMore && (
+                <button
+                    onClick={() => setShowAll((prev) => !prev)}
+                    className="mt-5 text-sm font-semibold text-[var(--color-green)] dark:text-[var(--color-gold)] underline cursor-pointer"
+                >
+                    {showAll ? "Show less" : `Show ${cart.length - INITIAL_VISIBLE} more`}
+                </button>
+            )}
           </div>
         )
   )

@@ -7,9 +7,8 @@ export default function SmoothNavLink({ href, targetId, children, className }) {
 
   const handleClick = (e) => {
     const isHomePage = pathname === "/" || pathname === "/ar" || pathname === "/en";
-    const isProductsPage = pathname === "/products" || pathname === "/ar/products" || pathname === "/en/products"
 
-    if (isHomePage || isProductsPage) {
+    if (isHomePage) {
       e.preventDefault();
       const element = document.getElementById(targetId);
       if (element) {

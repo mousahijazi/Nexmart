@@ -11,7 +11,7 @@
     },
     "header": {
         "TopBar": {
-            "linkTitle": "Free delivery on orders over 200 SAR.",
+            "linkTitle": "Free delivery on orders over 300 SAR.",
             "secondLink": "Track your order",
             "thirdLink": "Customer Service 920000000"
         },
@@ -238,8 +238,9 @@
         "title": "Home / Shopping Cart",
         "secondTitle": "Shopping Cart",
         "itemsCount": "({count} items)",
-        "Desc": "Prices include 15% VAT",
+        "Desc": "Prices include 10% VAT",
         "button": "Continue Shopping →",
+        "freeShippingNotice": "Add <b>{amount} SAR</b> more to get free shipping.",
         "emptyCart": {
             "title": "Your cart is empty",
             "Desc": "Add some products to start shopping.",
@@ -422,6 +423,7 @@
                     "shipping": {
                         "title": "Shipping",
                         "Desc": "Add delivery service",
+                        "DescTwo": "Shipping is on us.",
                         "label": "Need Shipping"
                     },
                     "coupon": {
@@ -486,6 +488,35 @@
                         "declinedCard": "Declined Card"
                     }
                 }
+            }
+        }
+    },
+    "contact": {
+        "title": "Get In Touch",
+        "Desc": "Have a question or feedback? We'd love to hear from you. Fill out the form or reach out via our channels.",
+        "Data": {
+            "title": "Contact Information",
+            "emailUs": "Email us",
+            "callUS": "Call us",
+            "Headquarters": {
+                "title": "Headquarters",
+                "Desc": "Nexmart Hub, Suite 100, Gaza City"
+            }
+        },
+        "Form": {
+            "sendButton": "Send message",
+            "sendingButton": "Sending message",
+            "Name": {
+                "label": "Your Name",
+                "placeholder": "Enter your name"
+            },
+            "email": {
+                "label": "Email",
+                "placeholder": "Enter your email"
+            },
+            "Message": {
+                "label": "Message",
+                "placeholder": "Write your message here..."
             }
         }
     }

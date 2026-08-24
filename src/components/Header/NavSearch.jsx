@@ -1,13 +1,15 @@
 "use client";
 import { Search } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getJSONCategories } from "@/helper/fetchApi";
-import { SmoothNavLink } from "@/index";
+import { Link } from "@/lib/i18n/routing";
 
 export default function NavSearch() {
     const t = useTranslations();
     const locale = useLocale();
+    const pathname = usePathname();
     const [search, setSearch] = useState("");
     const [categories, setCategories] = useState([]);
     const [loading ,setLoading] = useState(true);
@@ -26,7 +28,19 @@ export default function NavSearch() {
         };
 
         fetchCategories();
-    }, [])
+    }, []);
+
+    const handleClick = (e) => {
+        const isProductsPage = pathname === "/products" || pathname === "/ar/products" || pathname === "/en/products"
+
+        if (isProductsPage) {
+            e.preventDefault();
+            const element = document.getElementById("products");
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    };
 
      const results =
         search.trim().length > 0
@@ -63,13 +77,13 @@ export default function NavSearch() {
                 <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-[var(--color-surface)] border border-[var(--color-field)] rounded-xl shadow-lg overflow-hidden">
                     {results.length > 0 ? (
                         results.map((ele, index) => (
-                          <SmoothNavLink key={index} href={`/products?category=${ele.slug}#products`} targetId="FlashDeals">
-                            <div className="w-full text-start px-4 py-3 hover:bg-[#E9E7DD] dark:hover:bg-[var(--color-field)] transition">
+                          <button key={index} onClick={handleClick} className="w-full text-start px-4 py-3 hover:bg-[#E9E7DD] dark:hover:bg-[var(--color-field)] transition">
+                            <Link href={`/products?category=${ele.slug}#products`}>
                               <span className="text-sm font-semibold text-[var(--color-ink)]">
                                 {ele.name_en}
                               </span>
-                            </div>
-                          </SmoothNavLink>
+                            </Link>
+                          </button>
                         ))
                     ) : (
                         <div className="px-4 py-4 text-sm text-gray-500">

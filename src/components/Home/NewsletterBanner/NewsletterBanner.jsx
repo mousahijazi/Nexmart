@@ -5,7 +5,7 @@ export default function NewsletterBanner() {
     const t = useTranslations("home.NewsletterBanner");
 
   return (
-    <section className="max-w-[1280px] mx-auto px-6 py-14 pb-14">
+    <section className="max-w-[1280px] mx-auto px-6 py-14">
         <div
             className="relative overflow-hidden rounded-[22px] text-white p-6 md:p-12 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center"
             style={{

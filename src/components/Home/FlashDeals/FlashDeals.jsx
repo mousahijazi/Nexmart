@@ -41,7 +41,7 @@ export default async function FlashDeals() {
                                     alt={getLocalizedField(product, "title", locale)}
                                     fill
                                     priority
-                                    className="cursor-pointer object-contain p-3 bg-black/20 dark:bg-black/40 rounded-xl group-hover:bg-black/10 group-hover:scale-95 transition duration-300"
+                                    className="cursor-pointer object-cover bg-black/20 dark:bg-black/40 rounded-xl group-hover:bg-black/10 group-hover:scale-95 transition duration-300"
                                 />
                             </Link>
                             <div className="absolute top-2 start-2 bg-[var(--color-red)] text-white text-[11px] font-bold rounded-[7px] px-2 py-[3px]">-{discountPercentage}٪</div>

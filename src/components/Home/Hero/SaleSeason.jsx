@@ -1,5 +1,6 @@
 import { Button } from "@/index";
 import { useTranslations, useLocale } from "next-intl";
+import { Link } from "@/lib/i18n/routing";
 
 export default function SaleSeason() {
     const t = useTranslations();
@@ -16,7 +17,7 @@ export default function SaleSeason() {
             <p className="text-[17px] leading-[1.8] text-gray-600 min-sm:text-[#C6D6CF] mb-[30px] max-w-[420px]">{t("home.hero.Desc")}</p>
             <div className="flex items-center gap-3 flex-wrap">
                 <Button title={t("element.button")} link="products" />
-                <div className="cursor-pointer rounded-xl border border-gray-600 min-sm:border-white/28 text-gray-600 min-sm:text-white px-7 py-[15px] text-[15px] hover:bg-gray-600/10 min-sm:hover:bg-white/8">{t("home.hero.button")}</div>
+                <Link href="/products" className="cursor-pointer rounded-xl border border-gray-600 min-sm:border-white/28 text-gray-600 min-sm:text-white px-7 py-[15px] text-[15px] hover:bg-gray-600/10 min-sm:hover:bg-white/8">{t("home.hero.button")}</Link>
             </div>
             <div className="flex items-end gap-[34px] mt-[38px] pt-[26px] border-t border-white/14 flex-wrap">
                 <div><div className="text-2xl font-bold text-[var(--color-gold)]">{t("home.hero.data.products.value")}</div><div className="text-[13px] text-gray-600 max-sm:dark:text-[#A7BBB2] min-sm:text-[#A7BBB2]">{t("home.hero.data.products.label")}</div></div>

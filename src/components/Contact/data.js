@@ -1,36 +1,40 @@
 import { Mail, Phone, MapPin } from "lucide-react";
+
 export const LinkData = [
     {
         icon: <Mail size={22} />,
-        title: "Email Us",
+        title: "emailUs",
         text: "mousaeseady@gmail.com",
         link: "mailto:mousaeseady@gmail.com",
+        isTranslationText: false,
     },
     {
         icon: <Phone size={22} />,
-        title: "Call Us",
+        title: "callUS",
         text: "+970 595560240",
         link: "tel:+970595560240",
+        isTranslationText: false,
     },
     {
         icon: <MapPin size={22} />,
-        title: "Headquarters",
-        text: "Nexmart Hub, Suite 100, Gaza City",
+        title: "Headquarters.title",
+        text: "Headquarters.Desc",
         link: "https://maps.google.com/?q=Gaza+City",
+        isTranslationText: true,
     },
 ];
 
 export const fieldsConfig = [
   {
     id: "name",
-    label: "Your Name",
+    label: "Name.label",
     type: "text",
-    placeholder: "Enter your name",
+    placeholder: "Name.placeholder",
   },
   {
     id: "email",
-    label: "Your Email",
+    label: "email.label",
     type: "email",
-    placeholder: "Enter your email",
+    placeholder: "email.placeholder",
   }
 ];

@@ -18,8 +18,6 @@ export {default as Hero} from "./components/Home/Hero/Hero";
 export {default as SaleSeason} from "./components/Home/Hero/SaleSeason";
 export {default as SidePromotions} from "./components/Home/Hero/SidePromotions";
 
-export {default as HeroImage} from "./components/Home/Hero/HeroImage";
-
 // Categories
 export {default as Categories} from "./components/Home/Categories/Categories";
 export {default as CategoriesSlider} from "./components/Home/Categories/CategoriesSlider";
@@ -59,9 +57,7 @@ export {default as ContactLink} from "./components/Contact/ContactLink";
 
 // about
 export {default as About} from "./components/about/About";
-export {default as AboutHero} from "./components/about/AboutHero";
 export {default as DeveloperSection} from "./components/about/DeveloperSection";
-export {default as StatisticsSection} from "./components/about/StatisticsSection";
 export {default as StorySection} from "./components/about/StorySection";
 
 // products
@@ -105,6 +101,7 @@ export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
 export {default as CartDashboardData} from "./components/Dashboard/CartDashboardData";
 export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton";
 export {default as CartTotal} from "./components/Dashboard/CartTotal";
+export {default as CartAmount} from "./components/Dashboard/CartAmount";
 
 export {default as WishlistDashboard} from "./components/Dashboard/WishlistDashboard";
 export {default as WishlistDashboardData} from "./components/Dashboard/WishlistDashboardData";

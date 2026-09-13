@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  title: Nexmart API Documentation
+  version: 1.0.0
+  description: API Documentation for Nexmart E-commerce Project
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Development Server
+
+paths:
+  /products:
+    get:
+      summary: Get all products
+      tags: [Products]
+      responses:
+        200:
+          description: List of products fetched successfully
+    post:
+      summary: Create a new product
+      tags: [Products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titleAr:
+                  type: string
+                titleEn:
+                  type: string
+                descriptionAr:
+                  type: string
+                descriptionEn:
+                  type: string
+                price:
+                  type: number
+                mainImage:
+                  type: string
+                category:
+                  type: string
+                brand:
+                  type: string
+                stock:
+                  type: integer
+      responses:
+        201:
+          description: Product created successfully
+
+  /products/{productId}:
+    get:
+      summary: Get product by ID
+      tags: [Products]
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Product details
+        404:
+          description: Product not found
+    patch:
+      summary: Update product by ID
+      tags: [Products]
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: number
+                  example: 200
+                stock:
+                  type: integer
+                  example: 10
+      responses:
+        200:
+          description: Product updated successfully
+        404:
+          description: Product not found
+    delete:
+      summary: Delete product by ID
+      tags: [Products]
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Product deleted successfully
+        404:
+          description: Product not found

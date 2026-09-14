@@ -72,24 +72,26 @@ export async function getCategories(category, limit) {
   }
 }
 
-
-
-
-export async function getBrand(limit) {
+export async function getBrand(limit, page = 1) {
     try {
-        const res = await fetch(`${API_URL}/brand${limit ? `?_per_page=${limit}` : ""}`, {cache: "no-store"});
-        if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-        }
+      const res = await fetch(`${API_URL}/api/v1/brands${limit ? `?page=${page}&limit=${limit}` : ""}`, {cache: "no-store"});
+      if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+      }
 
-        const json = await res.json();
-        const {items} = normalizeListResponse(json, res);
-        return items;
+      const json = await res.json();
+      const brands = json.data?.brands|| [];
+
+      return {brands};
     } catch (error) {
-        console.log(error);
-        return [];
+      console.log(error);
+      return { brands: [] };
     }
 }
+
+
+
+
 
 // todo
 export function endOfDay(dateInput) {

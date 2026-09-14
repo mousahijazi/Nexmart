@@ -2,12 +2,14 @@ import {createCategoryController, getAllCategoriesController, getCategoryByIdCon
 import express from "express";
 import validate from "../middlewares/validate.js";
 import {createCategoryValidator} from "../validators/categoryValidator.js";
+import { uploadImage } from "../middlewares/upload.js";
 
 const router = express.Router();
+const upload = uploadImage("categories");
 
 router.route("/")
     .get(getAllCategoriesController)
-    .post(createCategoryValidator, validate, createCategoryController);
+    .post(upload.single("image"), createCategoryValidator, validate, createCategoryController);
 
 router.route("/:categoryId")
     .get(getCategoryByIdController)

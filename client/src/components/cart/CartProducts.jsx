@@ -6,6 +6,7 @@ import { getLocalizedField } from "../../lib/locale";
 import { Link } from "../../lib/i18n/routing";
 import Image from "next/image";
 import { useState } from "react";
+import { getImageUrl } from "@/helper/getImage";
 
 const INITIAL_VISIBLE = 4;
 
@@ -14,7 +15,7 @@ export default function CartProducts() {
   const locale = useLocale();
   const {cart, loadingCart} = useProductContext();
   const [showAll, setShowAll] = useState(false);
-  
+    
   const visibleItems = showAll ? cart : cart.slice(0, INITIAL_VISIBLE);
   const hasMore = cart.length > INITIAL_VISIBLE;
 
@@ -39,17 +40,17 @@ export default function CartProducts() {
           <div className="grid grid-cols-1 xs:grid-cols-[80px_1fr_auto] sm:grid-cols-[96px_1fr_auto] gap-[18px] p-5 border-b border-[var(--color-divider)] items-center">
             {visibleItems.map((ele, index) => (
               <div key={index} className="flex flex-col items-center gap-3 xs:contents max-sm:bg-[var(--color-sand)] px-2.5 py-3 rounded-2xl">
-                  <Link href={`/products/${ele.id}`} className="relative w-[180px] h-[120px] xs:w-full xs:h-full rounded-2xl overflow-hidden">
+                  <Link href={`/products/${ele?._id}`} className="relative w-[180px] h-[120px] xs:w-full xs:h-full rounded-2xl overflow-hidden">
                     <Image 
-                      src={ele.image}
-                      alt={ele.title_en}
+                      src={getImageUrl(ele.mainImage)}
+                      alt={ele?.title?.[locale]}
                       fill
                       className="object-cover"
                     />
                   </Link>
                   <div>
-                    <div className="text-xs text-[var(--color-muted)]">{ele.brand}</div>
-                    <div className="text-[15px] font-semibold my-[5px] leading-[1.5]">{getLocalizedField(ele, "title", locale)}</div>
+                    <div className="text-xs text-[var(--color-muted)]">{ele?.brand?.name?.[locale]}</div>
+                    <div className="text-[15px] font-semibold my-[5px] leading-[1.5]">{ele?.title?.[locale]}</div>
                     <div className="flex items-center gap-1.5 mt-3 text-[13px]">
                       <ShowCard showCard={false} product={ele} />
                       <ProductsWishlistIcon product={ele} />
@@ -57,11 +58,11 @@ export default function CartProducts() {
                   </div>
 
                   <div className="text-end flex flex-col items-end gap-[14px]">
-                    <div className="text-[17px] font-bold text-green-dark whitespace-nowrap">{ele.price} <span className="text-xs">ر.س </span></div>
+                    <div className="text-[17px] font-bold text-green-dark whitespace-nowrap">{ele?.price.toFixed(2)} <span className="text-xs">ر.س </span></div>
                     
                     <div className="flex items-center border border-[var(--color-field)] rounded-[10px] overflow-hidden">
                       <div className="px-[13px] py-[7px] cursor-pointer text-[var(--color-soft-2)] hover:bg-[var(--color-surface)]">−</div>
-                      <span className="px-[14px] py-[7px] text-sm min-w-[40px] text-center border-x border-[var(--color-field)]">{ele.stock}</span>
+                      <span className="px-[14px] py-[7px] text-sm min-w-[40px] text-center border-x border-[var(--color-field)]">{ele?.stock}</span>
                       <div className="px-[13px] py-[7px] cursor-pointer text-[var(--color-soft-2)] hover:bg-[var(--color-surface)]">+</div>
                     </div>
                   </div>

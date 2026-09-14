@@ -10,9 +10,7 @@ const getAllProductsController = async (req, res) => {
   res.status(200).json({
     status: SUCCESS,
     results: products.length,
-    data: {
-      products,
-    },
+    data: products,
   });
 };
 

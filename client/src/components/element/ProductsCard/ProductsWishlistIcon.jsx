@@ -4,7 +4,7 @@ import { useWishlistContext } from "../../../Context/WishlistProvider";
 
 export default function ProductsWishlistIcon({ product }) {
   const {isInWishlist, toggleWishlist} = useWishlistContext();
-  const active = isInWishlist(product.id);
+  const active = isInWishlist(product._id);
 
   return (
     <button 

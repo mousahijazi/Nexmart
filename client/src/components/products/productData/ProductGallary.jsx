@@ -2,17 +2,20 @@
 import Image from "next/image"; 
 import { Icons } from "../../../index"; 
 import { useState } from "react"; 
+import { useLocale } from "next-intl";
+import { getImageUrl } from "@/helper/getImage";
  
 export default function Product({data}) { 
-    const [selectedImage, setSelectedImage] = useState(data.image); 
+    const [selectedImage, setSelectedImage] = useState(data.mainImage); 
+    const locale = useLocale();
  
   return ( 
     <div className="flex flex-col justify-center items-center gap-5"> 
         <div className="rounded-2xl grid sm:grid-cols-[1fr_auto] gap-4"> 
             <div className="relative w-full max-w-[2000px] aspect-square rounded-2xl overflow-hidden bg-white min-[480px]:bg-[#F1F1F1] dark:bg-[#121a17] border border-[var(--color-border)] dark:border-[#22332e]"> 
                 <Image 
-                    src={selectedImage} 
-                    alt={data.title} 
+                    src={getImageUrl(selectedImage)} 
+                    alt={data?.title[locale ? locale : "ar"]} 
                     fill 
                     priority 
                     className="object-cover" 
@@ -53,8 +56,8 @@ export default function Product({data}) {
                     `} 
                 > 
                     <Image 
-                        src={ele} 
-                        alt={data.title} 
+                        src={getImageUrl(ele)} 
+                        alt={data.title[locale]} 
                         fill 
                         sizes="176px" 
                         className="object-cover" 

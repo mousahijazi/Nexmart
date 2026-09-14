@@ -1,6 +1,6 @@
-import { getJSONProduct, getJSONCategories } from "../../../../helper/fetchApi"; 
+import { getProduct, getCategories } from "@/helper/fetchApi"; 
 import { ProductGallary, ProductText, ProductsReviews, Rating, ProductsCard, Button } from "../../../../index"; 
-import { getTranslations } from "next-intl/server"; 
+import { getTranslations, getLocale } from "next-intl/server"; 
  
 export const metadata = { 
   title: "Nexmart - shop - product", 
@@ -9,24 +9,26 @@ export const metadata = {
  
 export default async function Product({params}) { 
     const { id } = await params; 
-    const data = await getJSONProduct(id); 
-    const categories = await getJSONCategories(data.category, 4); 
+    const {product} = await getProduct(id); 
+    const {categories} = await getCategories(product?.category?.slug, 4); 
     const t = await getTranslations(); 
-    const relatedProducts = categories.filter( 
-        (product) => product.id !== data.id 
-    ); 
+    const locale = await getLocale();
+    const safeCategories = Array.isArray(categories) ? categories : [];
+    const relatedProducts = safeCategories.filter( 
+        (relatedProduct) => relatedProduct._id !== product?._id 
+    );
  
   return ( 
     <> 
         <div className="py-32 md:py-36"> 
             <div className="max-w-7xl mx-auto px-2 min-[480px]:px-6"> 
                 <p className="text-[var(--color-muted)] dark:text-gray-400 font-semibold mb-8 flex max-sm:flex-col gap-2"> 
-                    {t("shop.products.product.title", { count: data.category })}  
-                    <span className="text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">{data.title}</span> 
+                    {t("shop.products.product.title", { count: product?.category?.name?.[locale] })}  
+                    <span className="text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">{product?.title?.[locale]}</span> 
                 </p> 
                 <div dir="ltr" className="min-[480px]:bg-white min-[480px]:dark:bg-[#18221f] min-[480px]:border min-[480px]:border-[var(--color-border)] min-[480px]:dark:border-[#22332e] min-[480px]:shadow-md dark:shadow-black/40 rounded-2xl py-6 min-[480px]:py-12 px-2 min-[480px]:px-6 grid md:grid-cols-[0.9fr_1.1fr] gap-12"> 
-                    <ProductGallary data={data} /> 
-                    <ProductText data={data} /> 
+                    <ProductGallary data={product} /> 
+                    <ProductText data={product} /> 
                 </div> 
             </div> 
         </div> 
@@ -45,8 +47,8 @@ export default async function Product({params}) {
         <div className="py-24"> 
             <div className="max-w-8xl mx-auto px-6"> 
                 <div className="flex flex-col items-center"> 
-                    <Rating rating={data.rating} /> 
-                    <ProductsReviews reviews={data.reviews} /> 
+                    <Rating rating={product.rating} /> 
+                    {/* <ProductsReviews reviews={product.reviews} />  */}
                 </div> 
             </div> 
         </div> 

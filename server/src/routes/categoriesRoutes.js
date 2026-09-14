@@ -3,9 +3,10 @@ import express from "express";
 import validate from "../middlewares/validate.js";
 import {createCategoryValidator} from "../validators/categoryValidator.js";
 import { uploadImage } from "../middlewares/upload.js";
+import Category from "../model/Category.js";
 
 const router = express.Router();
-const upload = uploadImage("categories");
+const upload = uploadImage("categories", Category);
 
 router.route("/")
     .get(getAllCategoriesController)

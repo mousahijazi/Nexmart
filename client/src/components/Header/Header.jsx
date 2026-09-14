@@ -1,17 +1,14 @@
 import { Link } from "../../lib/i18n/routing";
 import { HeaderNavItems, TopBar, NavSearch, SmoothNavLink } from "../../index";
-import { getJSONCategories } from "../../helper/fetchApi";
-import { getTranslations } from "next-intl/server";
+import { getCategories } from "../../helper/fetchApi";
+import { getTranslations, getLocale } from "next-intl/server";
 
 export default async function Header() {
   const t = await getTranslations();
-  const categories = await getJSONCategories();
-  const tabs = [
-      ...categories.slice(0, 6).map((cat) => ({
-      name: cat.name || cat.slug || cat,
-      slug: cat.slug || cat,
-      })),
-  ];
+  const locale = await getLocale();
+  const {categories} = await getCategories();
+  const categoryList = Array.isArray(categories) ? categories : [];
+  const visibleCategories = categoryList.slice(0, 6);
 
   return (
     <>
@@ -36,9 +33,9 @@ export default async function Header() {
         </div>
         <div className="border-t border-divider">
           <div className="max-w-[1280px] mx-auto px-6 flex items-center gap-[26px] text-sm text-[var(--color-soft)] overflow-x-auto custom-scrollbar">
-            {tabs.map((ele, index) => (
+            {visibleCategories.map((ele, index) => (
               <Link key={index} className="contents" href={`/products?category=${ele.slug}#products`}>
-                <div className="py-3 whitespace-nowrap cursor-pointer hover:text-[var(--color-gold)] transition duration-300">{ele.name}</div>
+                <div className="py-3 whitespace-nowrap cursor-pointer hover:text-[var(--color-gold)] transition duration-300">{ele?.name?.[locale]}</div>
               </Link>
             ))}
             <SmoothNavLink href="/#FlashDeals" targetId="FlashDeals" className="contents">

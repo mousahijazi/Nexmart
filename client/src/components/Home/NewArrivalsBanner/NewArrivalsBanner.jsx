@@ -1,11 +1,11 @@
-import { getJSONProducts } from "../../../helper/fetchApi";
+import { getProducts } from "../../../helper/fetchApi";
 import { getTranslations } from "next-intl/server";
 import { Link } from "../../../lib/i18n/routing";
 import Image from "next/image";
 
 export default async function NewArrivalsBanner() {
     const t = await getTranslations("home.NewArrivalsBanner");
-    const { products } = await getJSONProducts(3);
+    const { products } = await getProducts(3);
 
   return (
     <section className="max-w-[1280px] mx-auto px-6 py-14">

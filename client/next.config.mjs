@@ -5,6 +5,8 @@ const withNextIntl = createNextIntlPlugin("./src/lib/i18n/request.js");
 
 const nextConfig = {
   images: {
+    unoptimized: process.env.NODE_ENV === "development",
+    
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
     
@@ -31,9 +33,9 @@ const nextConfig = {
       },
       {
         protocol: 'http',
-        hostname: process.env.NEXT_PUBLIC_API_URL,
-        port: '',
-        pathname: '/storage/v1/object/public/**',
+        hostname: 'localhost',
+        port: '5000', 
+        pathname: '/uploads/**',
       },
       {
         protocol: 'https',

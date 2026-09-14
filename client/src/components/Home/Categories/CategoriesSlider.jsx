@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { CategoriesButton, CategoriesCard } from "../../../index";
+import { CategoriesButton, CategoriesCard } from "@/index";
 
 export default function CategoriesSlider({categories}) {
     const [currentPage, setCurrentPage] = useState(0);

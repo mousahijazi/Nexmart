@@ -2,6 +2,7 @@
 import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from "./AlertProvider";
 import { useUserContext } from './UserProvider';
+import { useLocale } from 'next-intl';
 
 const ProductsContext = createContext();
 
@@ -11,6 +12,7 @@ export default function ProductProvider({children}) {
   const {showAlert} = useAlertContext();
   const {user} = useUserContext();
   const cartKey = user?.id ? `cart-${user.id}` : "cart-guest";
+  const locale = useLocale();
 
   useEffect(() => {
     setLoadingCart(true);
@@ -23,22 +25,22 @@ export default function ProductProvider({children}) {
   const addToStorage = (product) => {
       if (!product) return;
 
-      const exists = cart.find(item => item.id === product.id);
+      const exists = cart.find(item => item?._id === product?._id);
       if (exists) {
-        showAlert(`${product.title} has already in cart!`, "danger");
+        showAlert(`${product?.title?.[locale]} has already in cart!`, "danger");
         return 
       } 
       
       setCart(prev => [...prev, product]);
-      showAlert(`${product.title} added to cart`);
+      showAlert(`${product?.title?.[locale]} added to cart`);
   }
 
   const removeFromCart = (product) => {
-      setCart(prev => prev.filter(item => item.id !== product.id));
-      showAlert(`${product.title} removed from cart`, "danger");
+      setCart(prev => prev.filter(item => item?._id !== product?._id));
+      showAlert(`${product?.title?.[locale]} removed from cart`, "danger");
   };
 
-  let totalPrice = cart.reduce((total, product) => total + product.price, 0);
+  let totalPrice = cart.reduce((total, product) => total + product?.price, 0);
 
   const value = {
       cart, 

@@ -24,7 +24,7 @@ const getAllProducts = async ({categories, page = 1, limit = 10}) => {
 
   const skip = (page - 1) * limit;
 
-  const products = await Product.find(filter).populate("category", "name slug image").skip(skip).limit(limit);
+  const products = await Product.find(filter).populate("category", "name slug image").populate("brand").skip(skip).limit(limit);
 
   const totalProducts = await Product.countDocuments(filter);
 
@@ -39,7 +39,7 @@ const getAllProducts = async ({categories, page = 1, limit = 10}) => {
 };
 
 const getProductById = async (productId) => {
-  return await Product.findById(productId).populate("category");
+  return await Product.findById(productId).populate("category").populate("brand");
 };
 
 const createProduct = async (productData) => {

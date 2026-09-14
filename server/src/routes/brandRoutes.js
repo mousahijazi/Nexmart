@@ -3,9 +3,10 @@ import express from "express";
 import validate from "../middlewares/validate.js";
 import {createBrandValidator} from "../validators/brandValidator.js";
 import { uploadImage } from "../middlewares/upload.js";
+import Brand from "../model/Brand.js";
 
 const router = express.Router();
-const upload = uploadImage("brands");
+const upload = uploadImage("brands", Brand);
 
 router.route("/")
     .get(getAllBrandsController)

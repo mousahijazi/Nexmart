@@ -1,14 +1,15 @@
 "use client" 
 import { ProductsFilter, ProductsCard } from "../../index"; 
 import { useState, useEffect, useMemo, useRef } from "react"; 
-import { getJSONProducts, getJSONCategories } from "../../helper/fetchApi"; 
+import { getProducts, getCategories } from "../../helper/fetchApi"; 
 import { useSearchParams } from "next/navigation"; 
 import { useRouter } from "../../lib/i18n/routing"; 
 import { ArrowDown, ArrowUp } from "lucide-react"; 
-import { useTranslations } from "next-intl"; 
+import { useTranslations, useLocale } from "next-intl"; 
  
 export default function ProductsContainer({data, totalProducts}) { 
   const t = useTranslations(); 
+  const locale = useLocale();
   const router = useRouter(); 
   const searchParams = useSearchParams(); 
   const categoryFromUrl = searchParams.get("category"); 
@@ -51,8 +52,13 @@ export default function ProductsContainer({data, totalProducts}) {
       if (categoryFromUrl) { 
         setIsLoadingCategory(true); 
  
-        const categoryProducts = await getJSONCategories(categoryFromUrl); 
-        setProducts(categoryProducts); 
+        const {categories} = await getCategories(categoryFromUrl); 
+        const productsList = Array.isArray(categories)
+          ? categories
+          : [];
+        console.log(productsList)
+
+        setProducts(productsList);
         setIsLoadingCategory(false);
       } else { 
         setProducts(data); 
@@ -70,7 +76,7 @@ export default function ProductsContainer({data, totalProducts}) {
     if (products.length >= totalProducts) return; 
      
     const nextSkip = products.length;  
-    const res = await getJSONProducts(PRODUCTS_PER_PAGE, nextSkip); 
+    const res = await getProducts(PRODUCTS_PER_PAGE, nextSkip); 
      
     setProducts((prev) => [...prev, ...res.products]); 
   }; 
@@ -86,7 +92,7 @@ export default function ProductsContainer({data, totalProducts}) {
   // Filter products 
   const filteredProducts = useMemo(() => { 
     return products.filter((product) => { 
-      const matchesSearch = product.title_en.toLowerCase().includes(search.toLowerCase()); 
+      const matchesSearch = product?.title?.[locale].toLowerCase().includes(search.toLowerCase()); 
  
       return matchesSearch; 
     }); 

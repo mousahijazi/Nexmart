@@ -9,6 +9,72 @@ function normalizeListResponse(json, res) {
   return { items: json.data || [], total: json.items ?? (json.data?.length || 0) };
 }
 
+
+export async function getProducts(limit = 20, skip = 0) {
+  try {
+    const page = Math.floor(skip / limit) + 1;
+ 
+    const res = await fetch(`${API_URL}/api/v1/products?page=${page}&limit=${limit}`, {
+      cache: "no-store",
+    });
+ 
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+ 
+    const json = await res.json();
+    const { products, totalProducts } = json.data;
+
+    return {products, total: totalProducts};
+  } catch (error) {
+    console.log(error);
+    return { products: [], total: 0 };
+  }
+}
+
+export async function getProduct(id) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/products/${id}`, { cache: "no-store" });
+ 
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+ 
+    const json = await res.json();
+    const { product } = json.data;
+
+    return {product};
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+export async function getCategories(category, limit) {
+  try {
+    const url = category
+      ? `${API_URL}/api/v1/products?categories=${category}${limit ? `&page=1&limit=${limit}` : ""}`
+      : `${API_URL}/api/v1/categories`;
+
+    const categoriesFetch = await fetch(url, { cache: "no-store" });
+ 
+    if (!categoriesFetch.ok) {
+      throw new Error(`HTTP error! status: ${categoriesFetch.status}`);
+    }
+    
+    const json = await categoriesFetch.json();
+    const categories = json.data?.products || json.data?.categories || [];
+
+    return {categories};
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+
+
+
 export async function getBrand(limit) {
     try {
         const res = await fetch(`${API_URL}/brand${limit ? `?_per_page=${limit}` : ""}`, {cache: "no-store"});
@@ -23,65 +89,6 @@ export async function getBrand(limit) {
         console.log(error);
         return [];
     }
-}
-
-export async function getJSONProducts(limit = 20, skip = 0) {
-  try {
-    const page = Math.floor(skip / limit) + 1;
- 
-    const res = await fetch(`${API_URL}/products?_page=${page}&_per_page=${limit}`, {
-      cache: "no-store",
-    });
- 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
- 
-    const json = await res.json();
-    const { items: products, total } = normalizeListResponse(json, res);
- 
-    return { products, total };
-  } catch (error) {
-    console.log(error);
-    return { products: [], total: 0 };
-  }
-}
- 
-export async function getJSONProduct(id) {
-  try {
-    const res = await fetch(`${API_URL}/products/${id}`, { cache: "no-store" });
- 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
- 
-    return await res.json();
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-}
- 
-export async function getJSONCategories(category = "", limit) {
-  try {
-    const url = category
-      ? `${API_URL}/products?category=${category}${limit ? `&_page=1&_per_page=${limit}` : ""}`
-      : `${API_URL}/categories`;
- 
-    const categoriesFetch = await fetch(url, { cache: "no-store" });
- 
-    if (!categoriesFetch.ok) {
-      throw new Error(`HTTP error! status: ${categoriesFetch.status}`);
-    }
- 
-    const json = await categoriesFetch.json();
-    const { items } = normalizeListResponse(json, categoriesFetch);
- 
-    return items;
-  } catch (error) {
-    console.log(error);
-    return [];
-  }
 }
 
 // todo

@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { getJSONCategories } from "../../helper/fetchApi";
+import { getCategories } from "../../helper/fetchApi";
 import { Link } from "../../lib/i18n/routing";
 
 export default function NavSearch() {
@@ -17,8 +17,8 @@ export default function NavSearch() {
     useEffect(() => {
         const fetchCategories = async () => {
           try {
-              const result = await getJSONCategories();
-              setCategories(result || []);
+              const {categories} = await getCategories();
+              setCategories(categories || []);
           } catch (error) {
             console.error("Failed to fetch categories:", error);
             setCategories([]);
@@ -44,7 +44,7 @@ export default function NavSearch() {
 
      const results =
         search.trim().length > 0
-            ? categories.filter((category) => category?.name_en?.toLowerCase().includes(search.trim().toLowerCase())).slice(0, 6)
+            ? categories.filter((category) => category?.name?.[locale]?.toLowerCase().includes(search.trim().toLowerCase())).slice(0, 6)
             : [];
 
     return (
@@ -80,7 +80,7 @@ export default function NavSearch() {
                           <button key={index} onClick={handleClick} className="w-full text-start px-4 py-3 hover:bg-[#E9E7DD] dark:hover:bg-[var(--color-field)] transition">
                             <Link href={`/products?category=${ele.slug}#products`}>
                               <span className="text-sm font-semibold text-[var(--color-ink)]">
-                                {ele.name_en}
+                                {ele.name[locale]}
                               </span>
                             </Link>
                           </button>
@@ -93,7 +93,6 @@ export default function NavSearch() {
 
                 </div>
             )}
-
         </div>
     );
 }

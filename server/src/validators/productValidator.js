@@ -51,9 +51,9 @@ const createProductValidator = [
     body("brand")
         .trim()
         .notEmpty()
-        .withMessage("Brand is required"),
-        // .isMongoId()
-        // .withMessage("Brand ID is invalid"),
+        .withMessage("Brand is required")
+        .isMongoId()
+        .withMessage("Brand ID is invalid"),
 
     body("stock")
         .notEmpty()

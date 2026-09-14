@@ -3,12 +3,14 @@ import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from "./AlertProvider";
 import { useProductContext } from './CartProvider';
 import { useUserContext } from './UserProvider';
+import { useLocale } from 'next-intl';
 
 const WishlistContext = createContext();
 
 export default function WishlistProvider({children}) {
     const [wishlist, setWishlist] = useState([]);
     const [loadingWishlist, setLoadingWishlist] = useState(true);
+    const locale = useLocale();
 
     const {showAlert} = useAlertContext();
     const {user} = useUserContext();
@@ -28,20 +30,20 @@ export default function WishlistProvider({children}) {
     }, [wishlist, wishlistKey]);
 
     const isInWishlist = (productId) => {
-        return wishlist.some(item => item.id === productId);
+        return wishlist.some(item => item._id === productId);
     };
 
     const addToWishlist = (product) => {
         if (!product) return;
 
-        const exists = isInWishlist(product.id)
+        const exists = isInWishlist(product._id)
         if (exists) {
-            showAlert(`${product.title} is already in your wishlist!`, "danger");
+            showAlert(`${product?.title?.[locale]} is already in your wishlist!`, "danger");
             return;
         }
 
         setWishlist(prev => [...prev, product]);
-        showAlert(`${product.title} added to wishlist`);
+        showAlert(`${product?.title?.[locale]} added to wishlist`);
     };
 
     const resetWishlist = () => {
@@ -67,14 +69,14 @@ export default function WishlistProvider({children}) {
     }
 
     const removeFromWishlist = (product) => {
-        setWishlist(prev => prev.filter(item => item.id !== product.id));
-        showAlert(`${product.title} removed from wishlist`, "danger");
+        setWishlist(prev => prev.filter(item => item?._id !== product?._id));
+        showAlert(`${product?.title?.[locale]} removed from wishlist`, "danger");
     };
 
     const toggleWishlist = (product) => {
         if (!product) return;
 
-        if (isInWishlist(product.id)) {
+        if (isInWishlist(product?._id)) {
             removeFromWishlist(product);
         } else {
             addToWishlist(product);

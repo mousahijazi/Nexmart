@@ -1,17 +1,19 @@
 export const formatCategoryData = (req) => {
-    return {
-        name: {
-            ar: req.body.nameAr,
-            en: req.body.nameEn,
-        },
+  const categoryData = {
+    name: {
+      ar: req.body.nameAr,
+      en: req.body.nameEn,
+    },
+    slug: req.body.slug,
+    description: {
+      ar: req.body.descriptionAr,
+      en: req.body.descriptionEn,
+    },
+  };
 
-        slug: req.body.slug,
+  if (req.file) {
+    categoryData.image = `/uploads/categories/${req.file.filename}`;
+  }
 
-        description: {
-            ar: req.body.descriptionAr,
-            en: req.body.descriptionEn,
-        },
-
-        image: req.body.image,
-    };
-}
+  return categoryData;
+};

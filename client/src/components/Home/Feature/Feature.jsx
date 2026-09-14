@@ -2,16 +2,17 @@ import { getProducts, getCategories } from "../../../helper/fetchApi";
 import { ProductsCard, Loader } from "../../../index";
 import { Suspense } from "react";
 import { Link } from "../../../lib/i18n/routing";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 export default async function Feature() {
     const t = await getTranslations();
+    const locale = await getLocale();
     const {products} =  await getProducts(5);
     const {categories} = await getCategories();
     const tabs = [
         { name: "الكل", slug: "all" },
         ...categories.slice(0, 4).map((cat) => ({
-            name: cat.name_en || cat.slug || cat,
+            name: cat?.name?.[locale] || cat.slug || cat,
             slug: cat.slug || cat,
         })),
     ];

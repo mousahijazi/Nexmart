@@ -1,10 +1,12 @@
 import { getProducts } from "../../../helper/fetchApi";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "../../../lib/i18n/routing";
 import Image from "next/image";
+import { getImageUrl } from "@/helper/getImage";
 
 export default async function NewArrivalsBanner() {
     const t = await getTranslations("home.NewArrivalsBanner");
+    const locale = await getLocale();
     const { products } = await getProducts(3);
 
   return (
@@ -22,16 +24,16 @@ export default async function NewArrivalsBanner() {
                             <div className="relative group h-[120px] mb-5">
                                 <Link href={`/products/${ele.id}`}>
                                     <Image
-                                        src={ele.image}
-                                        alt={ele.title}
+                                        src={getImageUrl(ele.mainImage)}
+                                        alt={ele?.title?.[locale] || "somthing error"}
                                         fill
                                         priority
                                         className="cursor-pointer object-cover bg-black/20 dark:bg-black/40 rounded-xl group-hover:bg-black/10 group-hover:scale-95 transition duration-300"
                                     />
                                 </Link>
                             </div>
-                            <div className="text-[12.5px] font-semibold leading-[1.5] line-clamp-2 min-h-[38px]">{ele.title}</div>
-                            <div className="text-[13px] font-bold text-[var(--color-green)] dark:text-white">{ele.price} ر.س</div>
+                            <div className="text-[12.5px] font-semibold leading-[1.5] line-clamp-2 min-h-[38px]">{ele?.title?.[locale]}</div>
+                            <div className="text-[13px] font-bold text-[var(--color-green)] dark:text-white">{ele?.price.toFixed(2)} ر.س</div>
                         </div>
                     ))}
             </div>

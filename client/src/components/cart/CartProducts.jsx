@@ -43,7 +43,7 @@ export default function CartProducts() {
                   <Link href={`/products/${ele?._id}`} className="relative w-[180px] h-[120px] xs:w-full xs:h-full rounded-2xl overflow-hidden">
                     <Image 
                       src={getImageUrl(ele.mainImage)}
-                      alt={ele?.title?.[locale]}
+                      alt={ele?.title?.[locale] || "somthing error"}
                       fill
                       className="object-cover"
                     />

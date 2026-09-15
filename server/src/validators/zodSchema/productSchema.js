@@ -7,6 +7,12 @@ export const productSchema = z.object({
   descriptionEn: z.string().nonempty(),
   price: z.coerce.number().positive(),
   stock: z.coerce.number().int().min(0),
-  category: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Category ID"),
-  brand: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Brand ID"),
+  category: z.string().regex(
+    /^[0-9a-fA-F]{24}$/,
+    "Invalid Category ID"
+  ),
+  brand: z.string().regex(
+    /^[0-9a-fA-F]{24}$/,
+    "Invalid Brand ID"
+  ),
 });

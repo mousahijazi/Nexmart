@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
-import productRoutes from "./routes/productRoutes.js";
-import categoryRoutes from "./routes/categoriesRoutes.js";
-import brandRoutes from "./routes/brandRoutes.js";
+import v1Routes from "./routes/v1/index.js";
 import { setupSwagger } from "./config/swagger.js";
 import AppError from "./utils/AppError.js";
 import { FAIL } from "./utils/httpStatusText.js";
@@ -21,9 +19,7 @@ setupSwagger(app);
 
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")))
 
-app.use("/api/v1/categories", categoryRoutes);
-app.use("/api/v1/brands", brandRoutes);
-app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/", v1Routes);
 
 app.all("/*splat", (req, res, next) => {
     next(AppError.create("This resource is not available", 404, FAIL));

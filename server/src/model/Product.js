@@ -83,6 +83,13 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
 
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+
     isActive: {
       type: Boolean,
       default: true,

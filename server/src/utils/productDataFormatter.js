@@ -19,6 +19,7 @@ export const formatProductData = (req) => {
       ar: req.body.descriptionAr,
       en: req.body.descriptionEn,
     },
+    slug: req.body.slug,
     price: Number(req.body.price),
     mainImage: `/uploads/products/${req.files.mainImage[0].filename}`,
     images,

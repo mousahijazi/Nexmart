@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
  
 export default function AuthSection() { 
   const t = useTranslations(); 
-  const { user, loading } = useUserContext(); 
+  const { handleAccountClick, user, loading } = useUserContext(); 
  
   if (loading) { 
     return ( 
@@ -18,30 +18,37 @@ export default function AuthSection() {
  
   return ( 
     <div className="flex items-center gap-3"> 
-      {!user  
-        ? <> 
-            <Link 
-                href="/auth?mode=login" 
-                className="inline-block text-sm font-medium px-4 text-[var(--color-green-dark)] transition hover:opacity-80 dark:text-[var(--color-gold)]" 
-            > 
-              {t("nav.login")} 
-            </Link> 
-            <Link 
-                href="/auth?mode=register" 
-                className="inline-block rounded-2xl bg-[var(--color-green-dark)] dark:bg-[#16382e] px-8 py-3 text-sm font-medium text-white transition hover:opacity-90" 
-            > 
-              {t("nav.register")} 
-            </Link> 
-          </>  
-        : <> 
-            <Link href="/user"> 
-              <div className="border rounded-2xl border-[var(--color-muted)] flex items-center gap-5 px-3 py-1 transition-opacity duration-200 hover:opacity-80">
-                <UserImage />
-                <p className="xs text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">{t("nav.account")}</p>
-              </div> 
-            </Link> 
-          </> 
-      } 
+      {!user ? (
+        <>
+          <button
+            type="button"
+            onClick={() => handleAccountClick("/auth?mode=login")}
+            className="cursor-pointer inline-block px-4 text-sm font-medium text-[var(--color-green-dark)] transition hover:opacity-80 dark:text-[var(--color-gold)]"
+          >
+            {t("nav.login")}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleAccountClick("/auth?mode=register")}
+            className="cursor-pointer inline-block rounded-2xl bg-[var(--color-green-dark)] px-8 py-3 text-sm font-medium text-white transition hover:opacity-90 dark:bg-[#16382e]"
+          >
+            {t("nav.register")}
+          </button>
+        </>
+      ) : (
+        <button
+          type="button"
+          onClick={() => handleAccountClick()}
+          className="cursor-pointer border rounded-2xl border-[var(--color-muted)] flex items-center gap-5 px-3 py-1 transition-opacity duration-200 hover:opacity-80"
+        >
+          <UserImage />
+
+          <p className="text-sm text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">
+            {t("nav.account")}
+          </p>
+        </button>
+      )} 
     </div> 
   ); 
 }

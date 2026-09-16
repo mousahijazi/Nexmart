@@ -98,6 +98,8 @@ export {default as AccountDashboard} from "./components/Dashboard/UserDashboard/
 export {default as SettingsDashboard} from "./components/Dashboard/UserDashboard/SettingsDashboard";
 
 export {default as AdminDashboard} from "./components/Dashboard/AdminDashboard/AdminDashboard";
+export {default as AdminDashboardContent} from "./components/Dashboard/AdminDashboard/AdminDashboardContent";
+export {default as DashboardPage} from "./components/Dashboard/AdminDashboard/DashboardPage";
 
 export {default as QuickNavRail} from "./components/Dashboard/AdminDashboard/quicknav/QuickNavrail";
 export {default as FulfillmentHubCard} from "./components/Dashboard/AdminDashboard/quicknav/Fulfillmenthubcard";
@@ -115,6 +117,12 @@ export {default as OrdersPagination} from "./components/Dashboard/AdminDashboard
 export {default as OrderTableRow} from "./components/Dashboard/AdminDashboard/orders/OrderTableRow";
 export {default as OrderPriorityIcon} from "./components/Dashboard/AdminDashboard/orders/OrderPriorityIcon";
 export {default as StatusBadge} from "./components/Dashboard/AdminDashboard/orders/StatusBadge";
+
+export {default as CustomersPage} from "./components/Dashboard/AdminDashboard/customers/CustomersPage";
+export {default as CustomersPanel} from "./components/Dashboard/AdminDashboard/customers/CustomersPanel";
+export {default as CustomersPanelHeader} from "./components/Dashboard/AdminDashboard/customers/CustomersPanelHeader";
+export {default as CustomersFilters} from "./components/Dashboard/AdminDashboard/customers/CustomersFilters";
+export {default as CustomerTableRow} from "./components/Dashboard/AdminDashboard/customers/CustomerTableRow";
 
 export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
 export {default as CartDashboardData} from "./components/Dashboard/CartDashboardData";
@@ -179,3 +187,6 @@ export {default as ProductsCard} from "./components/element/ProductsCard/Product
 export {default as ProductsWishlistIcon} from "./components/element/ProductsCard/ProductsWishlistIcon";
 export {default as ProductsButton} from "./components/element/ProductsCard/ProductsButton";
 export {default as ShowCard} from "./components/element/ProductsCard/ShowCard";
+
+// middleware
+export {default as ProtectedRoute} from "./middleware/ProtectedRoute";

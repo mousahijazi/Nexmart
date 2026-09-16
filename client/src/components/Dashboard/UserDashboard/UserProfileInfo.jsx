@@ -6,8 +6,8 @@ import { useLocale } from "next-intl";
 export default function UserProfileInfo() {
   const locale = useLocale();
   const { user, loading } = useUserContext();
-  const userName = user?.user_metadata?.first_name
-    ? `${user?.user_metadata.first_name} ${user?.user_metadata.last_name}`
+  const userName = user?.firstName
+    ? `${user?.firstName} ${user?.lastName}`
     : "guest";
 
   const formatDate = (dateString) => {
@@ -21,7 +21,7 @@ export default function UserProfileInfo() {
     }).format(date);
   };
 
-  const joinedDate = user?.created_at ? formatDate(user.created_at) : "غير محدد";
+  const joinedDate = user?.createdAt ? formatDate(user.createdAt) : "غير محدد";
 
   if (loading) {
     return (

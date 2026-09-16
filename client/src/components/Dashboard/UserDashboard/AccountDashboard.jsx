@@ -11,8 +11,8 @@ export default function AccountDashboard() {
     const tDash = useTranslations("profile.accountDashboard");
 
     const firstName =
-        user?.user_metadata?.first_name ||
-        user?.user_metadata?.firstName ||
+        user?.firstName ||
+        user?.firstName ||
         user?.email?.split("@")[0] ||
         t("guest");
 

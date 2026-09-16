@@ -24,7 +24,7 @@ const createDefaultAdmin = async () => {
       process.exit(0);
     }
 
-    const hashedPassword = await bcrypt.hash("Admin@123456", 18);
+    const hashedPassword = await bcrypt.hash("Admin@123456", 12);
 
     const adminUser = new User({
       firstName: "Super",

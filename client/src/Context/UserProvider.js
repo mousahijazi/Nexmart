@@ -2,7 +2,7 @@
 import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from './AlertProvider';
 import { useRouter } from "../lib/i18n/routing";
-import { loginUser, registerUser } from "../helper/fetchApi";
+import { loginUser, registerUser, getCurrentUser, logoutApi } from "../helper/fetchApi";
 import { supabase } from '../lib/supabase';
 
 const UserContext = createContext();
@@ -11,33 +11,44 @@ export default function UserProvider({children}) {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null);
+  const [redirectTo, setRedirectTo] = useState(null);
+  
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [userImage, setUserImage] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
   const {showAlert} = useAlertContext();
 
+  const fetchUser = async () => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      setUser(null);
+      setRole(null);
+      setRedirectTo(null);
+      setLoading(false);
+      return;
+    }
+
+    const result = await getCurrentUser(token);
+
+    if (!result.success) {
+      localStorage.removeItem("nexmart-token");
+      setUser(null);
+      setRole(null);
+      setRedirectTo(null);
+      setLoading(false);
+      return;
+    }
+
+    setUser(result.user);
+    setRole(result.role);
+    setRedirectTo(result.redirectTo);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    supabase.auth.getSession().then((result) => {
-      const session = result.data.session; 
-      session ? setUser(session.user) : setUser(null); 
-
-      setLoading(false);
-    });
-
-    const result = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        setUser(session.user);
-      } else {
-        setUser(null);
-      }
-    });
-
-    const listener = result.data;
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+    fetchUser();
   }, []);
 
   const login = async (data, isLogin) => {
@@ -50,7 +61,7 @@ export default function UserProvider({children}) {
     if (isLogin) {
       result = await loginUser(data.email, data.password);
     } else {
-      result = await registerUser(data.email, data.password, data.firstName, data.lastName, userImage);
+      result = await registerUser(data.email, data.password, data.firstName, data.lastName);
     }
 
     if (!result.success) {
@@ -58,33 +69,50 @@ export default function UserProvider({children}) {
       return { success: false };
     }
 
+    if (!result.token) {
+      showAlert("Account created! Please log in.", "success");
+      setTimeout(() => router.replace("/login"), 1200);
+      return { success: true };
+    }
+
+    localStorage.setItem("nexmart-token", result.token);
+
     const loggedInUser = result.user;
+
+    if (!loggedInUser) {
+      showAlert("Unable to get user information", "danger");
+      return { success: false };
+    }
+
+    const userId = loggedInUser._id;
+
+    setUser(loggedInUser);
+    setRole(loggedInUser.role);
+    setRedirectTo(result.redirectTo);
 
     // merged cart
     const guestCart = JSON.parse(localStorage.getItem("cart-guest")) || [];
-    const userCart = JSON.parse(localStorage.getItem(`cart-${loggedInUser.id}`)) || [];
+    const userCart = JSON.parse(localStorage.getItem(`cart-${userId}`)) || [];
     const mergedCart = [
       ...userCart, 
-      ...guestCart.filter(guestItem => !userCart.some(userItem => userItem.id === guestItem.id))
+      ...guestCart.filter(guestItem => !userCart.some(userItem => userItem._id === guestItem._id))
     ];
 
-    localStorage.setItem(`cart-${loggedInUser.id}`, JSON.stringify(mergedCart));
+    localStorage.setItem(`cart-${userId}`, JSON.stringify(mergedCart));
     localStorage.removeItem("cart-guest");
 
     // merged wishlist
     const guestWishlist = JSON.parse(localStorage.getItem("wishlist-guest")) || [];
-    const userWishlist =JSON.parse(localStorage.getItem(`wishlist-${loggedInUser.id}`)) || [];
+    const userWishlist =JSON.parse(localStorage.getItem(`wishlist-${userId}`)) || [];
     const mergedWishlist = [
         ...userWishlist,
-        ...guestWishlist.filter(guestItem => !userWishlist.some(userItem => userItem.id === guestItem.id))
+        ...guestWishlist.filter(guestItem => !userWishlist.some(userItem => userItem._id === guestItem._id))
     ];
 
-    localStorage.setItem(`wishlist-${loggedInUser.id}`, JSON.stringify(mergedWishlist));
+    localStorage.setItem(`wishlist-${userId}`, JSON.stringify(mergedWishlist));
     localStorage.removeItem("wishlist-guest");
-
-    setUser(loggedInUser);
     
-    const displayName = loggedInUser?.user_metadata?.first_name || loggedInUser.email;
+    const displayName = loggedInUser?.firstName || loggedInUser?.email;
     showAlert(`Welcome Back, ${displayName}!`);
 
     setTimeout(() => {
@@ -149,11 +177,41 @@ export default function UserProvider({children}) {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    showAlert("You have successfully logged out", "danger");
-    setTimeout(() => {
-      router.replace("/");
-    }, 1000);
+    try {
+      const token = localStorage.getItem("nexmart-token");
+      
+      if (token) {
+        await logoutApi(token);
+      }
+    } catch (error) {
+      console.error("Logout failed on server", error);
+    } finally {
+      localStorage.removeItem("nexmart-token");
+      setUser(null);
+      setRole(null);
+      setRedirectTo(null);
+      
+      showAlert("You have successfully logged out", "success");
+      
+      setTimeout(() => {
+        router.replace("/");
+      }, 1000);
+    }
+  };
+
+  const handleAccountClick = (path) => {
+    const token = localStorage.getItem("nexmart-token");
+    if (!token) {
+      router.replace(path);
+      return;
+    }
+
+    if (!redirectTo) {
+      console.log("redirectTo is not found !")
+      return;
+    }
+
+    router.replace(redirectTo);
   };
 
   const value = {
@@ -162,6 +220,12 @@ export default function UserProvider({children}) {
     
     loading,
     setLoading,
+
+    role,
+    setRole,
+    redirectTo,
+    setRedirectTo,
+    handleAccountClick,
 
     isUploadingImage,
     userImage,

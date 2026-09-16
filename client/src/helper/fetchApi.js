@@ -76,7 +76,7 @@ export async function getBrand(limit, page = 1) {
     try {
       const res = await fetch(`${API_URL}/api/v1/brands${limit ? `?page=${page}&limit=${limit}` : ""}`, {cache: "no-store"});
       if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
 
       const json = await res.json();
@@ -89,9 +89,156 @@ export async function getBrand(limit, page = 1) {
     }
 }
 
+// users
+export const getCurrentUser = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/users/me`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
 
+    const result = await response.json();
 
+    if (!response.ok) {
+      return {
+        success: false,
+        message: result.message || "Failed to get current user",
+      };
+    }
 
+    return {
+      success: true,
+      user: result.data.user,
+      role: result.data.user.role,
+      redirectTo: result.data.redirectTo,
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
+};
+
+// admin
+export async function createProduct(formData, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/products`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== "success") {
+      return {
+        success: false,
+        message: result.message || "Failed to create product",
+      };
+    }
+
+    return {
+      success: true,
+      product: result.data.product,
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
+}
+
+// auth
+import { supabase } from "../lib/supabase";
+
+// login
+export async function loginUser(email, password) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/users/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      cache: "no-store",
+    });
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== "success") {
+      return { success: false, message: result.message || "Login failed" };
+    }
+
+    return { 
+      success: true, 
+      token: result.data?.user?.token, 
+      user: result.data?.user,
+      redirectTo: result.data?.redirectTo,
+    };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Something went wrong" };
+  }
+}
+
+export async function registerUser(email, password, firstName, lastName, phoneNumber) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/users/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        firstName, 
+        lastName, 
+        email, 
+        password, 
+        phoneNumber: phoneNumber || "", 
+      }),
+      cache: "no-store",
+    });
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== "success") {
+      return { success: false, message: result.message || "Registration failed" };
+    }
+
+    return { 
+      success: true, 
+      token: result.data?.user?.token, 
+      user: result.data?.user,
+      redirectTo: result.data?.redirectTo,
+    };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Something went wrong" };
+  }
+}
+
+// logout
+export const logoutApi = async (token) => {
+  const response = await fetch("http://localhost:5000/api/users/logout", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to logout from server");
+  }
+
+  return await response.json();
+};
 
 // todo
 export function endOfDay(dateInput) {
@@ -153,38 +300,6 @@ export async function getOfferProducts(offer, limit = 4) {
   }
 }
 
-// login
-import { supabase } from "../lib/supabase";
-
-export async function loginUser(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({email, password});
-
-    if (error) {
-        return {success: false, message: error.message};
-    }
-
-    return {success: true, user: data.user, session: data.session};
-}
-
-// register
-export async function registerUser(email, password, firstName, lastName, userImage) {
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-            data: {
-                first_name: firstName,
-                last_name: lastName,
-                image: userImage || "/Profile.jpg",
-                role: "user"
-            }
-        }
-    });
-
-    return error 
-        ? {success: false, message: error.message} 
-        : {success: true, user: data?.user, session: data?.session};
-}
 
 // subscribeToNewsletter
 export async function subscribeToNewsletter(email) {

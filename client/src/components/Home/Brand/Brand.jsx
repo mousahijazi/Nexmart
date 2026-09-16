@@ -6,7 +6,6 @@ export default async function Brand() {
     const t = await getTranslations("home.Brand");
     const locale = await getLocale();
     const {brands} = await getBrand(6);
-    console.log("brands", brands);
 
   return (
     <section className="max-w-[1280px] mx-auto px-6 py-14">

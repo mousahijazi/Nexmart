@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useUserContext } from "../../Context/UserProvider";
+import { getImageUrl } from "@/helper/getImage";
 
 export default function UserImage() {
     const {user, isUploadingImage} = useUserContext();
@@ -7,7 +8,7 @@ export default function UserImage() {
   return (
     <div className="relative shrink-0">
       <Image
-          src={user?.user_metadata?.image || `/Profile.jpg`}
+          src={getImageUrl(user?.avater) || `/Profile.jpg`}
           alt={user?.firstName || "Guest"}
           width={35}
           height={35}

@@ -8,7 +8,6 @@ import { useTranslations } from "next-intl";
 export default function SettingsDashboard() {
     const { user } = useUserContext();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const metadata = user?.user_metadata || {};
     const tLabel = useTranslations();
     const t = useTranslations("profile");
     const tSettings = useTranslations("profile.settingsDashboard");
@@ -16,19 +15,19 @@ export default function SettingsDashboard() {
     const profileData = [
         {
             label: tLabel("auth.form.firstName.label"),
-            value: metadata?.first_name,
+            value: user?.firstName,
         },
         {
             label: tLabel("auth.form.lastName.label"),
-            value: metadata?.last_name,
+            value: user?.lastName,
         },
         {
             label: tSettings("phone"),
-            value: metadata?.phone,
+            value: user?.phoneNumber,
         },
         {
             label: tLabel("auth.form.email.label"),
-            value: metadata?.email,
+            value: user?.email,
         },
     ];
 
@@ -111,7 +110,7 @@ export default function SettingsDashboard() {
                         </p>
 
                         <p className="text-xs text-[var(--color-muted)] dark:text-gray-400 mt-1">
-                            {tSettings("emailLinkedDesc", { email: metadata.email || "" })}
+                            {tSettings("emailLinkedDesc", { email: user?.email || "" })}
                         </p>
                     </div>
                     <span className="text-xs font-bold text-[#0E4D3A] dark:text-[var(--color-gold)]">

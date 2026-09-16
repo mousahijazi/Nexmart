@@ -1,7 +1,7 @@
 import { LayoutGrid, ShoppingCart, Boxes, Tags, Users, Receipt, BadgePercent, BarChart3, Settings } from "lucide-react";
 
 export const QuickNavItems = [
-  { key: "overview", label: "Overview", icon: LayoutGrid },
+  { key: "dashboard", label: "Dashboard", icon: LayoutGrid },
   { key: "all-orders", label: "All Orders", icon: ShoppingCart },
   { key: "inventory", label: "Inventory", icon: Boxes },
   { key: "categories", label: "Categories", icon: Tags },

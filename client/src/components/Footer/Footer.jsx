@@ -5,7 +5,7 @@ export default function Footer() {
   const t = useTranslations();
 
   return (
-    <footer className="bg-[var(--color-green-dark)] text-[#C6D6CF]">
+    <footer className="relative bottom-0 bg-[var(--color-green-dark)] text-[#C6D6CF]">
       <div className="max-w-[1280px] mx-auto px-6 pt-[52px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-9">
         <div>
           <div className="flex items-center gap-[10px] mb-4">

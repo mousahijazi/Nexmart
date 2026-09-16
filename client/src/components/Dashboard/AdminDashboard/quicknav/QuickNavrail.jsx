@@ -1,16 +1,11 @@
 "use client";
-import { useState } from "react";
 import { PanelLeft } from "lucide-react";
 import { QuickNavItems } from "./QuickNavItems";
 import { FulfillmentHubCard } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 
-export default function QuickNavRail({ defaultActive = "overview", onNavigate }) {
-  const [active, setActive] = useState(defaultActive);
-
-  const handleSelect = (key) => {
-    setActive(key);
-    onNavigate?.(key);
-  }
+export default function QuickNavRail() {
+  const { activeSection, setActiveSection } = useAdminContext();
 
   return (
     <aside className="flex w-full shrink-0 flex-col gap-4 lg:w-56">
@@ -24,12 +19,12 @@ export default function QuickNavRail({ defaultActive = "overview", onNavigate })
 
         <nav className="flex flex-col gap-0.5">
           {QuickNavItems.map(({ key, label, icon: Icon }) => {
-            const isActive = key === active;
+            const isActive = key === activeSection;
             return (
               <button
                 key={key}
                 type="button"
-                onClick={() => handleSelect(key)}
+                onClick={() => setActiveSection(key)}
                 className={
                   isActive
                     ? "flex items-center gap-2.5 rounded-lg bg-[var(--color-green)] px-2.5 py-2 text-sm font-medium text-white"

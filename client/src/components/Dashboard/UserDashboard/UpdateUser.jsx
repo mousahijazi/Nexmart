@@ -18,9 +18,9 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
   useEffect(() => {
     if (user) {
       reset({
-          firstName: user.user_metadata.first_name,
-          lastName: user.user_metadata.last_name,
-          phone: user.user_metadata.phone || "",
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+          phone: user?.phoneNumber || "",
       })
     }
   }, [user, isModalOpen, reset]);

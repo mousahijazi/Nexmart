@@ -56,7 +56,6 @@ export default function ProductsContainer({data, totalProducts}) {
         const productsList = Array.isArray(categories)
           ? categories
           : [];
-        console.log(productsList)
 
         setProducts(productsList);
         setIsLoadingCategory(false);

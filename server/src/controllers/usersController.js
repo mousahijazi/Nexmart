@@ -1,4 +1,4 @@
-import { getAllUsersService, registerUserService, loginUserService } from "../service/userService.js";
+import { getAllUsersService, registerUserService, loginUserService, getCurrentUserService, logoutUserService } from "../service/userService.js";
 import { SUCCESS } from "../utils/httpStatusText.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 
@@ -18,14 +18,31 @@ export const getAllUsers = async (req, res) => {
   });
 };
 
+export const getCurrentUser = asyncHandler(
+  async (req, res) => {
+    const user = await getCurrentUserService(req.currentUser.id);
+
+    const redirectTo = req.userRole === "ADMIN" ? "/admin" : "/user";
+
+    res.json({
+      status: SUCCESS,
+      data: {
+        user,
+        redirectTo,
+      },
+    });
+  }
+);
+
 export const registerUser = asyncHandler(
     async (req, res) => {
-        const user = await registerUserService(req.body);
+        const {user, redirectTo} = await registerUserService(req.body);
 
         res.status(201).json({
             status: SUCCESS,
             data: {
-            user,
+              user,
+              redirectTo,
             },
         });
     }
@@ -35,13 +52,24 @@ export const loginUser = asyncHandler(
     async (req, res) => {
         const { email, password } = req.body;
 
-        const token = await loginUserService(email, password);
+        const { user, redirectTo } = await loginUserService(email, password);
 
         res.json({
             status: SUCCESS,
             data: {
-            token,
+              user,
+              redirectTo,
             },
         });
     }
 );
+
+export const logoutUser = asyncHandler(async (req, res) => {
+    const userId = req.currentUser.id; 
+    await logoutUserService(userId);
+
+    res.json({
+      status: SUCCESS,
+      message: "Logged out successfully",
+    });
+});

@@ -1,4 +1,4 @@
-import { Dashbaord } from "@/index";
+import { Dashbaord, ProtectedRoute } from "@/index";
 
 export const metadata = {
   title: "Nexmart - profile",
@@ -7,10 +7,12 @@ export const metadata = {
 
 export default function page() {
   return (
-    <div className="sm:px-6">
-        <div className="max-w-7xl mx-auto sm:px-6">
-            <Dashbaord showData="userDashboard" /> 
-        </div>
-    </div>
+    <ProtectedRoute allowedRole="USER">
+      <div className="sm:px-6">
+          <div className="max-w-7xl mx-auto sm:px-6">
+              <Dashbaord showData="userDashboard" /> 
+          </div>
+      </div>
+    </ProtectedRoute>
   )
 }

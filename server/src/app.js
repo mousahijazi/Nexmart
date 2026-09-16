@@ -5,6 +5,7 @@ import { setupSwagger } from "./config/swagger.js";
 import AppError from "./utils/AppError.js";
 import { FAIL } from "./utils/httpStatusText.js";
 import { fileURLToPath } from "node:url";
+import { API_BASE_PATH } from "./utils/apiEndpoints.js";
 import path from "node:path";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,7 +20,7 @@ setupSwagger(app);
 
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")))
 
-app.use("/api/v1/", v1Routes);
+app.use(API_BASE_PATH, v1Routes);
 
 app.all("/*splat", (req, res, next) => {
     next(AppError.create("This resource is not available", 404, FAIL));

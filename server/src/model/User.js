@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { userRoles } from "../utils/userRoles";
+import { userRoles } from "../utils/userRoles.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -31,9 +31,10 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
     },
 
-    image: {
+    avater: {
       type: String,
       trim: true,
+      default: "/uploads/users/Profile.jpg",
     },
 
     token: {

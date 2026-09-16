@@ -12,7 +12,7 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-:root { 
+:root {
   --color-green-dark: #0B3B2E;
   --color-green: #0E4D3A;
   --color-green-light: #12604A;
@@ -40,39 +40,31 @@
 }
 
 .dark {
-  /* Brand */
   --color-green-dark: #061C16;
   --color-green: #0A3A2C;
   --color-green-light: #12513F;
   --color-green-deep: #DDE5DF;
 
-  /* Text */
   --color-ink: #F3F1E9;
 
-  /* Gold */
   --color-gold: #D4A94A;
   --color-gold-light: #E9C876;
 
-  /* Backgrounds */
   --color-cream: #0B1512;
   --color-surface: #12201B;
   --color-sand: #192721;
 
-  /* Borders */
   --color-border: #263831;
   --color-divider: #20332B;
   --color-field: #182821;
 
-  /* Muted text */
   --color-muted: #9BA8A1;
   --color-muted-2: #87958E;
   --color-muted-3: #718078;
 
-  /* Secondary text / UI */
   --color-soft: #C2CCC6;
   --color-soft-2: #A9B5AF;
 
-  /* Errors */
   --color-red: #D05A3D;
 }
 

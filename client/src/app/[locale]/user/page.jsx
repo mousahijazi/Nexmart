@@ -1,4 +1,4 @@
-import { Dashbaord } from "../../../index";
+import { Dashbaord } from "@/index";
 
 export const metadata = {
   title: "Nexmart - profile",

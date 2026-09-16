@@ -18,7 +18,7 @@ export default function AccountDashboard() {
 
     return (
         <div className="flex flex-col gap-5">
-            <div className="relative overflow-hidden rounded-2xl bg-[var(--color-green-dark)] dark:bg-[#0f2e25] text-white p-7 border border-transparent dark:border-[#22332e] shadow-sm">
+            <div className="relative overflow-hidden rounded-2xl bg-[var(--color-green-dark)] dark:bg-[#0f2e25] text-white p-2 sm:p-7 border border-transparent dark:border-[#22332e] shadow-sm">
                 <div className="relative z-10 p-6">
                     <div className="text-[var(--color-gold)] text-xs font-bold tracking-[0.12em] mb-2">
                         {tDash("badge")}

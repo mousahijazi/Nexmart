@@ -97,6 +97,25 @@ export {default as UpdateUser} from "./components/Dashboard/UserDashboard/Update
 export {default as AccountDashboard} from "./components/Dashboard/UserDashboard/AccountDashboard";
 export {default as SettingsDashboard} from "./components/Dashboard/UserDashboard/SettingsDashboard";
 
+export {default as AdminDashboard} from "./components/Dashboard/AdminDashboard/AdminDashboard";
+
+export {default as QuickNavRail} from "./components/Dashboard/AdminDashboard/quicknav/QuickNavrail";
+export {default as FulfillmentHubCard} from "./components/Dashboard/AdminDashboard/quicknav/Fulfillmenthubcard";
+
+export {default as OverviewPanel} from "./components/Dashboard/AdminDashboard/overview/OverviewPanel";
+export {default as OverviewHero} from "./components/Dashboard/AdminDashboard/overview/OverviewHero";
+export {default as OverviewStatCard} from "./components/Dashboard/AdminDashboard/overview/OverviewStatCard";
+export {default as OverviewStatsGrid} from "./components/Dashboard/AdminDashboard/overview/OverviewStatsGrid";
+
+export {default as RecentOrdersPanel} from "./components/Dashboard/AdminDashboard/orders/RecentOrdersPanel";
+export {default as OrdersPanelHeader} from "./components/Dashboard/AdminDashboard/orders/OrdersPanelHeader";
+export {default as OrdersFilters} from "./components/Dashboard/AdminDashboard/orders/OrdersFilters";
+export {default as OrdersTable} from "./components/Dashboard/AdminDashboard/orders/OrdersTable";
+export {default as OrdersPagination} from "./components/Dashboard/AdminDashboard/orders/OrdersPagination";
+export {default as OrderTableRow} from "./components/Dashboard/AdminDashboard/orders/OrderTableRow";
+export {default as OrderPriorityIcon} from "./components/Dashboard/AdminDashboard/orders/OrderPriorityIcon";
+export {default as StatusBadge} from "./components/Dashboard/AdminDashboard/orders/StatusBadge";
+
 export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
 export {default as CartDashboardData} from "./components/Dashboard/CartDashboardData";
 export {default as ClearCartButton} from "./components/Dashboard/ClearCartButton";

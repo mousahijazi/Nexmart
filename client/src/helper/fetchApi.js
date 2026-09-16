@@ -46,7 +46,7 @@ export async function getProduct(id) {
     return {product};
   } catch (error) {
     console.log(error);
-    return null;
+    return { product: {} };
   }
 }
 
@@ -68,7 +68,7 @@ export async function getCategories(category, limit) {
     return {categories};
   } catch (error) {
     console.log(error);
-    return [];
+    return { categories: [] };
   }
 }
 

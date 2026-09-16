@@ -1,4 +1,4 @@
-import { CartDashboard, Userdashboard, WishlistDashboard, OrderDashboard } from "../../index";
+import { CartDashboard, Userdashboard, WishlistDashboard, OrderDashboard, AdminDashboard } from "../../index";
 
 export default function Dashbaord({showData = "cartDashboard"}) {
   switch (showData) {
@@ -11,6 +11,11 @@ export default function Dashbaord({showData = "cartDashboard"}) {
       return (
         <Userdashboard />
       );
+    
+    case "adminDashboard":
+      return (
+        <AdminDashboard />
+      );
 
     case "wishlistDashboard":
       return (
@@ -20,7 +25,7 @@ export default function Dashbaord({showData = "cartDashboard"}) {
     case "orderDashboard":
       return(
         <OrderDashboard />
-      )
+      );
 
     default:
       return null;

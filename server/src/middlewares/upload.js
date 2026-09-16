@@ -19,6 +19,7 @@ export const uploadImage = ({ folderName, model, schema, slugSource }) => {
         return cb(AppError.create(errorMessage, 400, FAIL));
       }
 
+      // todo generate slug ! 
       const source = slugSource(req.body);
 
       const baseSlug = slugify(source, {

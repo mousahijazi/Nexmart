@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllUsers, registerUser, loginUser, getCurrentUser, logoutUser} from "../../controllers/usersController.js";
+import { getAllUsers, registerUser, loginUser, getCurrentUser, logoutUser, updateUser } from "../../controllers/usersController.js";
 import { registerValidator } from "../../validators/createUsersSchema.js";
 import generateSlug from "../../utils/generateSlug.js";
 import validate from "../../middlewares/validate.js";
@@ -7,6 +7,7 @@ import User from "../../model/User.js";
 import {authorizeRoles} from "../../middlewares/role.js";
 import { authToken } from "../../middlewares/auth.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
+import { uploadUserImage } from "../../middlewares/uploadmiddleware/uploadUserMiddleware.js";
 
 const router = express.Router();
 
@@ -14,7 +15,8 @@ router.route("/")
         .get(authToken, authorizeRoles("ADMIN"), getAllUsers);
 
 router.route("/me")
-        .get(authToken, checkUserRole, getCurrentUser);
+        .get(authToken, checkUserRole, getCurrentUser)
+        .patch(authToken, uploadUserImage, validate, updateUser);
 
 router.route("/register")
         .post(

@@ -211,7 +211,7 @@ export default function ProductModal() {
     }
 
     if (!isEdit && !mainImage) {
-      console.log("Main image is required");
+      showAlert("Main image is required", "danger");
       return;
     }
 
@@ -250,6 +250,7 @@ export default function ProductModal() {
         return;
       }
 
+      showAlert(`The product ${locale == "ar" ? data.titleAr : data.titleEn} has been successfully added`)
       refreshProducts();
       closeProductModal();
     } catch (error) {

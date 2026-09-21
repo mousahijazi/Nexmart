@@ -3,8 +3,9 @@ import { CatalogStatus, CategoryBadge, StockBadge } from "./ProductStatus";
 import EditPoductsButton from "./EditPoductsButton";
 import { getStockStatus, getCatalogStatus, getCategoryName, getBrandName, getDisplaySku } from "./Productdisplay";
 import { getImageUrl } from "@/helper/getImage";
+import { Link } from "@/lib/i18n/routing";
 
-export default function ProductRow({ product, selected, onSelect }) {
+export default function ProductRow({ product, selected }) {
   const name = product.title?.en || product.title?.ar || "Untitled product";
   const arabicName = product.title?.ar || "";
 
@@ -41,7 +42,7 @@ export default function ProductRow({ product, selected, onSelect }) {
       </div>
 
       <div className="flex min-w-0 items-center gap-3">
-        <div className="relative h-[58px] w-[58px] shrink-0 overflow-hidden rounded-[8px] bg-[var(--color-surface)]">
+        <Link href={`/products/${product._id}`} className="relative h-[58px] w-[58px] shrink-0 overflow-hidden rounded-[8px] bg-[var(--color-surface)]">
           <Image
             src={getImageUrl(product.mainImage)}
             alt={name}
@@ -49,7 +50,7 @@ export default function ProductRow({ product, selected, onSelect }) {
             sizes="58px"
             className="object-cover"
           />
-        </div>
+        </Link>
 
         <div className="min-w-0">
           <p className="truncate text-[15px] font-medium leading-[1.15] tracking-[-0.02em] text-[var(--color-ink)]">

@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
     },
 
-    avater: {
+    avatar: {
       type: String,
       trim: true,
       default: "/uploads/users/Profile.jpg",

@@ -1,4 +1,4 @@
-import { getAllUsersService, registerUserService, loginUserService, getCurrentUserService, logoutUserService } from "../service/userService.js";
+import { getAllUsersService, registerUserService, loginUserService, getCurrentUserService, logoutUserService, updateUserService } from "../service/userService.js";
 import { SUCCESS } from "../utils/httpStatusText.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 
@@ -62,6 +62,28 @@ export const loginUser = asyncHandler(
             },
         });
     }
+);
+
+export const updateUser = asyncHandler(
+  async (req, res) => {
+    const userId = req.currentUser.id;
+    const updateData = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      phoneNumber: req.body.phoneNumber,
+    };
+
+    if (req.file) {
+      updateData.avatar = `/uploads/users/${req.file.filename}`;
+    }
+
+    const user = await updateUserService(userId, updateData);
+
+    res.json({
+      status: SUCCESS,
+      data: { user },
+    });
+  }
 );
 
 export const logoutUser = asyncHandler(async (req, res) => {

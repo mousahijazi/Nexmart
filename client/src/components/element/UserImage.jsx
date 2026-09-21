@@ -8,7 +8,7 @@ export default function UserImage() {
   return (
     <div className="relative shrink-0">
       <Image
-          src={getImageUrl(user?.avater) || `/Profile.jpg`}
+          src={getImageUrl(user?.avatar) || `/Profile.jpg`}
           alt={user?.firstName || "Guest"}
           width={35}
           height={35}

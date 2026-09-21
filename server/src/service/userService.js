@@ -2,7 +2,7 @@ import User from "../model/User.js";
 import bcrypt from "bcrypt";
 import generateJWT from "../utils/generateJWT.js";
 import AppError from "../utils/AppError.js";
-import { FAIL, ERROR } from "../utils/httpStatusText.js";
+import { FAIL } from "../utils/httpStatusText.js";
 
 export const getAllUsersService = async (limit, page) => {
   const skip = (page - 1) * limit;
@@ -78,6 +78,26 @@ export const loginUserService = async (email, password) => {
     user: userResponse,
     redirectTo: user.role === "ADMIN" ? "/admin" : "/user",
   };
+};
+
+export const updateUserService = async (userId, updateData) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $set: updateData },
+    { returnDocument: "after", runValidators: true }
+  );
+
+  if (!user) {
+    throw AppError.create("User not found", 404, FAIL);
+  }
+
+  const userResponse = user.toObject();
+
+  delete userResponse.password;
+  delete userResponse.token;
+  delete userResponse.__v;
+
+  return userResponse;
 };
 
 export const logoutUserService = async (userId) => {

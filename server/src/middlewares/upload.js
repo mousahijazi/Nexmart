@@ -16,9 +16,7 @@ export const uploadImage = ({ folderName, model, schema, slugSource, generateSlu
           .map((issue) => issue.message)
           .join(" | ");
 
-        return cb(
-          AppError.create(errorMessage, 400, FAIL)
-        );
+        return cb(AppError.create(errorMessage, 400, FAIL));
       }
 
       if (!generateSlug) {

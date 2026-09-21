@@ -7,6 +7,10 @@ import { useAdminContext } from "@/Context/Adminprovider";
 import ProductForm from "./ProductForm";
 import ProductImages from "./ProductImages";
 import ProductModalFooter from "./ProductModalFooter";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productFormSchema } from "@/lib/schemas/productSchema";
+import { useAlertContext } from "@/Context/AlertProvider";
 
 const EMPTY_FORM = {
   titleAr: "",
@@ -22,19 +26,26 @@ const EMPTY_FORM = {
 export default function ProductModal() {
   const locale = useLocale();
   const { isProductModalOpen, productModalMode, editingProduct, closeProductModal, refreshProducts } = useAdminContext();
+  const { register, reset, handleSubmit, formState: { errors, isSubmitting }} = 
+  useForm({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      EMPTY_FORM
+    },
+  });
+
+  const { showAlert } = useAlertContext();
   const isEdit = productModalMode === "edit";
 
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
-  const [form, setForm] = useState(EMPTY_FORM);
   const [mainImage, setMainImage] = useState(null);
   const [images, setImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [mainImagePreview, setMainImagePreview] = useState(null);
   const [imagePreviews, setImagePreviews] = useState([]);
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isProductModalOpen) {
@@ -42,7 +53,7 @@ export default function ProductModal() {
     }
 
     if (!isEdit || !editingProduct) {
-      setForm(EMPTY_FORM);
+      reset({EMPTY_FORM});
 
       setMainImage(null);
       setImages([]);
@@ -54,7 +65,7 @@ export default function ProductModal() {
       return;
     }
 
-    setForm({
+    reset({
       titleAr: editingProduct.title?.ar || "",
       titleEn: editingProduct.title?.en || "",
 
@@ -67,7 +78,7 @@ export default function ProductModal() {
       category: editingProduct.category?._id || editingProduct.category || "",
 
       brand: editingProduct.brand?._id || editingProduct.brand || "",
-    });
+    })
 
     setExistingImages(editingProduct.images || []);
 
@@ -140,7 +151,7 @@ export default function ProductModal() {
     }
 
     const handleKeyDown = (event) => {
-      if (event.key === "Escape" && !submitting) {
+      if (event.key === "Escape" && !isSubmitting) {
         closeProductModal();
       }
     };
@@ -150,7 +161,7 @@ export default function ProductModal() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isProductModalOpen, submitting, closeProductModal]);
+  }, [isProductModalOpen, isSubmitting, closeProductModal]);
 
   useEffect(() => {
     if (!isProductModalOpen) {
@@ -164,15 +175,6 @@ export default function ProductModal() {
       document.body.style.overflow = originalOverflow;
     };
   }, [isProductModalOpen]);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const handleMainImageChange = (event) => {
     const file = event.target.files?.[0] || null;
@@ -201,9 +203,7 @@ export default function ProductModal() {
     setExistingImages((prev) => prev.filter((_, imageIndex) => imageIndex !== index));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const onSubmit = async (data) => {
     const token = localStorage.getItem("nexmart-token");
 
     if (!token) {
@@ -215,28 +215,18 @@ export default function ProductModal() {
       return;
     }
 
-    if (!form.category) {
-      console.log("Category is required");
-      return;
-    }
-
-    if (!form.brand) {
-      console.log("Brand is required");
-      return;
-    }
-
     const formData = new FormData();
 
-    formData.append("titleAr", form.titleAr);
-    formData.append("titleEn", form.titleEn);
+    formData.append("titleAr", data.titleAr);
+    formData.append("titleEn", data.titleEn);
 
-    formData.append("descriptionAr", form.descriptionAr);
-    formData.append("descriptionEn", form.descriptionEn);
+    formData.append("descriptionAr", data.descriptionAr);
+    formData.append("descriptionEn", data.descriptionEn);
 
-    formData.append("price", form.price);
-    formData.append("stock", form.stock);
-    formData.append("category", form.category);
-    formData.append("brand", form.brand);
+    formData.append("price", data.price);
+    formData.append("stock", data.stock);
+    formData.append("category", data.category);
+    formData.append("brand", data.brand);
 
     if (mainImage) {
       formData.append("mainImage", mainImage);
@@ -251,8 +241,6 @@ export default function ProductModal() {
     });
 
     try {
-      setSubmitting(true);
-
       const result = isEdit 
         ? await updateProduct(editingProduct._id, formData, token)
         : await createProduct(formData, token);
@@ -266,8 +254,6 @@ export default function ProductModal() {
       closeProductModal();
     } catch (error) {
       console.error(isEdit ? "Failed to update product:" : "Failed to create product:", error);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -282,7 +268,7 @@ export default function ProductModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-3 backdrop-blur-[2px] sm:p-5"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !submitting) {
+        if (event.target === event.currentTarget && !isSubmitting) {
           closeProductModal();
         }
       }}
@@ -308,7 +294,7 @@ export default function ProductModal() {
           <button
             type="button"
             onClick={closeProductModal}
-            disabled={submitting}
+            disabled={isSubmitting}
             className="rounded-lg p-1.5 text-[var(--color-muted-2)] transition hover:bg-[var(--color-sand)] disabled:opacity-40"
             aria-label="Close"
           >
@@ -316,15 +302,15 @@ export default function ProductModal() {
           </button>
         </div>
 
-        <form id="product-form" onSubmit={handleSubmit} className="overflow-y-auto px-5 py-5 sm:px-6">
+        <form id="product-form" onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto px-5 py-5 sm:px-6">
           <div className="space-y-5">
             <ProductForm
-              form={form}
+              register={register}
+              errors={errors}
               categories={categories}
               brands={brands}
               locale={locale}
               loadingOptions={loadingOptions}
-              handleChange={handleChange}
               inputClass={inputClass}
               labelClass={labelClass}
               sectionClass={sectionClass}
@@ -336,7 +322,7 @@ export default function ProductModal() {
               images={images}
               existingImages={existingImages}
               mainImagePreview={mainImagePreview} imagePreviews={imagePreviews}
-              submitting={submitting}
+              submitting={isSubmitting}
               handleMainImageChange={handleMainImageChange} handleImagesChange={handleImagesChange} handleRemoveImage={handleRemoveImage} handleRemoveExistingImage={handleRemoveExistingImage}
               labelClass={labelClass}
               sectionClass={sectionClass}
@@ -346,7 +332,7 @@ export default function ProductModal() {
 
         <ProductModalFooter
           isEdit={isEdit}
-          submitting={submitting}
+          submitting={isSubmitting}
           loadingOptions={loadingOptions}
           onClose={closeProductModal}
         />

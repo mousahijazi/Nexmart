@@ -1,176 +1,148 @@
 "use client";
 import { ChevronDown } from "lucide-react";
+import { RHFerrors } from "@/index";
 
-export default function ProductForm({ form, categories, brands, locale, loadingOptions, handleChange, inputClass, labelClass, sectionClass,}) {
+export default function ProductForm({ register, errors, categories, brands, locale, loadingOptions, inputClass, labelClass, sectionClass }) {
+  const textFields = [
+    {
+      label: "Title (English)",
+      name: "titleEn",
+      placeholder: "Product name",
+    },
+    {
+      label: "العنوان (عربي)",
+      name: "titleAr",
+      placeholder: "اسم المنتج",
+    },
+    {
+      label: "Description (English)",
+      name: "descriptionEn",
+      placeholder: "Product description",
+      textarea: true,
+    },
+    {
+      label: "الوصف (عربي)",
+      name: "descriptionAr",
+      placeholder: "وصف المنتج",
+      textarea: true,
+    },
+  ];
+
+  const numberFields = [
+    {
+      label: "Price",
+      name: "price",
+      placeholder: "0.00",
+      step: "0.01",
+    },
+    {
+      label: "Stock Quantity",
+      name: "stock",
+      placeholder: "0",
+    },
+  ];
+
+  const selectFields = [
+    {
+      label: "Category",
+      name: "category",
+      placeholder: "Select category",
+      options: categories,
+    },
+    {
+      label: "Brand",
+      name: "brand",
+      placeholder: "Select brand",
+      options: brands,
+    },
+  ];
+  
   return (
     <div className={sectionClass}>
       <div className="space-y-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>
-              Title (English)
-            </label>
+          {textFields.map((field) => (
+            <div key={field.name}>
+              <label className={labelClass}>
+                {field.label}
+              </label>
 
-            <input
-              type="text"
-              name="titleEn"
-              value={form.titleEn}
-              onChange={handleChange}
-              placeholder="Product name"
-              required
-              className={inputClass}
-            />
-          </div>
+              {field.textarea ? (
+                <textarea
+                  {...register(field.name)}
+                  rows={4}
+                  placeholder={field.placeholder}
+                  className={`${inputClass} resize-none`}
+                />
+              ) : (
+                <input
+                  type="text"
+                  {...register(field.name)}
+                  placeholder={field.placeholder}
+                  className={inputClass}
+                />
+              )}
 
-          <div>
-            <label className={labelClass}>
-              العنوان (عربي)
-            </label>
-
-            <input
-              type="text"
-              name="titleAr"
-              value={form.titleAr}
-              onChange={handleChange}
-              placeholder="اسم المنتج"
-              dir="rtl"
-              required
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>
-              Description (English)
-            </label>
-
-            <textarea
-              name="descriptionEn"
-              value={form.descriptionEn}
-              onChange={handleChange}
-              rows={4}
-              placeholder="Product description"
-              required
-              className={`${inputClass} resize-none`}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              الوصف (عربي)
-            </label>
-
-            <textarea
-              name="descriptionAr"
-              value={form.descriptionAr}
-              onChange={handleChange}
-              rows={4}
-              placeholder="وصف المنتج"
-              dir="rtl"
-              required
-              className={`${inputClass} resize-none`}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>
-              Price
-            </label>
-
-            <input
-              type="number"
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              placeholder="0.00"
-              min="0"
-              step="0.1"
-              required
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Stock Quantity
-            </label>
-
-            <input
-              type="number"
-              name="stock"
-              value={form.stock}
-              onChange={handleChange}
-              placeholder="0"
-              min="0"
-              required
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>
-              Category
-            </label>
-
-            <div className="relative">
-              <select
-                name="category"
-                value={form.category}
-                onChange={handleChange}
-                disabled={loadingOptions}
-                required
-                className={`${inputClass} appearance-none pr-8 disabled:opacity-60`}
-              >
-                <option value="">
-                  {loadingOptions ? "Loading..." : "Select category"}
-                </option>
-
-                {categories.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name?.[locale] || category.name?.en || category.nameEn || category.name?.ar || category.nameAr}
-                  </option>
-                ))}
-              </select>
-
-              <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
+              <RHFerrors errors={errors[field.name]} />
             </div>
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Brand
-            </label>
-
-            <div className="relative">
-              <select
-                name="brand"
-                value={form.brand}
-                onChange={handleChange}
-                disabled={loadingOptions}
-                required
-                className={`${inputClass} appearance-none pr-8 disabled:opacity-60`}
-              >
-                <option value="">
-                  {loadingOptions ? "Loading..." : "Select brand"}
-                </option>
-
-                {brands.map((brand) => (
-                  <option key={brand._id} value={brand._id}>
-                    {brand.name?.[locale] || brand.name?.en || brand.nameEn || brand.name?.ar || brand.nameAr}
-                  </option>
-                ))}
-              </select>
-
-              <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
-            </div>
-          </div>
+          ))}
         </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {numberFields.map((field) => (
+            <div key={field.name}>
+              <label className={labelClass}>
+                {field.label}
+              </label>
+
+              <input
+                type="number"
+                {...register(field.name, {
+                  setValueAs: (value) => value === "" ? undefined : Number(value),
+                })}
+                placeholder={field.placeholder}
+                min="0"
+                step={field.step}
+                className={inputClass}
+              />
+
+              <RHFerrors errors={errors[field.name]} />
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {selectFields.map((field) => (
+            <div key={field.name}>
+              <label className={labelClass}>
+                {field.label}
+              </label>
+
+              <div className="relative">
+                <select
+                  {...register(field.name)}
+                  disabled={loadingOptions}
+                  className={`${inputClass} appearance-none pr-8 disabled:opacity-60`}
+                >
+                  <option value="">
+                    {loadingOptions ? "Loading..." : field.placeholder}
+                  </option>
+
+                  {field.options.map((option) => (
+                    <option key={option._id} value={option._id}>
+                      {option.name?.[locale] || option.name?.en || option.nameEn || option.name?.ar || option.nameAr}
+                    </option>
+                  ))}
+                </select>
+
+                <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
+              </div>
+
+              <RHFerrors errors={errors[field.name]} />
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );

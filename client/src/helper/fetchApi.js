@@ -23,12 +23,12 @@ export async function getProducts(limit = 20, skip = 0) {
     }
  
     const json = await res.json();
-    const { products, totalProducts } = json.data;
+    const { products, total, totalPages } = json.data;
 
-    return {products, total: totalProducts};
+    return {products, total, totalPages};
   } catch (error) {
     console.log(error);
-    return { products: [], total: 0 };
+    return { products: [], total: 0, totalPages: 0 };
   }
 }
 
@@ -47,6 +47,45 @@ export async function getProduct(id) {
   } catch (error) {
     console.log(error);
     return { product: {} };
+  }
+}
+
+export async function updateProduct(productId, formData, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/products/${productId}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== "success") {
+      return {
+        success: false,
+        message: result.message || "Failed to update product",
+      };
+    }
+
+    const { product } = result.data;
+    
+    return {
+      success: true,
+      product: product,
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      success: false,
+      product: {},
+      message: "Something went wrong",
+    };
   }
 }
 
@@ -90,6 +129,25 @@ export async function getBrand(limit, page = 1) {
 }
 
 // users
+export async function getAllUsers(token) {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const json = await response.json();
+    const { users } = json.data;
+    return {status: "success", users};
+  } catch (error) {
+    console.error("Failed to fetch users:", error);
+    return { status: "error", users: [] };
+  }
+}
+
 export const getCurrentUser = async (token) => {
   try {
     const response = await fetch(`${API_URL}/api/v1/users/me`, {

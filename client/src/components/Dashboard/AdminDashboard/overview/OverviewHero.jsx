@@ -1,5 +1,6 @@
-import { Clock, CalendarDays, Download, Plus } from "lucide-react";
+import { Clock, CalendarDays, Download } from "lucide-react";
 import { heroStats } from "./Stats";
+import { AddProductsButton, ProductModal } from "@/index";
 
 export default function OverviewHero({adminName = "Eng. Tariq Al-Mansoor", dateLabel = "Wednesday, 24 Sha'ban 1446 AH / March 2025", onExport, onAddProduct}) {
   return (
@@ -34,16 +35,11 @@ export default function OverviewHero({adminName = "Eng. Tariq Al-Mansoor", dateL
             <Download size={15} />
             Export Financial Audit CSV
           </button>
-          <button
-            type="button"
-            onClick={onAddProduct}
-            className="flex items-center gap-1.5 rounded-lg bg-[var(--color-gold)] px-3.5 py-2 text-sm font-medium text-[var(--color-green-dark)] hover:bg-[var(--color-gold-light)]"
-          >
-            <Plus size={15} />
-            Add New Product
-          </button>
+          <AddProductsButton />
         </div>
       </div>
+
+      <ProductModal />
 
       <div className="mt-5 flex flex-wrap gap-2">
         {heroStats.map(({ key, icon: Icon, label, value }) => (

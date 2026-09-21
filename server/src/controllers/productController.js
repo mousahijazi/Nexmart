@@ -1,6 +1,6 @@
 import {createProduct, getAllProducts, getProductById, updateProduct, deleteProduct} from "../service/productService.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
-import { formatProductData } from "../utils/productDataFormatter.js";
+import { formatProductData, formatProductUpdateData } from "../utils/productDataFormatter.js";
 import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
 
@@ -47,7 +47,9 @@ const createProductController = asyncHandler(
 
 const updateProductController = asyncHandler(
   async (req, res, next) => {
-    const product = await updateProduct(req.params.productId, req.body);
+    const productData = formatProductUpdateData(req);
+
+    const product = await updateProduct(req.params.productId, productData);
 
     if (!product) {
       return next(AppError.create("Product not found", 404, FAIL));

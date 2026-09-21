@@ -6,7 +6,7 @@ export const heroStats = [
   { key: "cart", icon: ShoppingBag, label: "Active Cart Sessions", value: "1,842 Users" },
 ];
 
-export const overviewStats = [
+export const getOverviewStats = (usersCount = 0) => [
   {
     key: "revenue",
     icon: Wallet,
@@ -25,8 +25,8 @@ export const overviewStats = [
     key: "users",
     icon: Users2,
     label: "Registered Users & Sellers",
-    value: "42,850 Accounts",
-    trend: { tone: "positive", text: "+840 this wk" },
+    value: `${usersCount.toLocaleString("en-US")} Accounts`,
+    trend: { tone: "positive", text: "Active Database" },
   },
   {
     key: "catalog",

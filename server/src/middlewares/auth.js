@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ERROR } from "../utils/httpStatusText.js";
+import { ERROR, FAIL } from "../utils/httpStatusText.js";
 import AppError from "../utils/AppError.js";
 
 export const authToken = (req, res, next) => {
@@ -20,7 +20,7 @@ export const authToken = (req, res, next) => {
 
         return next();
     } catch (err) {
-        const error = AppError.create("invalid token", 401, ERROR)
+        const error = AppError.create("invalid token", 401, ERROR);
         return next(error);
     }
 }

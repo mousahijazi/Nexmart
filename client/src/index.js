@@ -109,6 +109,9 @@ export {default as OverviewHero} from "./components/Dashboard/AdminDashboard/ove
 export {default as OverviewStatCard} from "./components/Dashboard/AdminDashboard/overview/OverviewStatCard";
 export {default as OverviewStatsGrid} from "./components/Dashboard/AdminDashboard/overview/OverviewStatsGrid";
 
+export {default as ProductModal} from "./components/Dashboard/AdminDashboard/products/productModal/ProductModal";
+export {default as AddProductsButton} from "./components/Dashboard/AdminDashboard/products/AddProductsButton";
+
 export {default as RecentOrdersPanel} from "./components/Dashboard/AdminDashboard/orders/RecentOrdersPanel";
 export {default as OrdersPanelHeader} from "./components/Dashboard/AdminDashboard/orders/OrdersPanelHeader";
 export {default as OrdersFilters} from "./components/Dashboard/AdminDashboard/orders/OrdersFilters";

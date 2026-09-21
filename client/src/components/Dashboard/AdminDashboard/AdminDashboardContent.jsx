@@ -4,6 +4,7 @@ import {DashboardPage} from "@/index";
 // import AllOrdersPage from "./pages/AllOrdersPage";
 // import InventoryPage from "./pages/InventoryPage";
 // import CategoriesPage from "./pages/CategoriesPage";
+import ProductsDashboard from "./products/ProductsDashboard";
 import {CustomersPage} from "@/index";
 // import SettlementsPage from "./pages/SettlementsPage";
 // import DealsPromosPage from "./pages/DealsPromosPage";
@@ -16,6 +17,7 @@ const PAGES = {
 //   inventory: <h1>InventoryPage</h1>,
 //   categories: <h1>CategoriesPage</h1>,
   customers: CustomersPage,
+  products: ProductsDashboard,
 //   settlements: <h1>SettlementsPage</h1>,
 //   deals: <h1>DealsPromosPage</h1>,
 //   reports: <h1>ReportsSlaPage</h1>,

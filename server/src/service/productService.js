@@ -1,5 +1,7 @@
 import Product from "../model/Product.js";
 import Category from "../model/Category.js";
+import AppError from "../utils/AppError.js";
+import { FAIL } from "../utils/httpStatusText.js";
 
 const getAllProducts = async ({categories, page = 1, limit = 10}) => {
   const filter = {};
@@ -24,7 +26,7 @@ const getAllProducts = async ({categories, page = 1, limit = 10}) => {
 
   const skip = (page - 1) * limit;
 
-  const products = await Product.find(filter).populate("category", "name slug image").populate("brand").skip(skip).limit(limit);
+  const products = await Product.find(filter).populate("category", "name slug image").populate("brand").sort({ createdAt: -1 }).skip(skip).limit(limit);
 
   const totalProducts = await Product.countDocuments(filter);
 
@@ -46,15 +48,47 @@ const createProduct = async (productData) => {
   return await Product.create(productData);
 };
 
+
+// todo
 const updateProduct = async (productId, productData) => {
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw AppError.create("Product is not found!", 404, FAIL);
+  }
+
+  const updateData = { ...productData };
+
+  delete updateData.existingImages;
+  delete updateData.newMainImage;
+  delete updateData.newImages;
+
+  if (productData.newMainImage) {
+    updateData.mainImage = productData.newMainImage;
+  }
+
+  if (productData.existingImages !== undefined || productData.newImages) {
+    const oldImages =
+      productData.existingImages !== undefined
+        ? productData.existingImages
+        : product.images;
+
+    const newImages = productData.newImages || [];
+
+    updateData.images = [
+      ...oldImages,
+      ...newImages,
+    ];
+  }
+
   return await Product.findByIdAndUpdate(
     productId,
-    productData,
+    updateData,
     {
       returnDocument: "after",
       runValidators: true,
     }
-  );
+  ).populate("category").populate("brand");
 };
 
 const deleteProduct = async (productId) => {

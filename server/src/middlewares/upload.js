@@ -4,7 +4,7 @@ import { FAIL } from "../utils/httpStatusText.js";
 import fs from "fs";
 import slugify from "slugify";
 
-export const uploadImage = ({ folderName, model, schema, slugSource }) => {
+export const uploadImage = ({ folderName, model, schema, slugSource, generateSlug = true }) => {
   const diskStorage = multer.diskStorage({
     destination: function (req, file, cb) {
       const uploadPath = `uploads/${folderName}`;
@@ -16,10 +16,19 @@ export const uploadImage = ({ folderName, model, schema, slugSource }) => {
           .map((issue) => issue.message)
           .join(" | ");
 
-        return cb(AppError.create(errorMessage, 400, FAIL));
+        return cb(
+          AppError.create(errorMessage, 400, FAIL)
+        );
       }
 
-      // todo generate slug ! 
+      if (!generateSlug) {
+        if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });
+        }
+
+        return cb(null, uploadPath);
+      }
+
       const source = slugSource(req.body);
 
       const baseSlug = slugify(source, {
@@ -51,22 +60,27 @@ export const uploadImage = ({ folderName, model, schema, slugSource }) => {
         cb(null, uploadPath);
       };
 
-      checkSlug()
-      .catch((error) => {
+      checkSlug().catch((error) => {
         cb(error);
       });
     },
 
     filename: function (req, file, cb) {
       const ext = file.mimetype.split("/")[1];
+
       const fileName = `${folderName}-${Date.now()}.${ext}`;
+
       cb(null, fileName);
     },
   });
 
   const fileFilter = (req, file, cb) => {
     const imageType = file.mimetype.split("/")[0];
-    if (imageType === "image") return cb(null, true);
+
+    if (imageType === "image") {
+      return cb(null, true);
+    }
+
     return cb(AppError.create("The file must be an image", 400, FAIL), false);
   };
 

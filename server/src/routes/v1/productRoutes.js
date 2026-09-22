@@ -1,9 +1,10 @@
 import express from "express";
-import {createProductController, getAllProductsController, getProductByIdController, updateProductController,deleteProductController} from "../../controllers/productController.js";
+import {createProductController, getAllProductsController, getProductByIdController, updateProductController, updateProductStatusController , deleteProductController} from "../../controllers/productController.js";
 import { uploadProductImages, uploadProductUpdateImages } from "../../middlewares/uploadmiddleware/uploadProductMiddleware.js";
 import validate from "../../middlewares/validate.js";
 import { authToken } from "../../middlewares/auth.js";
 import { authorizeRoles } from "../../middlewares/role.js";
+import { productStatusValidator } from "../../validators/productStatusSchema.js";
 
 const router = express.Router();
 
@@ -15,5 +16,8 @@ router.route("/:productId")
   .get(getProductByIdController)
   .patch(authToken, authorizeRoles("ADMIN"), uploadProductUpdateImages, validate, updateProductController)
   .delete(authToken, authorizeRoles("ADMIN"), deleteProductController);
+
+router.route("/:productId/status")
+  .patch(authToken, authorizeRoles("ADMIN"), productStatusValidator, validate, updateProductStatusController);
 
 export default router;

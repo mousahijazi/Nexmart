@@ -1,4 +1,4 @@
-import {createProduct, getAllProducts, getProductById, updateProduct, deleteProduct} from "../service/productService.js";
+import {createProduct, getAllProducts, getProductById, updateProduct, updateProductStatus , deleteProduct} from "../service/productService.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 import { formatProductData, formatProductUpdateData } from "../utils/productDataFormatter.js";
 import AppError from "../utils/AppError.js";
@@ -57,6 +57,29 @@ const updateProductController = asyncHandler(
 
     res.status(200).json({
       status: SUCCESS,
+      data: {
+        product,
+      },
+    });
+  }
+);
+
+export const updateProductStatusController = asyncHandler(
+  async (req, res, next) => {
+    const { isActive } = req.body;
+
+    const product = await updateProductStatus(
+      req.params.productId,
+      isActive
+    );
+
+    if (!product) {
+      next(AppError.create("Product not found", 404, FAIL))
+    }
+
+    res.json({
+      status: SUCCESS,
+      message: isActive ? "Product restored successfully" : "Product archived successfully",
       data: {
         product,
       },

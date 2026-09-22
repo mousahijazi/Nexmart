@@ -95,6 +95,17 @@ const updateProduct = async (productId, productData) => {
   ).populate("category").populate("brand");
 };
 
+const updateProductStatus = async (productId, isActive) => {
+  return await Product.findByIdAndUpdate(
+    productId,
+    { isActive },
+    {
+      returnDocument: "after",
+      runValidators: true,
+    }
+  );
+};
+
 const deleteProduct = async (productId) => {
   return await Product.findByIdAndDelete(productId);
 };
@@ -104,5 +115,6 @@ export {
   getAllProducts,
   getProductById,
   updateProduct,
+  updateProductStatus,
   deleteProduct,
 };

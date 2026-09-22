@@ -88,6 +88,8 @@ export {default as EmptyWishlist} from "./components/Wishlist/EmptyWishlist";
 // dashboard
 export {default as Dashbaord} from "./components/Dashboard/Dashbaord";
 
+export {default as SettingsDashboard} from "./components/Dashboard/settings/SettingsDashboard";
+
 export {default as Userdashboard} from "./components/Dashboard/UserDashboard/Userdashboard";
 export {default as CustomerDashboard} from "./components/Dashboard/UserDashboard/CustomerDashboard";
 export {default as UserProfileInfo} from "./components/Dashboard/UserDashboard/UserProfileInfo";
@@ -95,7 +97,6 @@ export {default as UserNav} from "./components/Dashboard/UserDashboard/UserNav";
 export {default as UpdateUser} from "./components/Dashboard/UserDashboard/UpdateUser";
 
 export {default as AccountDashboard} from "./components/Dashboard/UserDashboard/AccountDashboard";
-export {default as SettingsDashboard} from "./components/Dashboard/UserDashboard/SettingsDashboard";
 
 export {default as AdminDashboard} from "./components/Dashboard/AdminDashboard/AdminDashboard";
 export {default as AdminDashboardContent} from "./components/Dashboard/AdminDashboard/AdminDashboardContent";
@@ -190,6 +191,8 @@ export {default as ProductsCard} from "./components/element/ProductsCard/Product
 export {default as ProductsWishlistIcon} from "./components/element/ProductsCard/ProductsWishlistIcon";
 export {default as ProductsButton} from "./components/element/ProductsCard/ProductsButton";
 export {default as ShowCard} from "./components/element/ProductsCard/ShowCard";
+
+export {default as EditProfileButton} from "./components/element/EditProfileButton";
 
 // middleware
 export {default as ProtectedRoute} from "./middleware/ProtectedRoute";

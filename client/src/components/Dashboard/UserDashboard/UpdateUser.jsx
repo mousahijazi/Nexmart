@@ -33,18 +33,21 @@ export default function UpdateUser({isModalOpen, setIsModalOpen}) {
   };
 
   const handleSave = async (data) => {
+    setIsModalOpen(false);
 
-    const localPreviewUrl = imageFile ? URL.createObjectURL(imageFile) : null;
-    setIsModalOpen(false)
-
-    const result = await updateProfile({
-      first_name: data.firstName,
-      last_name: data.lastName,
-      phone: data.phone,
-    }, imageFile, localPreviewUrl);
+    const result = await updateProfile(
+      {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phoneNumber: data.phone,
+      },
+      imageFile
+    );
 
     if (!result.success) {
       setIsModalOpen(true);
+    } else {
+      setImageFile(null);
     }
   };
 

@@ -3,7 +3,7 @@ import Category from "../model/Category.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
 
-const getAllProducts = async ({categories, page = 1, limit = 10}) => {
+const getAllProducts = async ({categories, page = 1, limit = 10, userRole}) => {
   const filter = {};
 
   if (categories) {
@@ -25,6 +25,10 @@ const getAllProducts = async ({categories, page = 1, limit = 10}) => {
   }
 
   const skip = (page - 1) * limit;
+
+  if (userRole === "USER") {
+    filter.isActive = true;
+  }
 
   const products = await Product.find(filter).populate("category", "name slug image").populate("brand").sort({ createdAt: -1 }).skip(skip).limit(limit);
 

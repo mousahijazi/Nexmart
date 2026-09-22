@@ -28,7 +28,7 @@ export default function CustomerDashboard() {
                 return <p>return</p>;
 
             case "settings":
-                return <SettingsDashboard />;
+                return <SettingsDashboard role="user" />;
 
             default:
                 return <h3>Mousa</h3>;

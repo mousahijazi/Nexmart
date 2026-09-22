@@ -2,8 +2,7 @@
 import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from './AlertProvider';
 import { useRouter } from "../lib/i18n/routing";
-import { loginUser, registerUser, getCurrentUser, logoutApi } from "../helper/fetchApi";
-import { supabase } from '../lib/supabase';
+import { loginUser, registerUser, getCurrentUser, logoutApi, updateUser } from "../helper/fetchApi";
 
 const UserContext = createContext();
 
@@ -90,7 +89,6 @@ export default function UserProvider({children}) {
     setRole(loggedInUser.role);
     setRedirectTo(result.redirectTo);
 
-    // merged cart
     const guestCart = JSON.parse(localStorage.getItem("cart-guest")) || [];
     const userCart = JSON.parse(localStorage.getItem(`cart-${userId}`)) || [];
     const mergedCart = [
@@ -101,7 +99,6 @@ export default function UserProvider({children}) {
     localStorage.setItem(`cart-${userId}`, JSON.stringify(mergedCart));
     localStorage.removeItem("cart-guest");
 
-    // merged wishlist
     const guestWishlist = JSON.parse(localStorage.getItem("wishlist-guest")) || [];
     const userWishlist =JSON.parse(localStorage.getItem(`wishlist-${userId}`)) || [];
     const mergedWishlist = [
@@ -122,57 +119,55 @@ export default function UserProvider({children}) {
     return { success: true };
   };
 
-  const updateProfile = async (updatedFields, imageFile, localPreviewUrl) => {
+  const updateProfile = async (updatedFields, imageFile) => {
     try {
       setIsUploadingImage(true);
-        if (localPreviewUrl) {
-        setUser(prev => ({
-          ...prev,
-          user_metadata: {
-            ...prev?.user_metadata,
-            ...updatedFields,
-            image: localPreviewUrl
-          }
-        }));
+
+      const token = localStorage.getItem("nexmart-token");
+      if (!token) {
+        showAlert("You are not authenticated", "danger");
+        return {
+          success: false,
+          message: "You are not authenticated",
+        };
       }
 
-      let imageUrl = updatedFields.image;
+      const formData = new FormData();
+
+      formData.append("firstName", updatedFields.firstName);
+      formData.append("lastName", updatedFields.lastName);
+      formData.append("phoneNumber", updatedFields.phoneNumber || "");
 
       if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, imageFile, { upsert: true });
-
-        if (uploadError) throw uploadError;
-
-        const { data: publicUrlData } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(fileName);
-
-        imageUrl = publicUrlData.publicUrl;
+        formData.append("avatar", imageFile);
       }
 
-      const { data, error } = await supabase.auth.updateUser({
-        data: {...user?.user_metadata, ...updatedFields, image: imageUrl}
-      });
-
-      if (error) {
-        showAlert(error.message, "danger");
-        return { success: false, message: error.message };
+      const result = await updateUser(formData, token);
+      if (!result.success) {
+        showAlert(result.message, "danger");
+        return {
+          success: false,
+          message: result.message,
+        };
       }
 
-      setUser(data.user);
+      setUser(result.user);
       showAlert("Profile updated successfully!", "success");
 
-      setIsUploadingImage(false);
-      return { success: true };
+      return {
+        success: true,
+        user: result.user,
+      };
     } catch (error) {
+      console.error(error);
       showAlert("Something went wrong", "danger");
+
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    } finally {
       setIsUploadingImage(false);
-      return { success: false };
     }
   };
 

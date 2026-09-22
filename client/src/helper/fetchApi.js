@@ -183,6 +183,41 @@ export const getCurrentUser = async (token) => {
   }
 };
 
+export async function updateUser(formData, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/users/me`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== "success") {
+      return {
+        success: false,
+        message: result.message || "Failed to update profile",
+      };
+    }
+
+    return {
+      success: true,
+      user: result.data?.user,
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
+}
+
 // admin
 export async function createProduct(formData, token) {
   try {

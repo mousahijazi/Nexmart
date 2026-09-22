@@ -9,7 +9,7 @@ import {CustomersPage} from "@/index";
 // import SettlementsPage from "./pages/SettlementsPage";
 // import DealsPromosPage from "./pages/DealsPromosPage";
 // import ReportsSlaPage from "./pages/ReportsSlaPage";
-// import SettingsPage from "./pages/SettingsPage";
+import { SettingsDashboard } from "@/index";
 
 const PAGES = {
   dashboard: DashboardPage,
@@ -21,7 +21,7 @@ const PAGES = {
 //   settlements: <h1>SettlementsPage</h1>,
 //   deals: <h1>DealsPromosPage</h1>,
 //   reports: <h1>ReportsSlaPage</h1>,
-//   settings: <h1>SettingsPage</h1>,
+  settings: () => <SettingsDashboard role="admin" />
 };
 
 export default function AdminDashboardContent() {

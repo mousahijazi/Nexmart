@@ -1,7 +1,7 @@
 "use client" 
 import { ProductsFilter, ProductsCard } from "../../index"; 
 import { useState, useEffect, useMemo, useRef } from "react"; 
-import { getProducts, getCategories } from "../../helper/fetchApi"; 
+import { getProducts, getCategoryProducts } from "../../helper/fetchApi"; 
 import { useSearchParams } from "next/navigation"; 
 import { useRouter } from "../../lib/i18n/routing"; 
 import { ArrowDown, ArrowUp } from "lucide-react"; 
@@ -52,7 +52,7 @@ export default function ProductsContainer({data, totalProducts}) {
       if (categoryFromUrl) { 
         setIsLoadingCategory(true); 
  
-        const {categories} = await getCategories(categoryFromUrl); 
+        const {categories} = await getCategoryProducts(categoryFromUrl); 
         const productsList = Array.isArray(categories)
           ? categories
           : [];

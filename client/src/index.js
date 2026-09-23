@@ -110,6 +110,14 @@ export {default as OverviewHero} from "./components/Dashboard/AdminDashboard/ove
 export {default as OverviewStatCard} from "./components/Dashboard/AdminDashboard/overview/OverviewStatCard";
 export {default as OverviewStatsGrid} from "./components/Dashboard/AdminDashboard/overview/OverviewStatsGrid";
 
+export {default as CategoriesDashboard} from "./components/Dashboard/AdminDashboard/categories/CategoriesDashboard";
+export {default as CategoriesHeader} from "./components/Dashboard/AdminDashboard/categories/CategoriesHeader";
+export {default as CategoriesStats} from "./components/Dashboard/AdminDashboard/categories/CategoriesStats";
+export {default as CategoriesInteractive} from "./components/Dashboard/AdminDashboard/categories/CategoriesInteractive";
+export {default as CategoriesFilters} from "./components/Dashboard/AdminDashboard/categories/CategoriesFilters";
+export {default as CategoriesTable} from "./components/Dashboard/AdminDashboard/categories/CategoriesTable";
+export {default as CategoryRow} from "./components/Dashboard/AdminDashboard/categories/CategoryRow";
+
 export {default as ProductModal} from "./components/Dashboard/AdminDashboard/products/productModal/ProductModal";
 export {default as AddProductsButton} from "./components/Dashboard/AdminDashboard/products/AddProductsButton";
 

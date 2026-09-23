@@ -1,4 +1,4 @@
-import { getProduct, getCategories } from "@/helper/fetchApi"; 
+import { getProduct, getCategoryProducts } from "@/helper/fetchApi"; 
 import { ProductGallary, ProductText, ProductsReviews, Rating, ProductsCard, Button } from "../../../../index"; 
 import { getTranslations, getLocale } from "next-intl/server"; 
  
@@ -10,7 +10,7 @@ export const metadata = {
 export default async function Product({params}) { 
     const { id } = await params; 
     const {product} = await getProduct(id); 
-    const {categories} = await getCategories(product?.category?.slug, 4); 
+    const {categories} = await getCategoryProducts(product?.category?.slug, 4); 
     const t = await getTranslations(); 
     const locale = await getLocale();
     const safeCategories = Array.isArray(categories) ? categories : [];

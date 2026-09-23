@@ -104,25 +104,68 @@ export async function updateProduct(productId, formData, token) {
   }
 }
 
-export async function getCategories(category, limit) {
+export async function getCategoryProducts( categorySlug, limit = 10, page = 1) {
   try {
-    const url = category
-      ? `${API_URL}/api/v1/products?categories=${category}${limit ? `&page=1&limit=${limit}` : ""}`
-      : `${API_URL}/api/v1/categories`;
+    const url = `${API_URL}/api/v1/products?categories=${categorySlug}&page=${page}&limit=${limit}`;
 
-    const categoriesFetch = await fetch(url, { cache: "no-store" });
- 
-    if (!categoriesFetch.ok) {
-      throw new Error(`HTTP error! status: ${categoriesFetch.status}`);
+    const response = await fetch(url, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
-    const json = await categoriesFetch.json();
-    const categories = json.data?.products || json.data?.categories || [];
 
-    return {categories};
+    const json = await response.json();
+
+    return {
+      products: json.data?.products || [],
+      total: json.data?.total || 0,
+      page: json.data?.page || page,
+      limit: json.data?.limit || limit,
+      totalPages: json.data?.totalPages || 0,
+    };
   } catch (error) {
-    console.log(error);
-    return { categories: [] };
+    console.error("getCategoryProducts:", error);
+
+    return {
+      products: [],
+      total: 0,
+      page,
+      limit,
+      totalPages: 0,
+    };
+  }
+}
+
+export async function getCategories(limit = 10, page = 1) {
+  try {
+    const url = `${API_URL}/api/v1/categories?page=${page}&limit=${limit}`;
+    const response = await fetch(url, { cache: "no-store" });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const json = await response.json();
+
+    return {
+      categories: json.data?.categories || [],
+      total: json.data?.total || 0,
+      page: json.data?.page || page,
+      limit: json.data?.limit || limit,
+      totalPages: json.data?.totalPages || 0,
+    };
+  } catch (error) {
+    console.error("getCategories:", error);
+
+    return {
+      categories: [],
+      total: 0,
+      page,
+      limit,
+      totalPages: 0,
+    };
   }
 }
 

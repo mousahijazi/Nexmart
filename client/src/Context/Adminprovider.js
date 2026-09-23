@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getAllUsers, getProducts, updateProductStatus } from "@/helper/fetchApi";
+import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts } from "@/helper/fetchApi";
 import { useAlertContext } from "./AlertProvider";
 
 const AdminContext = createContext();
@@ -42,6 +42,104 @@ export default function AdminProvider({ children }) {
   const [productsLimit, setProductsLimitState] = useState(PRODUCTS_DEFAULT_LIMIT);
   const [productsTotal, setProductsTotal] = useState(0);
   const [productsTotalPages, setProductsTotalPages] = useState(0);
+
+  const [categoryProducts, setCategoryProducts] = useState({});
+
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesPage, setCategoriesPage] = useState(1);
+  const [categoriesLimit, setCategoriesLimit] = useState(10);
+  const [categoriesTotal, setCategoriesTotal] = useState(0);
+  const [categoriesTotalPages, setCategoriesTotalPages] = useState(0);
+
+  const fetchCategories = useCallback(async (page, limit) => {
+    setCategoriesLoading(true);
+
+    const result = await getCategories(limit, page);
+
+    setCategories(result.categories);
+    setCategoriesTotal(result.total);
+    setCategoriesTotalPages(result.totalPages);
+
+    setCategoriesLoading(false);
+  }, []);
+
+  const fetchCategoryProducts = useCallback(
+    async (categoryId, categorySlug, page = 1, limit = 10) => {
+      setCategoryProducts((current) => ({
+        ...current,
+        [categoryId]: {
+          ...(current[categoryId] || {}),
+          loading: true,
+        },
+      }));
+
+      const result = await getCategoryProducts(categorySlug, limit,  page);
+
+      setCategoryProducts((current) => ({
+        ...current,
+        [categoryId]: {
+          products: result.products,
+          loading: false,
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      }));
+    },
+    []
+  );
+
+  useEffect(() => {
+    fetchCategories(categoriesPage, categoriesLimit);
+  }, [categoriesPage, categoriesLimit, fetchCategories]);
+
+  const loadMoreCategoryProducts = useCallback(
+    async (categoryId, categorySlug) => {
+      const currentCategory = categoryProducts[categoryId];
+
+      if (!currentCategory) {
+        return;
+      }
+
+      if (currentCategory.loading) {
+        return;
+      }
+
+      if (currentCategory.page >= currentCategory.totalPages) {
+        return;
+      }
+
+      const nextPage = currentCategory.page + 1;
+
+      setCategoryProducts((current) => ({
+        ...current,
+        [categoryId]: {
+          ...current[categoryId],
+          loading: true,
+        },
+      }));
+
+      const result = await getCategoryProducts(categorySlug, 10, nextPage);
+
+      setCategoryProducts((current) => ({
+        ...current,
+        [categoryId]: {
+          ...current[categoryId],
+          products: [
+            ...(current[categoryId]?.products || []),
+            ...result.products,
+          ],
+          loading: false,
+          page: result.page,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      }));
+    },
+    [categoryProducts]
+  );
 
   const fetchProducts = useCallback(async (page, limit) => {
     const token = localStorage.getItem("nexmart-token");
@@ -142,6 +240,19 @@ export default function AdminProvider({ children }) {
     usersLoading,
 
     toggleProductActive,
+
+    categories,
+    categoriesLoading,
+    categoriesPage,
+    setCategoriesPage,
+    categoriesLimit,
+    setCategoriesLimit,
+    categoriesTotal,
+    categoriesTotalPages,
+
+    categoryProducts,
+    fetchCategoryProducts,
+    loadMoreCategoryProducts,
 
     products,
     productsLoading,

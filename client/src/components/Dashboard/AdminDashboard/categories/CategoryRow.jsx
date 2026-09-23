@@ -1,6 +1,9 @@
 "use client";
 import Image from "next/image";
-import { ChevronDown, ChevronRight, MoreVertical, Package, ArrowRight } from "lucide-react";
+import { ChevronDown, ChevronRight, MoreVertical, Package, ArrowRight, Loader2 } from "lucide-react";
+import { getImageUrl } from "@/helper/getImage";
+import { useLocale } from "next-intl";
+import { Link } from "@/lib/i18n/routing";
 
 function StatusBadge({ status }) {
   const isActive = status === "Active";
@@ -26,14 +29,14 @@ function StatusBadge({ status }) {
   );
 }
 
-function ProductCard({ product }) {
+function ProductCard({ product, locale }) {
   return (
     <div className="min-w-0 overflow-hidden rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)]">
-      <div className="relative h-[110px] w-full bg-[var(--color-sand)]">
-        {product.image ? (
+      <Link href={`products/${product._id}`} className="relative block h-[110px] w-full bg-[var(--color-sand)]">
+        {product.mainImage ? (
           <Image
-            src={product.image}
-            alt={product.name}
+            src={getImageUrl(product.mainImage)}
+            alt={product.title[locale]}
             fill
             sizes="(max-width: 768px) 50vw, 180px"
             className="object-cover"
@@ -43,11 +46,11 @@ function ProductCard({ product }) {
             <Package size={26} className="text-[var(--color-muted)]" />
           </div>
         )}
-      </div>
+      </Link>
 
       <div className="p-2.5">
         <p className="truncate text-[10px] font-semibold text-[var(--color-ink)]">
-          {product.name}
+          {product.title[locale]}
         </p>
 
         <p className="mt-1 text-[10px] font-bold text-[var(--color-gold-dark)]">
@@ -62,8 +65,11 @@ function ProductCard({ product }) {
   );
 }
 
-export default function CategoryRow({ category, isExpanded, onToggle }) {
-  const hasProducts = category.productsCount > 0;
+export default function CategoryRow({ category, isExpanded, productsData, onToggle, onLoadMore }) {
+  const locale = useLocale();
+  const products = productsData?.products || [];
+  const isLoading = productsData?.loading || false;
+  const hasMore = (productsData?.page || 1) < (productsData?.totalPages || 1);
 
   return (
     <>
@@ -72,11 +78,7 @@ export default function CategoryRow({ category, isExpanded, onToggle }) {
           <button
             type="button"
             onClick={onToggle}
-            aria-label={
-              isExpanded
-                ? "Collapse category"
-                : "Expand category"
-            }
+            aria-label={isExpanded ? "Collapse category" : "Expand category"}
             className="
               flex h-6 w-6 shrink-0
               items-center justify-center
@@ -95,8 +97,8 @@ export default function CategoryRow({ category, isExpanded, onToggle }) {
           <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-[var(--color-sand)]">
             {category.image ? (
               <Image
-                src={category.image}
-                alt={category.name.en}
+                src={getImageUrl(category.image)}
+                alt={category.name[locale]}
                 fill
                 sizes="40px"
                 className="object-cover"
@@ -110,11 +112,11 @@ export default function CategoryRow({ category, isExpanded, onToggle }) {
 
           <div className="min-w-0">
             <p className="truncate text-[14px] font-semibold text-[var(--color-ink)]">
-              {category.name.en}
+              {category.name[locale]}
             </p>
 
             <p dir="rtl" className="mt-1 truncate text-left text-[9px] text-[var(--color-muted)]">
-              {category.name.ar}
+              {category.name[locale]}
             </p>
           </div>
         </div>
@@ -150,7 +152,14 @@ export default function CategoryRow({ category, isExpanded, onToggle }) {
 
       {isExpanded && (
         <div className="border-b border-[var(--color-divider)] bg-[var(--color-cream)] px-5 py-4">
-          {hasProducts ? (
+          {isLoading && products.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <Loader2 size={22} className="animate-spin text-[var(--color-soft)]" />
+              <p className="mt-3 text-[11px] text-[var(--color-soft)]">
+                Loading products...
+              </p>
+            </div>
+          ) : products.length > 0 ? (
             <>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]">
@@ -164,24 +173,36 @@ export default function CategoryRow({ category, isExpanded, onToggle }) {
               </div>
 
               <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
-                {category.products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                {products.map((product) => (
+                  <ProductCard key={product._id} product={product} locale={locale} />
                 ))}
-
-                <div className="hidden min-h-[190px] items-center justify-center rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] md:flex">
-                  <div className="text-center">
-                    <Package size={24} className="mx-auto text-[var(--color-soft)]" />
-
-                    <p className="mt-2 text-[12px] font-semibold text-[var(--color-ink)]">
-                      +{Math.max(category.productsCount - 4, 0).toLocaleString()} more
-                    </p>
-
-                    <p className="mt-1 text-[9px] text-[var(--color-muted)]">
-                      products in category
-                    </p>
-                  </div>
-                </div>
               </div>
+
+              {hasMore && (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={onLoadMore}
+                    disabled={isLoading}
+                    className="
+                      flex items-center gap-2
+                      rounded-lg
+                      border border-[var(--color-border)]
+                      bg-[var(--color-surface)]
+                      px-4 py-2
+                      text-[10px]
+                      font-semibold
+                      text-[var(--color-green-dark)]
+                      disabled:cursor-not-allowed
+                      disabled:opacity-50
+                      hover:bg-[var(--color-sand)]
+                    "
+                  >
+                    {isLoading && <Loader2 size={13} className="animate-spin" />}
+                    {isLoading ? "Loading..." : "Load More Products"}
+                  </button>
+                </div>
+              )}
             </>
           ) : (
             <div className="flex flex-col items-center justify-center py-10 text-center">

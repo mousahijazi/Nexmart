@@ -1,20 +1,36 @@
 "use client";
 import { useMemo, useState } from "react";
 import { CategoryRow } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function CategoriesTable({ categories }) {
-  const [expandedId, setExpandedId] = useState(categories[0]?.id || null);
+  const [openCategories, setOpenCategories] = useState([]);
   const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
 
-  // todo
-  const rowsPerPage = 6;
+  const { categoryProducts, fetchCategoryProducts, loadMoreCategoryProducts } = useAdminContext();
+
   const totalPages = Math.max(1, Math.ceil(categories.length / rowsPerPage));
 
   const visibleCategories = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
-
     return categories.slice(start, start + rowsPerPage);
-  }, [categories, page]);
+  }, [categories, page, rowsPerPage]);
+
+  const toggleCategory = async (category) => {
+    const categoryId = category._id;
+    const isOpen = openCategories.includes(categoryId);
+
+    setOpenCategories((current) =>
+      isOpen
+        ? current.filter((id) => id !== categoryId)
+        : [...current, categoryId]
+    );
+
+    if (!isOpen && !categoryProducts[categoryId]) {
+      await fetchCategoryProducts(categoryId, category.slug, 1, 10);
+    }
+  };
 
   return (
     <section className="overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)]">
@@ -29,10 +45,12 @@ export default function CategoriesTable({ categories }) {
       <div>
         {visibleCategories.map((category) => (
           <CategoryRow
-            key={category.id}
+            key={category._id}
             category={category}
-            isExpanded={expandedId === category.id}
-            onToggle={() => setExpandedId((current) => current === category.id ? null : category.id)}
+            isExpanded={openCategories.includes(category._id)}
+            productsData={categoryProducts[category._id]}
+            onLoadMore={() => loadMoreCategoryProducts(category._id, category.slug)}
+            onToggle={() => toggleCategory(category)}
           />
         ))}
       </div>
@@ -105,7 +123,14 @@ export default function CategoriesTable({ categories }) {
         <div className="flex items-center gap-2 text-[10px] text-[var(--color-soft)]">
           <span>Rows per page:</span>
 
-          <select defaultValue="6" className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1 text-[10px] outline-none">
+          <select 
+            value={rowsPerPage}
+            onChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+                setPage(1);
+            }} 
+            className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1 text-[10px] outline-none"
+        >
             <option value="6">6</option>
             <option value="12">12</option>
             <option value="24">24</option>

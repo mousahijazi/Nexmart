@@ -1,8 +1,6 @@
 import ProductRow from "./ProductRow";
 
-export default function ProductTable({ products, selected, toggleProduct, toggleAll }) {
-  const allSelected = products.length > 0 && selected.length === products.length;
-
+export default function ProductTable({ products, selected, onToggleActive }) {
   return (
     <section className="grid w-full grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-cream)]">
       <div className="min-w-0 overflow-x-auto scrollbar-thin">
@@ -21,8 +19,8 @@ export default function ProductTable({ products, selected, toggleProduct, toggle
               <ProductRow
                 key={product._id}
                 product={product}
+                onToggleActive={onToggleActive}
                 selected={selected.includes(product._id)}
-                onSelect={toggleProduct}
               />
             ))
           ) : (

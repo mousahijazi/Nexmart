@@ -10,11 +10,17 @@ function normalizeListResponse(json, res) {
 }
 
 
-export async function getProducts(limit = 20, skip = 0) {
+export async function getProducts(limit = 20, skip = 0, token = null) {
   try {
     const page = Math.floor(skip / limit) + 1;
+    const headers = {};
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
  
     const res = await fetch(`${API_URL}/api/v1/products?page=${page}&limit=${limit}`, {
+      headers,
       cache: "no-store",
     });
  
@@ -32,9 +38,18 @@ export async function getProducts(limit = 20, skip = 0) {
   }
 }
 
-export async function getProduct(id) {
+export async function getProduct(id, token = null) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/products/${id}`, { cache: "no-store" });
+    const headers = {};
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    
+    const res = await fetch(`${API_URL}/api/v1/products/${id}`, { 
+      headers,
+      cache: "no-store" 
+    });
  
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -244,6 +259,44 @@ export async function createProduct(formData, token) {
     };
   } catch (error) {
     console.log(error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
+}
+
+export async function updateProductStatus(productId, isActive, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/products/${productId}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isActive }),
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== "success") {
+      return {
+        success: false,
+        message: result.message ||"Failed to update product status",
+      };
+    }
+
+    return {
+      success: true,
+      product: result.data?.product,
+      message: result.message,
+    };
+  } catch (error) {
+    console.error(error);
 
     return {
       success: false,

@@ -20,6 +20,7 @@ export default function ProductsDashboard() {
     productsLimit,
     setProductsLimit,
     productsTotal,
+    toggleProductActive,
     productsTotalPages,
   } = useAdminContext();
 
@@ -67,21 +68,6 @@ export default function ProductsDashboard() {
       return matchesSearch && matchesCategory && matchesBrand && matchesStock;
     });
   }, [products, search, category, brand, stock]);
-
-  const toggleProduct = (id) => {
-    setSelected((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
-    );
-  };
-
-  const toggleAll = () => {
-    if (selected.length === filteredProducts.length && filteredProducts.length > 0) {
-      setSelected([]);
-      return;
-    }
-
-    setSelected(filteredProducts.map((product) => product._id));
-  };
 
   return (
     <div dir="ltr" className="min-w-0 bg-[var(--color-cream)] text-[var(--color-ink)]">
@@ -148,8 +134,7 @@ export default function ProductsDashboard() {
             <ProductTable
               products={filteredProducts}
               selected={selected}
-              toggleProduct={toggleProduct}
-              toggleAll={toggleAll}
+              onToggleActive={toggleProductActive}
             />
 
             <section className="md:hidden">
@@ -160,13 +145,10 @@ export default function ProductsDashboard() {
 
                 <button
                   type="button"
-                  onClick={toggleAll}
                   className="flex items-center gap-1.5 text-[10px] font-medium text-[var(--color-green)]"
                 >
                   <Filter />
-                  {selected.length === filteredProducts.length && filteredProducts.length > 0
-                    ? "Clear selection"
-                    : "Select all"}
+                  {selected.length === filteredProducts.length && filteredProducts.length > 0 ? "Clear selection" : "Select all"}
                 </button>
               </div>
             </section>

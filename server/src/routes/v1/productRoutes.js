@@ -5,15 +5,17 @@ import validate from "../../middlewares/validate.js";
 import { authToken } from "../../middlewares/auth.js";
 import { authorizeRoles } from "../../middlewares/role.js";
 import { productStatusValidator } from "../../validators/productStatusSchema.js";
+import checkUserRole from "../../middlewares/checkUserRole.js";
+import optionalAuth from "../../middlewares/optionalAuth.js";
 
 const router = express.Router();
 
 router.route("/")
-  .get(getAllProductsController)
+  .get(optionalAuth, checkUserRole, getAllProductsController)
   .post(authToken, authorizeRoles("ADMIN"), uploadProductImages, validate, createProductController);
 
 router.route("/:productId")
-  .get(getProductByIdController)
+  .get(optionalAuth, checkUserRole, getProductByIdController)
   .patch(authToken, authorizeRoles("ADMIN"), uploadProductUpdateImages, validate, updateProductController)
   .delete(authToken, authorizeRoles("ADMIN"), deleteProductController);
 

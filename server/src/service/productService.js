@@ -2,8 +2,9 @@ import Product from "../model/Product.js";
 import Category from "../model/Category.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
+import { userRoles } from "../utils/userRoles.js";
 
-const getAllProducts = async ({categories, page = 1, limit = 10, userRole}) => {
+const getAllProducts = async ({categories, page = 1, limit = 10}, userRole) => {
   const filter = {};
 
   if (categories) {
@@ -26,7 +27,7 @@ const getAllProducts = async ({categories, page = 1, limit = 10, userRole}) => {
 
   const skip = (page - 1) * limit;
 
-  if (userRole === "USER") {
+  if (userRole !== userRoles.ADMIN) {
     filter.isActive = true;
   }
 
@@ -44,8 +45,16 @@ const getAllProducts = async ({categories, page = 1, limit = 10, userRole}) => {
   };
 };
 
-const getProductById = async (productId) => {
-  return await Product.findById(productId).populate("category").populate("brand");
+const getProductById = async (productId, userRole) => {
+  const filter = {
+    _id: productId,
+  };
+
+  if (userRole !== userRoles.ADMIN) {
+    filter.isActive = true;
+  }
+
+  return await Product.findById(filter).populate("category").populate("brand");
 };
 
 const createProduct = async (productData) => {

@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getAllUsers, getProducts } from "@/helper/fetchApi";
+import { getAllUsers, getProducts, updateProductStatus } from "@/helper/fetchApi";
+import { useAlertContext } from "./AlertProvider";
 
 const AdminContext = createContext();
 
@@ -8,6 +9,7 @@ const PRODUCTS_DEFAULT_LIMIT = 5;
 
 export default function AdminProvider({ children }) {
   const [activeSection, setActiveSection] = useState("dashboard");
+  const { showAlert } = useAlertContext();
 
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
@@ -42,10 +44,17 @@ export default function AdminProvider({ children }) {
   const [productsTotalPages, setProductsTotalPages] = useState(0);
 
   const fetchProducts = useCallback(async (page, limit) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
+    
     setProductsLoading(true);
 
     const skip = (page - 1) * limit;
-    const result = await getProducts(limit, skip);
+    const result = await getProducts(limit, skip, token);
 
     setProducts(result.products);
     setProductsTotal(result.total);
@@ -90,6 +99,32 @@ export default function AdminProvider({ children }) {
     fetchAllAppUsers();
   }, []);
 
+  const toggleProductActive = async (productId, isActive) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
+
+    const result = await updateProductStatus(productId, isActive, token);
+
+    if (!result.success) {
+      showAlert(result.message, "danger");
+      return result;
+    }
+
+    setProducts((currentProducts) =>
+      currentProducts.map((product) =>
+        product._id === productId ? { ...product, isActive: result.product?.isActive } : product
+      )
+    );
+
+    showAlert(isActive ? "Product restored successfully!" : "Product archived successfully!", "success");
+
+    return result;
+  };
+
   const value = {
     activeSection,
     setActiveSection,
@@ -105,6 +140,8 @@ export default function AdminProvider({ children }) {
     users,
     usersCount: users.length,
     usersLoading,
+
+    toggleProductActive,
 
     products,
     productsLoading,

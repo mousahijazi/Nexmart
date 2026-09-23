@@ -5,12 +5,14 @@ import { getStockStatus, getCatalogStatus, getCategoryName, getBrandName, getDis
 import { getImageUrl } from "@/helper/getImage";
 import { Link } from "@/lib/i18n/routing";
 
-export default function ProductRow({ product, selected }) {
+export default function ProductRow({ product, selected, onToggleActive }) {
   const name = product.title?.en || product.title?.ar || "Untitled product";
   const arabicName = product.title?.ar || "";
 
   const stockStatus = getStockStatus(product.stock);
   const catalogStatus = getCatalogStatus(product.isActive);
+
+  const isArchived = !product.isActive;
 
   return (
     <div
@@ -23,21 +25,35 @@ export default function ProductRow({ product, selected }) {
 
         <button
           type="button"
-          aria-label={`Archive ${name}`}
-          title="Archive Product"
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-300 bg-transparent text-red-600 transition-colors hover:bg-red-50"
+          onClick={() =>
+            onToggleActive(
+              product._id,
+              !product.isActive
+            )
+          }
+          aria-label={
+            isArchived
+              ? `Restore ${name}`
+              : `Archive ${name}`
+          }
+          title={ isArchived ? "Restore Product" : "Archive Product" }
+          className={`flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors ${
+            isArchived ? "border-green-300 text-green-600 hover:bg-green-50" : "border-red-300 text-red-600 hover:bg-red-50"
+          }`}
         >
-          <svg
-            viewBox="0 0 24 24"
-            className="h-3.5 w-3.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <polyline points="21 8 21 21 3 21 3 8" />
-            <rect x="1" y="3" width="22" height="5" />
-            <line x1="10" y1="12" x2="14" y2="12" />
-          </svg>
+          {isArchived ? (
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="3 8 3 21 21 21 21 8" />
+              <rect x="1" y="3" width="22" height="5" />
+              <line x1="10" y1="12" x2="14" y2="12" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="21 8 21 21 3 21 3 8" />
+              <rect x="1" y="3" width="22" height="5" />
+              <line x1="10" y1="12" x2="14" y2="12" />
+            </svg>
+          )}
         </button>
       </div>
 

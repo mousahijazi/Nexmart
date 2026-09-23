@@ -5,18 +5,18 @@ import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
 
 const getAllProductsController = async (req, res) => {
-  const products = await getAllProducts(req.query);
+  const result = await getAllProducts(req.query, req?.userRole);
 
   res.status(200).json({
     status: SUCCESS,
-    results: products.length,
-    data: products,
+    results: result.products.length,
+    data: result,
   });
 };
 
 const getProductByIdController = asyncHandler(
-  async (req, res) => {
-    const product = await getProductById(req.params.productId);
+  async (req, res, next) => {
+    const product = await getProductById(req.params.productId, req?.userRole);
 
     if (!product) {
       return next(AppError.create("Product not found", 404, FAIL));
@@ -32,7 +32,7 @@ const getProductByIdController = asyncHandler(
 );
 
 const createProductController = asyncHandler(
-    async (req, res) => {
+    async (req, res, next) => {
       const productData = formatProductData(req);
       const product = await createProduct(productData);
 
@@ -88,7 +88,7 @@ export const updateProductStatusController = asyncHandler(
 );
 
 const deleteProductController = asyncHandler(
-  async (req, res) => {
+  async (req, res, next) => {
     const product = await deleteProduct(req.params.productId);
 
     if (!product) {

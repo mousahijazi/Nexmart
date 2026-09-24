@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts } from "@/helper/fetchApi";
+import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts, createCategory  } from "@/helper/fetchApi";
 import { useAlertContext } from "./AlertProvider";
 
 const AdminContext = createContext();
@@ -34,6 +34,51 @@ export default function AdminProvider({ children }) {
     setIsProductModalOpen(false);
     setEditingProduct(null);
     setProductModalMode("create");
+  };
+
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [categoryModalMode, setCategoryModalMode] = useState("create");
+  const [editingCategory, setEditingCategory] = useState(null);
+
+  const openCategoryModal = () => {
+    setCategoryModalMode("create");
+    setEditingCategory(null);
+    setIsCategoryModalOpen(true);
+  };
+
+  const openEditCategory = (category) => {
+    setCategoryModalMode("edit");
+    setEditingCategory(category);
+    setIsCategoryModalOpen(true);
+  };
+
+  const closeCategoryModal = () => {
+    setIsCategoryModalOpen(false);
+    setEditingCategory(null);
+    setCategoryModalMode("create");
+  };
+
+  const addCategory = async (formData) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
+
+    const result = await createCategory(formData, token);
+
+    if (!result.success) {
+      return result;
+    }
+
+    if (categoriesPage === 1) {
+      fetchCategories(1, categoriesLimit);
+    } else {
+      setCategoriesPage(1);
+    }
+
+    return result;
   };
 
   const [products, setProducts] = useState([]);
@@ -234,6 +279,15 @@ export default function AdminProvider({ children }) {
     openProductModal,
     openEditProduct,
     closeProductModal,
+
+    isCategoryModalOpen,
+    categoryModalMode,
+    editingCategory,
+    
+    openCategoryModal,
+    openEditCategory,
+    closeCategoryModal,
+    addCategory,
 
     users,
     usersCount: users.length,

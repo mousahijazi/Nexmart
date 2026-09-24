@@ -310,6 +310,7 @@ export async function createProduct(formData, token) {
   }
 }
 
+
 export async function updateProductStatus(productId, isActive, token) {
   try {
     const res = await fetch(`${API_URL}/api/v1/products/${productId}/status`,
@@ -345,6 +346,28 @@ export async function updateProductStatus(productId, isActive, token) {
       success: false,
       message: "Something went wrong",
     };
+  }
+}
+
+export async function createCategory(formData, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/categories`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || json.status !== "success") {
+      return { success: false, message: json.message || "Failed to create category" };
+    }
+
+    return { success: true, category: json.data?.category };
+  } catch (error) {
+    return { success: false, message: "Something went wrong" };
   }
 }
 

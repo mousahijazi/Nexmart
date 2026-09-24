@@ -1,4 +1,5 @@
-import { Download, Plus, FolderTree } from "lucide-react";
+import { Download, FolderTree } from "lucide-react";
+import { AddCategoryButton } from "@/index";
 
 export default function CategoriesHeader() {
   return (
@@ -22,41 +23,13 @@ export default function CategoriesHeader() {
       <div className="flex w-full flex-wrap items-center gap-2 xl:w-auto">
         <button
           type="button"
-          className="
-            flex min-h-[44px] items-center justify-center gap-2
-            rounded-[10px]
-            border border-[var(--color-border)]
-            bg-[var(--color-surface)]
-            px-4
-            text-[11px]
-            font-semibold
-            text-[var(--color-ink)]
-            transition
-            hover:bg-[var(--color-sand)]
-          "
+          className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[11px] font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-sand)]"
         >
           <Download size={16} />
-
           <span>Export Categories<span className="sm:ml-1">CSV</span></span>
         </button>
 
-        <button
-          type="button"
-          className="
-            flex min-h-[44px] items-center justify-center gap-2
-            rounded-[10px]
-            bg-[var(--color-gold)]
-            px-5
-            text-[11px]
-            font-bold
-            text-[var(--color-ink)]
-            transition
-            hover:opacity-90
-          "
-        >
-          <Plus size={16} />
-          Add New Category
-        </button>
+        <AddCategoryButton />
       </div>
     </section>
   );

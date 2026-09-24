@@ -118,6 +118,13 @@ export {default as CategoriesFilters} from "./components/Dashboard/AdminDashboar
 export {default as CategoriesTable} from "./components/Dashboard/AdminDashboard/categories/CategoriesTable";
 export {default as CategoryRow} from "./components/Dashboard/AdminDashboard/categories/CategoryRow";
 
+export {default as AddCategoryButton} from "./components/Dashboard/AdminDashboard/categories/AddCategoryButton";
+
+export {default as CategoryModal} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryModal";
+export {default as CategoryForm} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryForm";
+export {default as CategoryImage} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryImage";
+export {default as CategoryModalFooter} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryModalFooter";
+
 export {default as ProductModal} from "./components/Dashboard/AdminDashboard/products/productModal/ProductModal";
 export {default as AddProductsButton} from "./components/Dashboard/AdminDashboard/products/AddProductsButton";
 

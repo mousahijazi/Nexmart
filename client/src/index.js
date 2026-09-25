@@ -119,6 +119,7 @@ export {default as CategoriesTable} from "./components/Dashboard/AdminDashboard/
 export {default as CategoryRow} from "./components/Dashboard/AdminDashboard/categories/CategoryRow";
 
 export {default as AddCategoryButton} from "./components/Dashboard/AdminDashboard/categories/AddCategoryButton";
+export {default as EditCategoryButton} from "./components/Dashboard/AdminDashboard/categories/EditCategoryButton";
 
 export {default as CategoryModal} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryModal";
 export {default as CategoryForm} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryForm";

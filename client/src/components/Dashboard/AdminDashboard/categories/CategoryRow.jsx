@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
-import { ChevronDown, ChevronRight, MoreVertical, Package, ArrowRight, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Package, ArrowRight, Loader2, Archive } from "lucide-react";
+import { EditCategoryButton } from "@/index";
 import { getImageUrl } from "@/helper/getImage";
 import { useLocale } from "next-intl";
 import { Link } from "@/lib/i18n/routing";
@@ -133,19 +134,25 @@ export default function CategoryRow({ category, isExpanded, productsData, onTogg
           <StatusBadge status={category.status} />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex items-center justify-end gap-1">
+          <EditCategoryButton category={category} />
+
           <button
             type="button"
-            aria-label="Category actions"
+            aria-label={`Archive ${category.name?.en || "category"}`}
             className="
               flex h-7 w-7
               items-center justify-center
-              rounded-md
-              text-[var(--color-soft)]
+              rounded-lg
+              border border-[var(--color-border)]
+              text-[var(--color-muted)]
+              transition-colors
+              hover:border-[var(--color-red)]
               hover:bg-[var(--color-sand)]
+              hover:text-[var(--color-red)]
             "
           >
-            <MoreVertical size={16} />
+            <Archive size={14} />
           </button>
         </div>
       </div>

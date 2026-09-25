@@ -371,6 +371,40 @@ export async function createCategory(formData, token) {
   }
 }
 
+
+export const updateCategory = async (categoryId, formData, token) => {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/categories/${categoryId}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: result.message || "Failed to update category",
+      };
+    }
+
+    return {
+      success: true,
+      category: result.data.category,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
+};
+
 // auth
 import { supabase } from "../lib/supabase";
 

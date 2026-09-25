@@ -17,7 +17,6 @@ export const uploadProductImages = upload.fields([
 ]);
 
 
-// todo
 const uploadUpdate = uploadImage({
   folderName: "products",
   model: Product,

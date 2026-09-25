@@ -1,6 +1,6 @@
 import { uploadImage } from "../upload.js";
 import Category from "../../model/Category.js";
-import {categorySchema} from "../../validators/zodSchema/categorySchema.js";
+import {categorySchema, categoryUpdateSchema} from "../../validators/zodSchema/categorySchema.js";
 
 const upload = uploadImage({
   folderName: "categories",
@@ -10,3 +10,12 @@ const upload = uploadImage({
 });
 
 export const uploadCategoryImage = upload.single("image");
+
+const uploadUpdate = uploadImage({
+  folderName: "categories",
+  model: Category,
+  schema: categoryUpdateSchema,
+  generateSlug: false,
+});
+
+export const uploadCategoryUpdateImage = uploadUpdate.single("image");

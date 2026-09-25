@@ -25,14 +25,14 @@ const createCategory = async (categoryData) => {
 };
 
 const updateCategory = async (categoryId, categoryData) => {
-    return await Category.findByIdAndUpdate(
-        categoryId,
-        categoryData,
-        {
-            returnDocument: "after",
-            runValidators: true,
-        }
-    ).populate("productsCount");
+  return await Category.findByIdAndUpdate(
+    categoryId,
+    { $set: categoryData },
+    {
+      new: true,
+      runValidators: true,
+    }
+  ).populate("productsCount");
 };
 
 const deleteCategory = async (categoryId) => {

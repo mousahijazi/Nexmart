@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts, createCategory  } from "@/helper/fetchApi";
+import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts, createCategory, updateCategory } from "@/helper/fetchApi";
 import { useAlertContext } from "./AlertProvider";
 
 const AdminContext = createContext();
@@ -77,6 +77,29 @@ export default function AdminProvider({ children }) {
     } else {
       setCategoriesPage(1);
     }
+
+    return result;
+  };
+
+  const editCategory = async (categoryId, formData) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
+
+    const result = await updateCategory(categoryId, formData, token);
+
+    if (!result.success) {
+      return result;
+    }
+
+    setCategories((currentCategories) =>
+      currentCategories.map((category) =>
+        category._id === categoryId ? result.category : category
+      )
+    );
 
     return result;
   };
@@ -288,6 +311,7 @@ export default function AdminProvider({ children }) {
     openEditCategory,
     closeCategoryModal,
     addCategory,
+    editCategory,
 
     users,
     usersCount: users.length,

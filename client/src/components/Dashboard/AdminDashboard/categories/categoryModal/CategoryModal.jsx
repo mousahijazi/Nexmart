@@ -21,7 +21,7 @@ const emptyValues = {
 };
 
 export default function CategoryModal() {
-  const { isCategoryModalOpen, categoryModalMode, editingCategory, closeCategoryModal, addCategory } = useAdminContext();
+  const { isCategoryModalOpen, categoryModalMode, editingCategory, closeCategoryModal, addCategory, editCategory } = useAdminContext();
 
   const { showAlert } = useAlertContext();
 
@@ -74,11 +74,6 @@ export default function CategoryModal() {
   };
 
   const onSubmit = async (values) => {
-    if (isEdit) {
-      showAlert("Editing categories isn't available yet", "danger");
-      return;
-    }
-
     const formData = new FormData();
 
     formData.append("nameAr", values.nameAr);
@@ -87,13 +82,17 @@ export default function CategoryModal() {
     formData.append("descriptionAr", values.descriptionAr);
     formData.append("descriptionEn", values.descriptionEn);
 
-    formData.append("isActive", values.isActive);
+    formData.append("isActive", String(values.isActive));
 
-    if (image) {
-        formData.append("image", image);
+    if (isEdit && !existingImage && !image) {
+      formData.append("removeImage", "true");
     }
 
-    const result = await addCategory(formData);
+    if (image) {
+      formData.append("image", image);
+    }
+
+    const result = isEdit ? await editCategory(editingCategory._id, formData) : await addCategory(formData);
 
     if (result?.success) {
       showAlert("تمت إضافة الصنف بنجاح", "success");

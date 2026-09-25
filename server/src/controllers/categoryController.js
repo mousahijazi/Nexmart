@@ -1,7 +1,7 @@
 import {createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory} from "../service/categoryService.js";
 import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
-import { formatCategoryData } from "../utils/categoryDataFormatter.js";
+import { formatCategoryData, formatCategoryUpdateData } from "../utils/categoryDataFormatter.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 
 const getAllCategoriesController = async (req, res) => {
@@ -45,23 +45,21 @@ const createCategoryController = async (req, res) => {
 };
 
 const updateCategoryController = asyncHandler(
-    async (req, res, next) => {
-        const category = await updateCategory(
-            req.params.categoryId,
-            req.body
-        );
+  async (req, res, next) => {
+    const categoryData = formatCategoryUpdateData(req);
+    const category = await updateCategory(req.params.categoryId, categoryData);
 
-        if (!category) {
-            return next(AppError.create("Category not found", 404, FAIL));
-        }
-
-        res.status(200).json({
-            status: SUCCESS,
-            data: {
-                category,
-            },
-        });
+    if (!category) {
+      return next(AppError.create("Category not found", 404, FAIL));
     }
+
+    res.status(200).json({
+      status: SUCCESS,
+      data: {
+        category,
+      },
+    });
+  }
 );
 
 const deleteCategoryController = asyncHandler(

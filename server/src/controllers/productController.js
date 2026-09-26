@@ -68,10 +68,7 @@ export const updateProductStatusController = asyncHandler(
   async (req, res, next) => {
     const { isActive } = req.body;
 
-    const product = await updateProductStatus(
-      req.params.productId,
-      isActive
-    );
+    const product = await updateProductStatus(req.params.productId, isActive);
 
     if (!product) {
       next(AppError.create("Product not found", 404, FAIL))

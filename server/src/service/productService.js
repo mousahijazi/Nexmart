@@ -30,6 +30,7 @@ const getAllProducts = async ({categories, page = 1, limit = 10}, userRole) => {
 
   if (userRole !== userRoles.ADMIN) {
     filter.isActive = true;
+    filter.archivedByCategory = false;
   }
 
   const products = await Product.find(filter).populate("category", "name slug image").populate("brand").sort({ createdAt: -1 }).skip(skip).limit(limit);
@@ -53,9 +54,10 @@ const getProductById = async (productId, userRole) => {
 
   if (userRole !== userRoles.ADMIN) {
     filter.isActive = true;
+    filter.archivedByCategory = false;
   }
 
-  return await Product.findById(filter).populate("category").populate("brand");
+  return await Product.findOne(filter).populate("category").populate("brand");
 };
 
 const createProduct = async (productData) => {
@@ -117,14 +119,24 @@ const updateProduct = async (productId, productData) => {
 };
 
 const updateProductStatus = async (productId, isActive) => {
-  return await Product.findByIdAndUpdate(
-    productId,
-    { isActive },
-    {
-      returnDocument: "after",
-      runValidators: true,
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw AppError.create("Product not found", 404, FAIL);
+  }
+
+  if (isActive) {
+    const category = await Category.findById(product.category);
+
+    if (category && !category.isActive) {
+      throw AppError.create("Cannot activate a product while its category is archived", 400, FAIL);
     }
-  );
+  }
+
+  product.isActive = isActive;
+  await product.save();
+
+  return product;
 };
 
 const deleteProduct = async (productId) => {

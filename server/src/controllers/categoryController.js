@@ -1,4 +1,4 @@
-import {createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory} from "../service/categoryService.js";
+import {createCategory, getAllCategories, getCategoryById, updateCategory, updateCategoryStatus, deleteCategory} from "../service/categoryService.js";
 import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
 import { formatCategoryData, formatCategoryUpdateData } from "../utils/categoryDataFormatter.js";
@@ -7,7 +7,7 @@ import asyncHandler from "../middlewares/asyncHandler.js";
 const getAllCategoriesController = async (req, res) => {
     const {page = 1, limit = 10} = req.query;
 
-    const result = await getAllCategories({page: Number(page), limit: Number(limit)});
+    const result = await getAllCategories({page: Number(page), limit: Number(limit)}, req?.userRole);
 
     res.status(200).json({
         status: SUCCESS,
@@ -17,7 +17,7 @@ const getAllCategoriesController = async (req, res) => {
 
 const getCategoryByIdController = asyncHandler(
     async (req, res, next) => {
-        const category = await getCategoryById(req.params.categoryId);
+        const category = await getCategoryById(req.params.categoryId, req?.userRole);
 
         if (!category) {
             return next(AppError.create("Category not found", 404, FAIL));
@@ -62,6 +62,21 @@ const updateCategoryController = asyncHandler(
   }
 );
 
+const updateCategoryStatusController = asyncHandler(
+  async (req, res, next) => {
+    const { isActive } = req.body;
+
+    const category = await updateCategoryStatus(req.params.categoryId, isActive);
+
+    res.status(200).json({
+      status: SUCCESS,
+      data: {
+        category,
+      },
+    });
+  }
+);
+
 const deleteCategoryController = asyncHandler(
     async (req, res, next) => {
         const category = await deleteCategory(req.params.categoryId);
@@ -84,5 +99,6 @@ export {
     getAllCategoriesController,
     getCategoryByIdController,
     updateCategoryController,
+    updateCategoryStatusController,
     deleteCategoryController,
 };

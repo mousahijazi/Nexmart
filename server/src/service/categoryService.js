@@ -1,11 +1,19 @@
 import Category from "../model/Category.js";
+import Product from "../model/Product.js";
 import { deleteFile } from "../middlewares/fileService.js";
+import { userRoles } from "../utils/userRoles.js";
 
-const getAllCategories = async ({page = 1, limit = 10}) => {
+const getAllCategories = async ({page = 1, limit = 10}, userRole) => {
     const skip = (page - 1) * limit;
 
-    const categories = await Category.find({}, {"__v": false}).populate("productsCount").sort({ createdAt: -1 }).skip(skip).limit(limit);
-    const totalCategories = await Category.countDocuments();
+    const filter = {};
+
+    if (userRole !== userRoles.ADMIN) {
+      filter.isActive = true;
+    }
+
+    const categories = await Category.find(filter, {"__v": false}).populate("productsCount").sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const totalCategories = await Category.countDocuments(filter);
 
     return {
         categories,
@@ -17,8 +25,16 @@ const getAllCategories = async ({page = 1, limit = 10}) => {
     };
 };
 
-const getCategoryById = async (categoryId) => {
-    return await Category.findById(categoryId).populate("productsCount");
+const getCategoryById = async (categoryId, userRole) => {
+    const filter = {
+      "_id": categoryId
+    };
+
+    if (userRole !== userRoles.ADMIN) {
+      filter.isActive = true;
+    }
+    
+    return await Category.findOne(filter).populate("productsCount");
 };
 
 const createCategory = async (categoryData) => {
@@ -63,10 +79,47 @@ const deleteCategory = async (categoryId) => {
   return category;
 };
 
+const updateCategoryStatus = async (categoryId, isActive) => {
+  const category = await Category.findById(categoryId);
+
+  if (!category) {
+    throw AppError.create("Category not found", 404, FAIL);
+  }
+
+  category.isActive = isActive;
+
+  await category.save();
+
+  if (!isActive) {
+    await Product.updateMany(
+      { category: categoryId },
+      {
+        $set: {
+          archivedByCategory: true,
+        },
+      }
+    );
+  }
+
+  if (isActive) {
+    await Product.updateMany(
+      { category: categoryId },
+      {
+        $set: {
+          archivedByCategory: false,
+        },
+      }
+    );
+  }
+
+  return category;
+};
+
 export {
     createCategory,
     getAllCategories,
     getCategoryById,
     updateCategory,
+    updateCategoryStatus,
     deleteCategory,
 };

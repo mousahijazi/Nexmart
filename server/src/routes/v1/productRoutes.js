@@ -4,7 +4,7 @@ import { uploadProductImages, uploadProductUpdateImages } from "../../middleware
 import validate from "../../middlewares/validate.js";
 import { authToken } from "../../middlewares/auth.js";
 import { authorizeRoles } from "../../middlewares/role.js";
-import { productStatusValidator } from "../../validators/productStatusSchema.js";
+import { StatusValidator } from "../../validators/statusSchema.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
 import optionalAuth from "../../middlewares/optionalAuth.js";
 
@@ -20,6 +20,6 @@ router.route("/:productId")
   .delete(authToken, authorizeRoles("ADMIN"), deleteProductController);
 
 router.route("/:productId/status")
-  .patch(authToken, authorizeRoles("ADMIN"), productStatusValidator, validate, updateProductStatusController);
+  .patch(authToken, authorizeRoles("ADMIN"), StatusValidator, validate, updateProductStatusController);
 
 export default router;

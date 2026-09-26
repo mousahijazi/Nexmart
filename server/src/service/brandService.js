@@ -1,4 +1,5 @@
 import Brand from "../model/Brand.js";
+import { deleteFile } from "../middlewares/fileService.js";
 
 const getAllBrands = async ({page = 1,limit = 6}) => {
     const skip = (page - 1) * limit;
@@ -25,18 +26,42 @@ const createBrand = async (brandData) => {
 };
 
 const updateBrand = async (brandId, brandData) => {
-    return await Brand.findByIdAndUpdate(
-        brandId,
-        brandData,
-        {
-            returnDocument: "after",
-            runValidators: true,
-        }
-    );
+  const oldBrand = await Brand.findById(brandId);
+
+  if (!oldBrand) {
+    return null;
+  }
+
+  const updatedBrand = await Brand.findByIdAndUpdate(
+    brandId,
+    { $set: brandData },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (brandData.logo && oldBrand.logo) {
+    await deleteFile(oldBrand.logo);
+  }
+
+  return updatedBrand;
 };
 
 const deleteBrand = async (brandId) => {
-    return await Brand.findByIdAndDelete(brandId);
+  const brand = await Brand.findById(brandId);
+
+  if (!brand) {
+    return null;
+  }
+
+  await Brand.findByIdAndDelete(brandId);
+
+  if (brand.logo) {
+    await deleteFile(brand.logo);
+  }
+
+  return brand;
 };
 
 export {

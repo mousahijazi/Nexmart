@@ -50,6 +50,10 @@ const categorySchema = new mongoose.Schema(
 
     toJSON: {
       virtuals: true,
+      transform: function (doc, ret) {
+        delete ret.id;
+        return ret;
+      },
     },
 
     toObject: {

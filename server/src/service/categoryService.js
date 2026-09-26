@@ -49,7 +49,18 @@ const updateCategory = async (categoryId, categoryData) => {
 };
 
 const deleteCategory = async (categoryId) => {
-    return await Category.findByIdAndDelete(categoryId);
+  const category = await Category.findById(categoryId);
+  if (!category) {
+    return null;
+  }
+
+  await Category.findByIdAndDelete(categoryId);
+
+  if (category.image) {
+    await deleteFile(category.image);
+  }
+
+  return category;
 };
 
 export {

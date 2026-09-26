@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import generateJWT from "../utils/generateJWT.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
+import { deleteFile } from "../middlewares/fileService.js";
 
 export const getAllUsersService = async (limit, page) => {
   const skip = (page - 1) * limit;
@@ -81,14 +82,23 @@ export const loginUserService = async (email, password) => {
 };
 
 export const updateUserService = async (userId, updateData) => {
+  const oldUser = await User.findById(userId);
+
+  if (!oldUser) {
+    throw AppError.create("User not found", 404, FAIL);
+  }
+
   const user = await User.findByIdAndUpdate(
     userId,
     { $set: updateData },
-    { returnDocument: "after", runValidators: true }
+    {
+      new: true,
+      runValidators: true,
+    }
   );
 
-  if (!user) {
-    throw AppError.create("User not found", 404, FAIL);
+  if (updateData.avatar && oldUser.avatar) {
+    await deleteFile(oldUser.avatar);
   }
 
   const userResponse = user.toObject();

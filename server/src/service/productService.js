@@ -3,6 +3,7 @@ import Category from "../model/Category.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
 import { userRoles } from "../utils/userRoles.js";
+import { deleteFile, deleteFiles } from "../middlewares/fileService.js";
 
 const getAllProducts = async ({categories, page = 1, limit = 10}, userRole) => {
   const filter = {};
@@ -61,8 +62,6 @@ const createProduct = async (productData) => {
   return await Product.create(productData);
 };
 
-
-// todo
 const updateProduct = async (productId, productData) => {
   const product = await Product.findById(productId);
 
@@ -76,32 +75,45 @@ const updateProduct = async (productId, productData) => {
   delete updateData.newMainImage;
   delete updateData.newImages;
 
+  let imagesToDelete = [];
+
   if (productData.newMainImage) {
     updateData.mainImage = productData.newMainImage;
   }
 
   if (productData.existingImages !== undefined || productData.newImages) {
-    const oldImages =
-      productData.existingImages !== undefined
-        ? productData.existingImages
-        : product.images;
-
+    const oldImages = product.images || [];
+    const existingImages = productData.existingImages || [];
     const newImages = productData.newImages || [];
 
     updateData.images = [
-      ...oldImages,
+      ...existingImages,
       ...newImages,
     ];
+
+    imagesToDelete = oldImages.filter(
+      (oldImage) => !existingImages.includes(oldImage)
+    );
   }
 
-  return await Product.findByIdAndUpdate(
+  const updatedProduct = await Product.findByIdAndUpdate(
     productId,
     updateData,
     {
-      returnDocument: "after",
+      new: true,
       runValidators: true,
     }
   ).populate("category").populate("brand");
+
+  if (imagesToDelete.length > 0) {
+    await deleteFiles(imagesToDelete);
+  }
+
+  if (productData.newMainImage && product.mainImage) {
+    await deleteFile(product.mainImage);
+  }
+
+  return updatedProduct;
 };
 
 const updateProductStatus = async (productId, isActive) => {
@@ -116,7 +128,22 @@ const updateProductStatus = async (productId, isActive) => {
 };
 
 const deleteProduct = async (productId) => {
-  return await Product.findByIdAndDelete(productId);
+  const product = await Product.findById(productId);
+  if (!product) {
+    return null;
+  }
+
+  await Product.findByIdAndDelete(productId);
+
+  if (product.mainImage) {
+    await deleteFile(product.mainImage);
+  }
+
+  if (product.images?.length > 0) {
+    await deleteFiles(product.images);
+  }
+
+  return product;
 };
 
 export {

@@ -104,11 +104,17 @@ export async function updateProduct(productId, formData, token) {
   }
 }
 
-export async function getCategoryProducts( categorySlug, limit = 10, page = 1) {
+export async function getCategoryProducts( categorySlug, limit = 10, page = 1, token = null) {
   try {
     const url = `${API_URL}/api/v1/products?categories=${categorySlug}&page=${page}&limit=${limit}`;
+    const headers = {};
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
 
     const response = await fetch(url, {
+      headers,
       cache: "no-store",
     });
 
@@ -126,7 +132,7 @@ export async function getCategoryProducts( categorySlug, limit = 10, page = 1) {
       totalPages: json.data?.totalPages || 0,
     };
   } catch (error) {
-    console.error("getCategoryProducts:", error);
+    console.error("Error to get category products:", error);
 
     return {
       products: [],
@@ -138,10 +144,19 @@ export async function getCategoryProducts( categorySlug, limit = 10, page = 1) {
   }
 }
 
-export async function getCategories(limit = 10, page = 1) {
+export async function getCategories(limit = 10, page = 1, token = null) {
   try {
     const url = `${API_URL}/api/v1/categories?page=${page}&limit=${limit}`;
-    const response = await fetch(url, { cache: "no-store" });
+    const headers = {};
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, {
+      headers,
+      cache: "no-store" 
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -404,6 +419,43 @@ export const updateCategory = async (categoryId, formData, token) => {
     };
   }
 };
+
+export async function updateCategoryStatus(categoryId, isActive, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/categories/${categoryId}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isActive }),
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== "success") {
+      return {
+        success: false,
+        message: result.message || "Failed to update category status",
+      };
+    }
+
+    return {
+      success: true,
+      category: result.data?.category,
+    };
+  } catch (error) {
+    console.error("updateCategoryStatus:", error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
+}
 
 // auth
 import { supabase } from "../lib/supabase";

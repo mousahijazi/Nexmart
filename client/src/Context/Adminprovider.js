@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts, createCategory, updateCategory } from "@/helper/fetchApi";
+import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts, createCategory, updateCategory, updateCategoryStatus } from "@/helper/fetchApi";
 import { useAlertContext } from "./AlertProvider";
 
 const AdminContext = createContext();
@@ -104,6 +104,41 @@ export default function AdminProvider({ children }) {
     return result;
   };
 
+  const toggleCategoryActive = async (categoryId, isActive) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
+
+    const result = await updateCategoryStatus(categoryId, isActive, token);
+
+    if (!result.success) {
+      showAlert(result.message, "danger");
+      return result;
+    }
+
+    setCategories((currentCategories) =>
+      currentCategories.map((category) =>
+        category._id === categoryId
+          ? { ...category, ...result.category }
+          : category
+      )
+    );
+
+    // todo
+    setCategoryProducts((current) => {
+      const updated = { ...current };
+      delete updated[categoryId];
+      return updated;
+    });
+
+    showAlert(isActive ? "Category restored successfully!" : "Category archived successfully!", "success");
+
+    return result;
+  };
+
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [productsPage, setProductsPageState] = useState(1);
@@ -122,8 +157,9 @@ export default function AdminProvider({ children }) {
 
   const fetchCategories = useCallback(async (page, limit) => {
     setCategoriesLoading(true);
+    const token = localStorage.getItem("nexmart-token");
 
-    const result = await getCategories(limit, page);
+    const result = await getCategories(limit, page, token);
 
     setCategories(result.categories);
     setCategoriesTotal(result.total);
@@ -134,6 +170,8 @@ export default function AdminProvider({ children }) {
 
   const fetchCategoryProducts = useCallback(
     async (categoryId, categorySlug, page = 1, limit = 10) => {
+      const token = localStorage.getItem("nexmart-token");
+
       setCategoryProducts((current) => ({
         ...current,
         [categoryId]: {
@@ -142,7 +180,7 @@ export default function AdminProvider({ children }) {
         },
       }));
 
-      const result = await getCategoryProducts(categorySlug, limit,  page);
+      const result = await getCategoryProducts(categorySlug, limit, page, token);
 
       setCategoryProducts((current) => ({
         ...current,
@@ -179,6 +217,13 @@ export default function AdminProvider({ children }) {
         return;
       }
 
+      const token = localStorage.getItem("nexmart-token");
+
+      if (!token) {
+        showAlert("You are not authenticated", "danger");
+        return { success: false };
+      }
+
       const nextPage = currentCategory.page + 1;
 
       setCategoryProducts((current) => ({
@@ -189,7 +234,7 @@ export default function AdminProvider({ children }) {
         },
       }));
 
-      const result = await getCategoryProducts(categorySlug, 10, nextPage);
+      const result = await getCategoryProducts(categorySlug, 10, nextPage, token);
 
       setCategoryProducts((current) => ({
         ...current,
@@ -317,6 +362,7 @@ export default function AdminProvider({ children }) {
     usersCount: users.length,
     usersLoading,
 
+    toggleCategoryActive,
     toggleProductActive,
 
     categories,

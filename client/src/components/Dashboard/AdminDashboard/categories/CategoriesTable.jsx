@@ -59,7 +59,6 @@ export default function CategoriesTable({ categories }) {
         </div>
       </div>
 
-      {/* الفوتر خارج منطقة السحب عشان يضل ثابت العرض */}
       <div className="flex flex-col gap-3 border-t border-[var(--color-divider)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-[10px] text-[var(--color-soft)]">
           Showing {categories.length === 0 ? 0 : (page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, categories.length)} of {categories.length} categories

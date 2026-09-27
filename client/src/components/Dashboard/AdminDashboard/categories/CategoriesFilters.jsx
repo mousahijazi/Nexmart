@@ -44,9 +44,7 @@ export default function CategoriesFilters({ search, setSearch, status, setStatus
 
           <input
             value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="Search category name (EN/AR)..."
             className="
               h-[40px] w-full
@@ -64,12 +62,7 @@ export default function CategoriesFilters({ search, setSearch, status, setStatus
         <SelectBox
           value={status}
           onChange={setStatus}
-          options={[
-            "All Statuses",
-            "Active",
-            "Draft",
-            "Archived",
-          ]}
+          options={["All Statuses", "Active", "Archived"]}
         />
       </div>
     </section>

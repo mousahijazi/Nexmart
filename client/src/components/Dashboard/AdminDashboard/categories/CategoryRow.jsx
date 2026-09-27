@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
-import { ChevronDown, ChevronRight, Package, ArrowRight, Loader2, Archive } from "lucide-react";
+import { ChevronDown, ChevronRight, Package, ArrowRight, Loader2, Archive, RotateCcw } from "lucide-react";
 import { EditCategoryButton } from "@/index";
 import { getImageUrl } from "@/helper/getImage";
+import { useAdminContext } from "@/Context/Adminprovider";
 import { useLocale } from "next-intl";
 import { Link } from "@/lib/i18n/routing";
 
@@ -68,9 +69,11 @@ function ProductCard({ product, locale }) {
 
 export default function CategoryRow({ category, isExpanded, productsData, onToggle, onLoadMore }) {
   const locale = useLocale();
+  const { toggleCategoryActive } = useAdminContext();
   const products = productsData?.products || [];
   const isLoading = productsData?.loading || false;
   const hasMore = (productsData?.page || 1) < (productsData?.totalPages || 1);
+  const isActive = category.isActive;
 
   return (
     <>
@@ -131,7 +134,7 @@ export default function CategoryRow({ category, isExpanded, productsData, onTogg
         </div>
 
         <div>
-          <StatusBadge status={category.status} />
+          <StatusBadge status={category.isActive ? "Active" : "Archived"} />
         </div>
 
         <div className="flex items-center justify-end gap-1">
@@ -139,7 +142,13 @@ export default function CategoryRow({ category, isExpanded, productsData, onTogg
 
           <button
             type="button"
-            aria-label={`Archive ${category.name?.en || "category"}`}
+            onClick={() => toggleCategoryActive(category._id, !category.isActive)}
+            aria-label={
+              category.isActive
+                ? `Archive ${category.name?.en || "category"}`
+                : `Restore ${category.name?.en || "category"}`
+            }
+            title={category.isActive ? "Archive category" : "Restore category"}
             className="
               flex h-7 w-7
               items-center justify-center
@@ -152,7 +161,11 @@ export default function CategoryRow({ category, isExpanded, productsData, onTogg
               hover:text-[var(--color-red)]
             "
           >
-            <Archive size={14} />
+            {category.isActive ? (
+              <Archive size={14} />
+            ) : (
+              <RotateCcw size={14} />
+            )}
           </button>
         </div>
       </div>

@@ -17,8 +17,8 @@ export default function CategoriesInteractive() {
         category.name.en.toLowerCase().includes(value) ||
         category.name.ar.toLowerCase().includes(value);
 
-      const matchesStatus =
-        status === "All Statuses" || category.status === status;
+      const categoryStatus = category.isActive ? "Active" : "Archived";
+      const matchesStatus = status === "All Statuses" || categoryStatus === status;
 
       return matchesSearch && matchesStatus;
     });

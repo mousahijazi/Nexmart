@@ -110,6 +110,19 @@ export {default as OverviewHero} from "./components/Dashboard/AdminDashboard/ove
 export {default as OverviewStatCard} from "./components/Dashboard/AdminDashboard/overview/OverviewStatCard";
 export {default as OverviewStatsGrid} from "./components/Dashboard/AdminDashboard/overview/OverviewStatsGrid";
 
+export {default as AdminProductCard} from "./components/Dashboard/AdminDashboard/AdminProductCard";
+
+export {default as BrandsDashboard} from "./components/Dashboard/AdminDashboard/brand/BrandsDashboard";
+export {default as BrandsHeader} from "./components/Dashboard/AdminDashboard/brand/BrandsHeader";
+export {default as BrandsInteractive} from "./components/Dashboard/AdminDashboard/brand/BrandsInteractive";
+export {default as BrandsTable} from "./components/Dashboard/AdminDashboard/brand/BrandsTable";
+export {default as BrandRow} from "./components/Dashboard/AdminDashboard/brand/BrandRow";
+export {default as BrandsPagination} from "./components/Dashboard/AdminDashboard/brand/BrandsPagination";
+export {default as BrandExpandedPanel} from "./components/Dashboard/AdminDashboard/brand/BrandExpandedPanel";
+export {default as BrandsToolbar} from "./components/Dashboard/AdminDashboard/brand/BrandsToolbar";
+export {default as BrandsStatsGrid} from "./components/Dashboard/AdminDashboard/brand/BrandsStatsGrid";
+export {default as BrandStatCard} from "./components/Dashboard/AdminDashboard/brand/BrandStatCard";
+
 export {default as CategoriesDashboard} from "./components/Dashboard/AdminDashboard/categories/CategoriesDashboard";
 export {default as CategoriesHeader} from "./components/Dashboard/AdminDashboard/categories/CategoriesHeader";
 export {default as CategoriesStats} from "./components/Dashboard/AdminDashboard/categories/CategoriesStats";

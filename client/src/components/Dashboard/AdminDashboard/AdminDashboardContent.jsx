@@ -9,12 +9,13 @@ import {CustomersPage} from "@/index";
 // import SettlementsPage from "./pages/SettlementsPage";
 // import DealsPromosPage from "./pages/DealsPromosPage";
 // import ReportsSlaPage from "./pages/ReportsSlaPage";
-import { SettingsDashboard, CategoriesDashboard } from "@/index";
+import { SettingsDashboard, CategoriesDashboard, BrandsDashboard } from "@/index";
 
 const PAGES = {
   dashboard: DashboardPage,
 //   "all-orders": <h1>AllOrdersPage</h1>,
 //   inventory: <h1>InventoryPage</h1>,
+  brand: BrandsDashboard,
   categories: CategoriesDashboard,
   customers: CustomersPage,
   products: ProductsDashboard,

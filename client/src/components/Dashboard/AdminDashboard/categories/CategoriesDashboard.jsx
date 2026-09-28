@@ -1,5 +1,5 @@
 import { CategoriesHeader, CategoriesInteractive, CategoriesStats, CategoryModal } from "@/index";
-import { categoriesData, categoryStats } from "./categoriesData";
+import { categoryStats } from "./categoriesData";
 
 export default function CategoriesDashboard() {
   return (
@@ -8,7 +8,7 @@ export default function CategoriesDashboard() {
         <CategoriesHeader />
         <CategoryModal />
         <CategoriesStats stats={categoryStats} />
-        <CategoriesInteractive categories={categoriesData} />
+        <CategoriesInteractive />
       </div>
     </div>
   );

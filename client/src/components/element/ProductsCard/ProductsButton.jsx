@@ -5,7 +5,7 @@ export default function ProductsButton({children, onClick, ariaLabel}) {
       aria-label={ariaLabel}
       className="
         p-3 
-        rounded-tl-3xl
+        rounded-3xl
         hover:bg-gray-100 dark:hover:bg-zinc-600
         cursor-pointer
         transition duration-200">

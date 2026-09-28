@@ -52,9 +52,9 @@ export default function ProductsContainer({data, totalProducts}) {
       if (categoryFromUrl) { 
         setIsLoadingCategory(true); 
  
-        const {categories} = await getCategoryProducts(categoryFromUrl); 
-        const productsList = Array.isArray(categories)
-          ? categories
+        const {products} = await getCategoryProducts(categoryFromUrl); 
+        const productsList = Array.isArray(products)
+          ? products
           : [];
 
         setProducts(productsList);

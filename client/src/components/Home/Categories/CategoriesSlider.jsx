@@ -21,7 +21,7 @@ export default function CategoriesSlider({categories}) {
         <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-[14px]">
             <CategoriesCard categories={visibleCategories} />
         </div>
-        <div dir="ltr" className="mt-10 flex items-center justify-center gap-6">
+        <div className="mt-10 flex items-center justify-center gap-6">
             <CategoriesButton action={prevPage} ariaLabel="Previous categories" icon={<ChevronLeft className="h-5 w-5" />} />
             <div className="flex items-center gap-2">
                 {Array.from({ length: totalPages }).map((_, index) => {

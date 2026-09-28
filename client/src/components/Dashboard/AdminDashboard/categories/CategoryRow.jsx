@@ -1,11 +1,10 @@
 "use client";
 import Image from "next/image";
 import { ChevronDown, ChevronRight, Package, ArrowRight, Loader2, Archive, RotateCcw } from "lucide-react";
-import { EditCategoryButton } from "@/index";
+import { EditCategoryButton, AdminProductCard } from "@/index";
 import { getImageUrl } from "@/helper/getImage";
 import { useAdminContext } from "@/Context/Adminprovider";
 import { useLocale } from "next-intl";
-import { Link } from "@/lib/i18n/routing";
 
 function StatusBadge({ status }) {
   const isActive = status === "Active";
@@ -28,42 +27,6 @@ function StatusBadge({ status }) {
       <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-[var(--color-green)]" : "bg-[var(--color-muted)]"}`} />
       {status}
     </span>
-  );
-}
-
-function ProductCard({ product, locale }) {
-  return (
-    <div className="min-w-0 overflow-hidden rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)]">
-      <Link href={`products/${product._id}`} className="relative block h-[110px] w-full bg-[var(--color-sand)]">
-        {product.mainImage ? (
-          <Image
-            src={getImageUrl(product.mainImage)}
-            alt={product.title[locale]}
-            fill
-            sizes="(max-width: 768px) 50vw, 180px"
-            className="object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            <Package size={26} className="text-[var(--color-muted)]" />
-          </div>
-        )}
-      </Link>
-
-      <div className="p-2.5">
-        <p className="truncate text-[10px] font-semibold text-[var(--color-ink)]">
-          {product.title[locale]}
-        </p>
-
-        <p className="mt-1 text-[10px] font-bold text-[var(--color-gold-dark)]">
-          SAR {Number(product.price).toLocaleString()}
-        </p>
-
-        <span className="mt-2 inline-flex rounded-md bg-[var(--color-mint)] px-1.5 py-1 text-[8px] font-semibold text-[var(--color-green-dark)]">
-          In Stock ({product.stock} units)
-        </span>
-      </div>
-    </div>
   );
 }
 
@@ -194,7 +157,7 @@ export default function CategoryRow({ category, isExpanded, productsData, onTogg
 
               <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
                 {products.map((product) => (
-                  <ProductCard key={product._id} product={product} locale={locale} />
+                  <AdminProductCard key={product._id} product={product} locale={locale} />
                 ))}
               </div>
 

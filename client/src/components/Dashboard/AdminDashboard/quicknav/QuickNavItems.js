@@ -1,9 +1,10 @@
-import { LayoutGrid, ShoppingCart, Boxes, Tags, Package, Users, Receipt, BadgePercent, BarChart3, Settings } from "lucide-react";
+import { LayoutGrid, ShoppingCart, Boxes, Tags, Package, Users, Receipt, BadgePercent, BarChart3, Settings, BadgeCheck } from "lucide-react";
 
 export const QuickNavItems = [
   { key: "dashboard", label: "Dashboard", icon: LayoutGrid },
   { key: "all-orders", label: "All Orders", icon: ShoppingCart },
   { key: "inventory", label: "Inventory", icon: Boxes },
+  { key: "brand", label: "Brand", icon: BadgeCheck },
   { key: "categories", label: "Categories", icon: Tags },
   { key: "products", label: "Products", icon: Package },
   { key: "customers", label: "Customers", icon: Users },

@@ -18,6 +18,15 @@ export default function AdminProvider({ children }) {
   const [productModalMode, setProductModalMode] = useState("create");
   const [editingProduct, setEditingProduct] = useState(null);
 
+  const [categoryProducts, setCategoryProducts] = useState({});
+
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesPage, setCategoriesPage] = useState(1);
+  const [categoriesLimit, setCategoriesLimit] = useState(10);
+  const [categoriesTotal, setCategoriesTotal] = useState(0);
+  const [categoriesTotalPages, setCategoriesTotalPages] = useState(0);
+
   const openProductModal = () => {
     setProductModalMode("create");
     setEditingProduct(null);
@@ -146,15 +155,6 @@ export default function AdminProvider({ children }) {
   const [productsTotal, setProductsTotal] = useState(0);
   const [productsTotalPages, setProductsTotalPages] = useState(0);
 
-  const [categoryProducts, setCategoryProducts] = useState({});
-
-  const [categories, setCategories] = useState([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [categoriesPage, setCategoriesPage] = useState(1);
-  const [categoriesLimit, setCategoriesLimit] = useState(10);
-  const [categoriesTotal, setCategoriesTotal] = useState(0);
-  const [categoriesTotalPages, setCategoriesTotalPages] = useState(0);
-
   const fetchCategories = useCallback(async (page, limit) => {
     setCategoriesLoading(true);
     const token = localStorage.getItem("nexmart-token");
@@ -256,11 +256,6 @@ export default function AdminProvider({ children }) {
 
   const fetchProducts = useCallback(async (page, limit) => {
     const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-      return { success: false };
-    }
     
     setProductsLoading(true);
 

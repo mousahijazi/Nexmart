@@ -1,5 +1,4 @@
 import { BrandsHeader, BrandsStatsGrid, BrandsInteractive } from "@/index";
-import { mockBrands } from "./mockBrands";
 
 export default function BrandsDashboard() {
   return (
@@ -7,7 +6,7 @@ export default function BrandsDashboard() {
       <div className="mx-auto w-full max-w-[1120px] py-5 lg:py-3">
         <BrandsHeader />
         <BrandsStatsGrid />
-        <BrandsInteractive brands={mockBrands} />
+        <BrandsInteractive />
       </div>
     </div>
   );

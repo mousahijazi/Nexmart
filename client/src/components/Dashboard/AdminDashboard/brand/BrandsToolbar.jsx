@@ -14,7 +14,7 @@ function StatusSelect({ value, onChange }) {
   );
 }
 
-export default function BrandsToolbar({ search, onSearchChange, status, onStatusChange }) {
+export default function BrandsToolbar({ search, setSearch, status, setStatus }) {
   return (
     <section className="mb-4 rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)] p-3.5 sm:p-4">
       <div className="grid grid-cols-1 gap-2.5 md:grid-cols-[minmax(0,1fr)_180px]">
@@ -28,14 +28,14 @@ export default function BrandsToolbar({ search, onSearchChange, status, onStatus
           <input
             value={search}
             onChange={(event) =>
-              onSearchChange(event.target.value)
+              setSearch(event.target.value)
             }
             placeholder="Search brand name (EN/AR)..."
             className="h-[40px] w-full rounded-[9px] bg-[var(--color-cream)] pl-9 pr-3 text-[11px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus:ring-1 focus:ring-[var(--color-gold)]"
           />
         </label>
 
-        <StatusSelect value={status} onChange={onStatusChange} />
+        <StatusSelect value={status} onChange={setStatus} />
       </div>
     </section>
   );

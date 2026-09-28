@@ -2,10 +2,12 @@
 import { useMemo, useState } from "react";
 import { BrandsToolbar, BrandsTable, BrandsPagination } from "@/index";
 import { useLocale } from "next-intl";
+import { useAdminContext } from "@/Context/Adminprovider";
 
-export default function BrandsInteractive({brands}) {
+export default function BrandsInteractive() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Statuses");
+  const { brands, brandsLoading } = useAdminContext();
   const locale = useLocale();
 
   const filteredBrands = useMemo(() => {
@@ -30,9 +32,17 @@ export default function BrandsInteractive({brands}) {
         status={status}
         setStatus={setStatus}
       />
-
-      <BrandsTable brands={filteredBrands} />
-      <BrandsPagination />
+      {brandsLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <p className="text-[12px] text-[var(--color-soft)]">
+              جاري تحميل الفئات...
+            </p>
+          </div>
+        ) : (
+          <>
+            <BrandsTable brands={filteredBrands} />
+          </>
+        )}
     </>
   );
 }

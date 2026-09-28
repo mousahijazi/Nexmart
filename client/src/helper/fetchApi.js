@@ -201,6 +201,46 @@ export async function getBrand(limit, page = 1) {
     }
 }
 
+export async function getBrandProducts( brandSlug, limit = 10, page = 1, token = null) {
+  try {
+    const url = `${API_URL}/api/v1/products?brands=${brandSlug}&page=${page}&limit=${limit}`;
+    const headers = {};
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, {
+      headers,
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const json = await response.json();
+
+    return {
+      products: json.data?.products || [],
+      total: json.data?.total || 0,
+      page: json.data?.page || page,
+      limit: json.data?.limit || limit,
+      totalPages: json.data?.totalPages || 0,
+    };
+  } catch (error) {
+    console.error("Error to get brand products:", error);
+
+    return {
+      products: [],
+      total: 0,
+      page,
+      limit,
+      totalPages: 0,
+    };
+  }
+}
+
 // users
 export async function getAllUsers(token) {
   try {

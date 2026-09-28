@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts, createCategory, updateCategory, updateCategoryStatus } from "@/helper/fetchApi";
+import { getAllUsers, getProducts, updateProductStatus, getCategories, getCategoryProducts, createCategory, updateCategory, updateCategoryStatus, getBrand, getBrandProducts } from "@/helper/fetchApi";
 import { useAlertContext } from "./AlertProvider";
 
 const AdminContext = createContext();
@@ -26,6 +26,15 @@ export default function AdminProvider({ children }) {
   const [categoriesLimit, setCategoriesLimit] = useState(10);
   const [categoriesTotal, setCategoriesTotal] = useState(0);
   const [categoriesTotalPages, setCategoriesTotalPages] = useState(0);
+
+  const [brandProducts, setBrandProducts] = useState({});
+
+  const [brands, setBrands] = useState([]);
+  const [brandsLoading, setBrandsLoading] = useState(true);
+  const [brandsPage, setBrandsPage] = useState(1);
+  const [brandsLimit, setBrandsLimit] = useState(10);
+  const [brandsTotal, setBrandsTotal] = useState(0);
+  const [brandsTotalPages, setBrandsTotalPages] = useState(0);
 
   const openProductModal = () => {
     setProductModalMode("create");
@@ -155,6 +164,7 @@ export default function AdminProvider({ children }) {
   const [productsTotal, setProductsTotal] = useState(0);
   const [productsTotalPages, setProductsTotalPages] = useState(0);
 
+  // categories
   const fetchCategories = useCallback(async (page, limit) => {
     setCategoriesLoading(true);
     const token = localStorage.getItem("nexmart-token");
@@ -250,10 +260,68 @@ export default function AdminProvider({ children }) {
           totalPages: result.totalPages,
         },
       }));
-    },
-    [categoryProducts]
+    }, [categoryProducts]
   );
 
+  // brands
+  const fetchBrands = useCallback(async (page, limit) => {
+    setBrandsLoading(true);
+    const token = localStorage.getItem("nexmart-token");
+
+    try {
+      const result = await getBrand(limit, page);
+
+      setBrands(result.brands);
+      setBrandsTotal(result.total);
+      setBrandsTotalPages(result.totalPages);
+    } finally {
+      setBrandsLoading(false);
+    }
+  }, []);
+
+  const fetchBrandProducts = useCallback(
+    async (brandId, brandSlug, page = 1, limit = 10) => {
+      const token = localStorage.getItem("nexmart-token");
+
+      setBrandProducts((current) => ({
+        ...current,
+        [brandId]: {
+          ...(current[brandId] || {}),
+          loading: true,
+        },
+      }));
+
+      try {
+        const result = await getBrandProducts(brandSlug, limit, page, token);
+
+        setBrandProducts((current) => ({
+          ...current,
+          [brandId]: {
+            products: result.products,
+            loading: false,
+            page: result.page,
+            limit: result.limit,
+            total: result.total,
+            totalPages: result.totalPages,
+          },
+        }));
+      } catch (error) {
+        setBrandProducts((current) => ({
+          ...current,
+          [brandId]: {
+            ...(current[brandId] || {}),
+            loading: false,
+          },
+        }));
+      }
+    }, []
+  );
+  
+  useEffect(() => {
+    fetchBrands(brandsPage, brandsLimit);
+  }, [brandsPage, brandsLimit, fetchBrands]);
+
+  // products
   const fetchProducts = useCallback(async (page, limit) => {
     const token = localStorage.getItem("nexmart-token");
     
@@ -372,6 +440,18 @@ export default function AdminProvider({ children }) {
     categoryProducts,
     fetchCategoryProducts,
     loadMoreCategoryProducts,
+
+    brands,
+    brandsLoading,
+    brandsPage,
+    setBrandsPage,
+    brandsLimit,
+    setBrandsLimit,
+    brandsTotal,
+    brandsTotalPages,
+
+    brandProducts,
+    fetchBrandProducts,
 
     products,
     productsLoading,

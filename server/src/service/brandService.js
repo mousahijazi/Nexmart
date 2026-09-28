@@ -4,7 +4,7 @@ import { deleteFile } from "../middlewares/fileService.js";
 const getAllBrands = async ({page = 1,limit = 6}) => {
     const skip = (page - 1) * limit;
 
-    const brands = await Brand.find().skip(skip).limit(limit);
+    const brands = await Brand.find().populate("productsCount").sort({ createdAt: -1 }).skip(skip).limit(limit);
     const totalBrands = await Brand.countDocuments();
 
     return {
@@ -18,11 +18,11 @@ const getAllBrands = async ({page = 1,limit = 6}) => {
 };
 
 const getBrandById = async (brandId) => {
-    return await Brand.findById(brandId);
+  return await Brand.findById(brandId).populate("productsCount");
 };
 
 const createBrand = async (brandData) => {
-    return await Brand.create(brandData);
+  return await Brand.create(brandData);
 };
 
 const updateBrand = async (brandId, brandData) => {
@@ -39,7 +39,7 @@ const updateBrand = async (brandId, brandData) => {
       new: true,
       runValidators: true,
     }
-  );
+  ).populate("productsCount");
 
   if (brandData.logo && oldBrand.logo) {
     await deleteFile(oldBrand.logo);

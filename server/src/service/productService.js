@@ -1,11 +1,12 @@
 import Product from "../model/Product.js";
 import Category from "../model/Category.js";
+import Brand from "../model/Brand.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
 import { userRoles } from "../utils/userRoles.js";
 import { deleteFile, deleteFiles } from "../middlewares/fileService.js";
 
-const getAllProducts = async ({categories, page = 1, limit = 10}, userRole) => {
+const getAllProducts = async ({categories, brands, page = 1, limit = 10}, userRole) => {
   const filter = {};
 
   if (categories) {
@@ -23,6 +24,24 @@ const getAllProducts = async ({categories, page = 1, limit = 10}, userRole) => {
 
     if (category) {
       filter.category = category._id;
+    }
+  }
+
+  if (brands) {
+    const brand = await Brand.findOne({slug: brands}).select("_id");
+
+    if (!brand) {
+      return {
+        products: [],
+        total: 0,
+        page: page,
+        limit: limit,
+        totalPages: 0,
+      };
+    }
+
+    if (brand) {
+      filter.brand = brand._id;
     }
   }
 

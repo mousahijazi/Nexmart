@@ -1,13 +1,13 @@
 "use client";
 import { useMemo, useState } from "react";
 import { BrandRow } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function CategoriesTable({ brands }) {
   const [openBrands, setOpenBrands] = useState([]);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(6);
-
-  // const { categoryProducts, fetchCategoryProducts, loadMoreCategoryProducts } = useAdminContext();
+  const { brandProducts, fetchBrandProducts } = useAdminContext();
 
   const totalPages = Math.max(1, Math.ceil(brands.length / rowsPerPage));
 
@@ -25,6 +25,10 @@ export default function CategoriesTable({ brands }) {
         ? current.filter((id) => id !== brandId)
         : [...current, brandId]
     );
+
+    if (!isOpen && !brandProducts[brandId]) {
+      await fetchBrandProducts(brandId, brand.slug, 1, 10);
+    }
   };
 
   return (
@@ -45,7 +49,7 @@ export default function CategoriesTable({ brands }) {
                 key={brand._id}
                 brand={brand}
                 isExpanded={openBrands.includes(brand._id)}
-                // productsData={categoryProducts[brand._id]}
+                productsData={brandProducts[brand._id]}
                 // onLoadMore={() => loadMoreCategoryProducts(brand._id, brand.slug)}
                 onToggle={() => toggleBrand(brand)}
               />

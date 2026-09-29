@@ -1,6 +1,7 @@
 "use client"
 import { Download, FolderTree } from "lucide-react";
 import { AdminAddButton } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function CategoriesHeader() {
   const { openCategoryModal } = useAdminContext();

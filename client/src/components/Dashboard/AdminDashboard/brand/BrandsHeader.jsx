@@ -3,7 +3,7 @@ import { Award, Download } from "lucide-react";
 import { AdminAddButton } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
 
-export default function BrandsHeader({ onAddBrand }) {
+export default function BrandsHeader() {
   const {openBrandModal} = useAdminContext();
 
   return (

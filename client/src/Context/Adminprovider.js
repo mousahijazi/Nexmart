@@ -15,7 +15,7 @@ export default function AdminProvider({ children }) {
 
   const productsAdmin = useAdminProducts({ showAlert });
   const categoriesAdmin = useAdminCategories({ showAlert });
-  const brandsAdmin = useAdminBrands();
+  const brandsAdmin = useAdminBrands({ showAlert });
   const usersAdmin = useAdminUsers();
 
   const value = {

@@ -126,6 +126,11 @@ export {default as BrandsToolbar} from "./components/Dashboard/AdminDashboard/br
 export {default as BrandsStatsGrid} from "./components/Dashboard/AdminDashboard/brand/BrandsStatsGrid";
 export {default as BrandStatCard} from "./components/Dashboard/AdminDashboard/brand/BrandStatCard";
 
+export {default as BrandModal} from "./components/Dashboard/AdminDashboard/brand/brandModal/BrandModal";
+export {default as BrandForm} from "./components/Dashboard/AdminDashboard/brand/brandModal/BrandForm";
+export {default as BrandLogo} from "./components/Dashboard/AdminDashboard/brand/brandModal/BrandLogo";
+export {default as BrandModalFooter} from "./components/Dashboard/AdminDashboard/brand/brandModal/BrandModalFooter";
+
 export {default as CategoriesDashboard} from "./components/Dashboard/AdminDashboard/categories/CategoriesDashboard";
 export {default as CategoriesHeader} from "./components/Dashboard/AdminDashboard/categories/CategoriesHeader";
 export {default as CategoriesStats} from "./components/Dashboard/AdminDashboard/categories/CategoriesStats";

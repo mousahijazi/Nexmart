@@ -1,4 +1,4 @@
-import { BrandsHeader, BrandsStatsGrid, BrandsInteractive } from "@/index";
+import { BrandsHeader, BrandsStatsGrid, BrandsInteractive, BrandModal } from "@/index";
 
 export default function BrandsDashboard() {
   return (
@@ -7,6 +7,7 @@ export default function BrandsDashboard() {
         <BrandsHeader />
         <BrandsStatsGrid />
         <BrandsInteractive />
+        <BrandModal />
       </div>
     </div>
   );

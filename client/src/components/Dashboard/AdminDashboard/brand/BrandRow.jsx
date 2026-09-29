@@ -31,7 +31,7 @@ function StatusBadge({ status }) {
 }
 
 export default function CategoryRow({ brand, isExpanded, onToggle, productsData }) {
-  const {openEditBrand} = useAdminContext();
+  const {openEditBrand, toggleBrandActive} = useAdminContext();
   const locale = useLocale();
   const products = productsData?.products || [];
   const isLoading = productsData?.loading || false;
@@ -103,6 +103,7 @@ export default function CategoryRow({ brand, isExpanded, onToggle, productsData 
 
           <button
             type="button"
+            onClick={() => toggleBrandActive(brand._id, !brand.isActive)}
             aria-label={
               brand.isActive
                 ? `Archive ${brand.name?.en || "brand"}`

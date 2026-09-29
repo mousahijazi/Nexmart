@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { getBrand, getBrandProducts, createBrand, updateBrand } from "@/helper/fetchApi";
+import { getBrand, getBrandProducts, createBrand, updateBrand, updateBrandStatus } from "@/helper/fetchApi";
 
 export default function useAdminBrands({ showAlert }) {
   const [brandProducts, setBrandProducts] = useState({});
@@ -37,8 +37,10 @@ export default function useAdminBrands({ showAlert }) {
   const fetchBrands = useCallback(async (page, limit) => {
     setBrandsLoading(true);
 
+    const token = localStorage.getItem("nexmart-token");
+
     try {
-      const result = await getBrand(limit, page);
+      const result = await getBrand(limit, page, token);
 
       setBrands(result.brands);
       setBrandsTotal(result.total);
@@ -100,6 +102,43 @@ export default function useAdminBrands({ showAlert }) {
     return result;
   };
 
+  const toggleBrandActive = async (brandId, isActive) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+        showAlert("You are not authenticated", "danger");
+        return { success: false };
+    }
+
+    const result = await updateBrandStatus(brandId, isActive, token);
+
+    if (!result.success) {
+        showAlert(result.message, "danger");
+        return result;
+    }
+
+    setBrands((currentBrands) =>
+        currentBrands.map((brand) =>
+            brand._id === brandId
+            ? {
+                ...brand,
+                ...result.brand,
+                }
+            : brand
+        )
+    );
+
+    setBrandProducts((current) => {
+        const updated = { ...current };
+        delete updated[brandId];
+        return updated;
+    });
+
+    showAlert(isActive ? "brand restored successfully!" : "Brand archived successfully!", "success");
+
+    return result;
+  };
+
   const fetchBrandProducts = useCallback(
     async (brandId, brandSlug, page = 1, limit = 10) => {
       const token = localStorage.getItem("nexmart-token");
@@ -150,5 +189,6 @@ export default function useAdminBrands({ showAlert }) {
 
     addBrand,
     editBrand,
+    toggleBrandActive,
   };
 }

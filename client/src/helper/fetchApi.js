@@ -184,9 +184,19 @@ export async function getCategories(limit = 10, page = 1, token = null) {
   }
 }
 
-export async function getBrand(limit, page = 1) {
+export async function getBrand(limit, page = 1, token = null) {
     try {
-      const res = await fetch(`${API_URL}/api/v1/brands${limit ? `?page=${page}&limit=${limit}` : ""}`, {cache: "no-store"});
+      const headers = {};
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const res = await fetch(`${API_URL}/api/v1/brands${limit ? `?page=${page}&limit=${limit}` : ""}`, {
+        headers,
+        cache: "no-store"
+      });
+
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
@@ -296,6 +306,43 @@ export async function updateBrand(brandId, formData, token) {
       message: "Something went wrong",
     };
   }  
+}
+
+export async function updateBrandStatus(brandId, isActive, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/brands/${brandId}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isActive }),
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== "success") {
+      return {
+        success: false,
+        message: result.message || "Failed to update brand status",
+      };
+    }
+
+    return {
+      success: true,
+      brand: result.data?.brand,
+    };
+  } catch (error) {
+    console.error("updateBrandStatus:", error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
 }
 
 // users

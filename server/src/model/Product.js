@@ -98,7 +98,12 @@ const productSchema = new mongoose.Schema(
     archivedByCategory: {
       type: Boolean,
       default: false
-    }
+    },
+
+    // archivedByBrand: {
+    //   type: Boolean,
+    //   default: false
+    // }
   },
   {
     timestamps: true,

@@ -1,7 +1,7 @@
 import {createBrandController, getAllBrandsController, getBrandByIdController, updateBrandController, deleteBrandController} from "../../controllers/brandController.js";
 import express from "express";
 import validate from "../../middlewares/validate.js";
-import { uploadBrandLogo } from "../../middlewares/uploadmiddleware/uploadBrand.js";
+import { uploadBrandLogo, uploadBrandUpdateImage } from "../../middlewares/uploadmiddleware/uploadBrand.js";
 import { authToken } from "../../middlewares/auth.js";
 import { authorizeRoles } from "../../middlewares/role.js";
 
@@ -13,7 +13,7 @@ router.route("/")
 
 router.route("/:brandId")
     .get(getBrandByIdController)
-    .patch(authToken, authorizeRoles("ADMIN"), updateBrandController)
+    .patch(authToken, authorizeRoles("ADMIN"), uploadBrandUpdateImage, validate, updateBrandController)
     .delete(authToken, authorizeRoles("ADMIN"), deleteBrandController);
 
 export default router;

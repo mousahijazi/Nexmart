@@ -1,7 +1,7 @@
 import {createBrand, getAllBrands, getBrandById, updateBrand, deleteBrand} from "../service/brandService.js";
 import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
-import { formatBrandData } from "../utils/formatBrandData.js";
+import { formatBrandData, formatBrandUpdateData } from "../utils/formatBrandData.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 
 const getAllBrandsController = async (req, res) => {
@@ -45,7 +45,8 @@ const createBrandController = async (req, res) => {
 
 const updateBrandController = asyncHandler(
     async (req, res, next) => {
-        const brand = await updateBrand(req.params.brandId, req.body);
+        const brandData = formatBrandUpdateData(req);
+        const brand = await updateBrand(req.params.brandId, brandData);
 
         if (!brand) {
             return next(AppError.create("Brand not found", 404, FAIL));

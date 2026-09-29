@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { ChevronDown, ChevronRight, Package, ArrowRight, Loader2, Archive, RotateCcw } from "lucide-react";
-import { EditCategoryButton, AdminProductCard } from "@/index";
+import { AdminProductCard, AdminEditButton } from "@/index";
 import { getImageUrl } from "@/helper/getImage";
 import { useAdminContext } from "@/Context/Adminprovider";
 import { useLocale } from "next-intl";
@@ -32,11 +32,10 @@ function StatusBadge({ status }) {
 
 export default function CategoryRow({ category, isExpanded, productsData, onToggle, onLoadMore }) {
   const locale = useLocale();
-  const { toggleCategoryActive } = useAdminContext();
+  const { toggleCategoryActive, openEditCategory } = useAdminContext();
   const products = productsData?.products || [];
   const isLoading = productsData?.loading || false;
   const hasMore = (productsData?.page || 1) < (productsData?.totalPages || 1);
-  const isActive = category.isActive;
 
   return (
     <>
@@ -101,7 +100,7 @@ export default function CategoryRow({ category, isExpanded, productsData, onTogg
         </div>
 
         <div className="flex items-center justify-end gap-1">
-          <EditCategoryButton category={category} />
+          <AdminEditButton name={category?.name?.en || category?.name?.ar || "category"} onClick={() => openEditCategory(category)} />
 
           <button
             type="button"

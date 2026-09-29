@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import { ChevronDown, ChevronRight, Package, ArrowRight, Loader2, Archive, RotateCcw, Pencil } from "lucide-react";
-import { AdminProductCard } from "@/index";
+import { AdminProductCard, AdminEditButton } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 import { getImageUrl } from "@/helper/getImage";
 import { useLocale } from "next-intl";
 
@@ -30,6 +31,7 @@ function StatusBadge({ status }) {
 }
 
 export default function CategoryRow({ brand, isExpanded, onToggle, productsData }) {
+  const {openEditBrand} = useAdminContext();
   const locale = useLocale();
   const products = productsData?.products || [];
   const isLoading = productsData?.loading || false;
@@ -97,13 +99,7 @@ export default function CategoryRow({ brand, isExpanded, onToggle, productsData 
         </div>
 
         <div className="flex items-center justify-end gap-1">
-          <button
-            type="button"
-            aria-label={`Edit ${brand.name[locale]}`}
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-muted)] transition-colors hover:border-[var(--color-green-light)] hover:bg-[var(--color-sand)] hover:text-[var(--color-green)]"
-          >
-            <Pencil size={14} />
-          </button>
+          <AdminEditButton name={brand?.name?.en || brand?.name?.ar || "brand"} onClick={() => openEditBrand(brand)} />
 
           <button
             type="button"

@@ -102,6 +102,9 @@ export {default as AdminDashboard} from "./components/Dashboard/AdminDashboard/A
 export {default as AdminDashboardContent} from "./components/Dashboard/AdminDashboard/AdminDashboardContent";
 export {default as DashboardPage} from "./components/Dashboard/AdminDashboard/DashboardPage";
 
+export {default as AdminAddButton} from "./components/Dashboard/AdminDashboard/shared/AdminAddButton";
+export {default as AdminEditButton} from "./components/Dashboard/AdminDashboard/shared/AdminEditButton";
+
 export {default as QuickNavRail} from "./components/Dashboard/AdminDashboard/quicknav/QuickNavrail";
 export {default as FulfillmentHubCard} from "./components/Dashboard/AdminDashboard/quicknav/Fulfillmenthubcard";
 
@@ -131,16 +134,12 @@ export {default as CategoriesFilters} from "./components/Dashboard/AdminDashboar
 export {default as CategoriesTable} from "./components/Dashboard/AdminDashboard/categories/CategoriesTable";
 export {default as CategoryRow} from "./components/Dashboard/AdminDashboard/categories/CategoryRow";
 
-export {default as AddCategoryButton} from "./components/Dashboard/AdminDashboard/categories/AddCategoryButton";
-export {default as EditCategoryButton} from "./components/Dashboard/AdminDashboard/categories/EditCategoryButton";
-
 export {default as CategoryModal} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryModal";
 export {default as CategoryForm} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryForm";
 export {default as CategoryImage} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryImage";
 export {default as CategoryModalFooter} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryModalFooter";
 
 export {default as ProductModal} from "./components/Dashboard/AdminDashboard/products/productModal/ProductModal";
-export {default as AddProductsButton} from "./components/Dashboard/AdminDashboard/products/AddProductsButton";
 
 export {default as RecentOrdersPanel} from "./components/Dashboard/AdminDashboard/orders/RecentOrdersPanel";
 export {default as OrdersPanelHeader} from "./components/Dashboard/AdminDashboard/orders/OrdersPanelHeader";

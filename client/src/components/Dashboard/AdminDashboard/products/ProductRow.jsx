@@ -1,13 +1,16 @@
+"use client"
 import Image from "next/image";
 import { CatalogStatus, CategoryBadge, StockBadge } from "./ProductStatus";
-import EditPoductsButton from "./EditPoductsButton";
 import { getStockStatus, getCatalogStatus, getCategoryName, getBrandName, getDisplaySku } from "./Productdisplay";
 import { getImageUrl } from "@/helper/getImage";
 import { Link } from "@/lib/i18n/routing";
+import { AdminEditButton } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function ProductRow({ product, selected, onToggleActive }) {
   const name = product.title?.en || product.title?.ar || "Untitled product";
   const arabicName = product.title?.ar || "";
+  const {openEditProduct} = useAdminContext();
 
   const stockStatus = getStockStatus(product.stock);
   const catalogStatus = getCatalogStatus(product.isActive);
@@ -21,7 +24,7 @@ export default function ProductRow({ product, selected, onToggleActive }) {
       }`}
     >
       <div className="flex flex-col items-center gap-1">
-        <EditPoductsButton product={product} />
+        <AdminEditButton name={product?.title?.en || product?.title?.ar || "product"} onClick={() => openEditProduct(product)} />
 
         <button
           type="button"

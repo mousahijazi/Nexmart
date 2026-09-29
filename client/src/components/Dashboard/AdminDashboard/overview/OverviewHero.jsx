@@ -1,8 +1,12 @@
+"use client"
 import { Clock, CalendarDays, Download } from "lucide-react";
 import { heroStats } from "./Stats";
-import { AddProductsButton, ProductModal } from "@/index";
+import { AdminAddButton, ProductModal } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function OverviewHero({adminName = "Eng. Tariq Al-Mansoor", dateLabel = "Wednesday, 24 Sha'ban 1446 AH / March 2025", onExport, onAddProduct}) {
+  const {openProductModal} = useAdminContext();
+  
   return (
     <div className="rounded-2xl bg-[var(--color-green-dark)] p-6 text-white sm:p-7">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -35,7 +39,7 @@ export default function OverviewHero({adminName = "Eng. Tariq Al-Mansoor", dateL
             <Download size={15} />
             Export Financial Audit CSV
           </button>
-          <AddProductsButton />
+          <AdminAddButton label="Add New Product" onClick={openProductModal} />
         </div>
       </div>
 

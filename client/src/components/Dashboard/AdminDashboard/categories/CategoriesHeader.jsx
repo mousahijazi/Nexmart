@@ -1,7 +1,10 @@
+"use client"
 import { Download, FolderTree } from "lucide-react";
-import { AddCategoryButton } from "@/index";
+import { AdminAddButton } from "@/index";
 
 export default function CategoriesHeader() {
+  const { openCategoryModal } = useAdminContext();
+
   return (
     <section className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
       <div className="flex min-w-0 items-start gap-3">
@@ -29,7 +32,7 @@ export default function CategoriesHeader() {
           <span>Export Categories<span className="sm:ml-1">CSV</span></span>
         </button>
 
-        <AddCategoryButton />
+        <AdminAddButton label="Add New Category" onClick={openCategoryModal} />
       </div>
     </section>
   );

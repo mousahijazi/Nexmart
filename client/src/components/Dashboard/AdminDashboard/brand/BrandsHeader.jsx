@@ -1,6 +1,11 @@
+"use client"
 import { Award, Download } from "lucide-react";
+import { AdminAddButton } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function BrandsHeader({ onAddBrand }) {
+  const {openBrandModal} = useAdminContext();
+
   return (
     <section className="mb-6 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
       <div className="flex min-w-0 items-start gap-3">
@@ -29,13 +34,7 @@ export default function BrandsHeader({ onAddBrand }) {
           </span>
         </button>
         
-        <button
-          type="button"
-          onClick={onAddBrand}
-          className="flex min-h-[44px] items-center justify-center rounded-[10px] bg-[var(--color-gold)] px-5 text-[11px] font-bold text-[var(--color-green-dark)] transition hover:opacity-90"
-        >
-          + Add New Brand
-        </button>
+        <AdminAddButton label="Add New Brand" onClick={openBrandModal} />
       </div>
     </section>
   );

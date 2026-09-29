@@ -8,7 +8,7 @@ import ProductsPageSkeleton from "./ProductsSkeleton";
 import { Package, Download, Filter } from "lucide-react";
 import { stockOptions } from "./productsData";
 import { getCategoryName, getBrandName } from "./Productdisplay";
-import { ProductModal, AddProductsButton } from "@/index";
+import { ProductModal, AdminAddButton } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function ProductsDashboard() {
@@ -22,6 +22,7 @@ export default function ProductsDashboard() {
     productsTotal,
     toggleProductActive,
     productsTotalPages,
+    openProductModal,
   } = useAdminContext();
 
   const [search, setSearch] = useState("");
@@ -105,7 +106,7 @@ export default function ProductsDashboard() {
               Export Catalog CSV
             </button>
 
-            <AddProductsButton />
+            <AdminAddButton label="Add New Product" onClick={openProductModal} />
           </div>
         </section>
 

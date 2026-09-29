@@ -1,4 +1,4 @@
-import {createBrand, getAllBrands, getBrandById, updateBrand, deleteBrand} from "../service/brandService.js";
+import {createBrand, getAllBrands, getBrandById, updateBrand, updateBrandStatus, deleteBrand} from "../service/brandService.js";
 import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
 import { formatBrandData, formatBrandUpdateData } from "../utils/formatBrandData.js";
@@ -6,7 +6,7 @@ import asyncHandler from "../middlewares/asyncHandler.js";
 
 const getAllBrandsController = async (req, res) => {
     const {page = 1, limit = 10} = req.query;
-    const result = await getAllBrands({page: Number(page), limit: Number(limit),});
+    const result = await getAllBrands({page: Number(page), limit: Number(limit)}, req?.userRole);
 
     res.status(200).json({
         status: SUCCESS,
@@ -16,7 +16,7 @@ const getAllBrandsController = async (req, res) => {
 
 const getBrandByIdController = asyncHandler(
     async (req, res, next) => {
-        const brand = await getBrandById(req.params.brandId);
+        const brand = await getBrandById(req.params.brandId, req?.userRole);
 
         if (!brand) {
             return next(AppError.create("Brand not found", 404, FAIL));
@@ -61,6 +61,22 @@ const updateBrandController = asyncHandler(
     }
 );
 
+const updateBrandStatusController = asyncHandler(
+  async (req, res, next) => {
+    const { isActive } = req.body;
+
+    const brand = await updateBrandStatus(req.params.brandId, isActive);
+
+    res.status(200).json({
+      status: SUCCESS,
+      data: {
+        brand,
+      },
+    });
+  }
+);
+
+
 const deleteBrandController = asyncHandler(
     async (req, res, next) => {
         const brand = await deleteBrand(req.params.brandId);
@@ -83,5 +99,6 @@ export {
     getAllBrandsController,
     getBrandByIdController,
     updateBrandController,
+    updateBrandStatusController,
     deleteBrandController,
 };

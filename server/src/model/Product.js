@@ -100,10 +100,10 @@ const productSchema = new mongoose.Schema(
       default: false
     },
 
-    // archivedByBrand: {
-    //   type: Boolean,
-    //   default: false
-    // }
+    archivedByBrand: {
+      type: Boolean,
+      default: false
+    }
   },
   {
     timestamps: true,

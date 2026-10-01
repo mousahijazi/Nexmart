@@ -30,11 +30,12 @@ function StatusBadge({ status }) {
   );
 }
 
-export default function CategoryRow({ brand, isExpanded, onToggle, productsData }) {
+export default function CategoryRow({ brand, isExpanded, onToggle, onLoadMore, productsData }) {
   const {openEditBrand, toggleBrandActive} = useAdminContext();
   const locale = useLocale();
   const products = productsData?.products || [];
   const isLoading = productsData?.loading || false;
+  const hasMore = (productsData?.page || 1) < (productsData?.totalPages || 1);
 
   return (
     <>
@@ -158,6 +159,32 @@ export default function CategoryRow({ brand, isExpanded, onToggle, productsData 
                   <AdminProductCard key={product._id} product={product} locale={locale} />
                 ))}
               </div>
+
+              {hasMore && (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={onLoadMore}
+                    disabled={isLoading}
+                    className="
+                      flex items-center gap-2
+                      rounded-lg
+                      border border-[var(--color-border)]
+                      bg-[var(--color-surface)]
+                      px-4 py-2
+                      text-[10px]
+                      font-semibold
+                      text-[var(--color-green-dark)]
+                      disabled:cursor-not-allowed
+                      disabled:opacity-50
+                      hover:bg-[var(--color-sand)]
+                    "
+                  >
+                    {isLoading && <Loader2 size={13} className="animate-spin" />}
+                    {isLoading ? "Loading..." : "Load More Products"}
+                  </button>
+                </div>
+              )}
             </>
           ) : (
             <div className="flex flex-col items-center justify-center py-10 text-center">

@@ -1,22 +1,16 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
-const createReviewValidator = [
-    body("product")
-        .trim()
-        .notEmpty()
-        .withMessage("Product is required")
-        .isMongoId()
-        .withMessage("Product ID is invalid"),
+export const createReviewValidator = [
+  param("productId")
+    .isMongoId()
+    .withMessage("Invalid product ID"),
 
-    body("rating")
-        .notEmpty()
-        .withMessage("Rating is required")
-        .isInt({ min: 1, max: 5 })
-        .withMessage("Rating must be between 1 and 5"),
+  body("rating")
+    .isInt({ min: 1, max: 5 })
+    .withMessage("Rating must be an integer between 1 and 5"),
 
-    body("comment")
-        .optional()
-        .trim(),
+  body("comment")
+    .trim()
+    .notEmpty()
+    .withMessage("Comment is required"),
 ];
-
-export default createReviewValidator;

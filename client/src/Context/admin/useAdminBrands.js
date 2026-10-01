@@ -164,7 +164,53 @@ export default function useAdminBrands({ showAlert }) {
             totalPages: result.totalPages,
         },
       }));
-    }, []);
+  }, []);
+
+  const loadMoreBrandProducts = useCallback(
+    async (brandId, categorySlug) => {
+      const currentBrand = brandProducts[brandId];
+
+      if (!currentBrand) return;
+      if (currentBrand.loading) return;
+
+      if (currentBrand.page >= currentBrand.totalPages) {
+        return;
+      }
+
+      const token = localStorage.getItem("nexmart-token");
+
+      if (!token) {
+        showAlert("You are not authenticated", "danger");
+        return { success: false };
+      }
+
+      const nextPage = currentBrand.page + 1;
+
+      setBrandProducts((current) => ({
+        ...current,
+        [brandId]: {
+          ...current[brandId],
+          loading: true,
+        },
+      }));
+
+      const result = await getBrandProducts(categorySlug, 10, nextPage, token);
+
+      setBrandProducts((current) => ({
+        ...current,
+        [brandId]: {
+          ...current[brandId],
+          products: [
+            ...(current[brandId]?.products || []),
+            ...result.products,
+          ],
+          loading: false,
+          page: result.page,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      }));
+    }, [brandProducts, showAlert]);
 
   return {
     brands,
@@ -190,5 +236,6 @@ export default function useAdminBrands({ showAlert }) {
     addBrand,
     editBrand,
     toggleBrandActive,
+    loadMoreBrandProducts,
   };
 }

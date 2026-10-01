@@ -7,7 +7,7 @@ export default function CategoriesTable({ brands }) {
   const [openBrands, setOpenBrands] = useState([]);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(6);
-  const { brandProducts, fetchBrandProducts } = useAdminContext();
+  const { brandProducts, fetchBrandProducts, loadMoreBrandProducts } = useAdminContext();
 
   const totalPages = Math.max(1, Math.ceil(brands.length / rowsPerPage));
 
@@ -50,7 +50,7 @@ export default function CategoriesTable({ brands }) {
                 brand={brand}
                 isExpanded={openBrands.includes(brand._id)}
                 productsData={brandProducts[brand._id]}
-                // onLoadMore={() => loadMoreCategoryProducts(brand._id, brand.slug)}
+                onLoadMore={() => loadMoreBrandProducts(brand._id, brand.slug)}
                 onToggle={() => toggleBrand(brand)}
               />
             ))}

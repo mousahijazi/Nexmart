@@ -71,6 +71,8 @@ export {default as ProductsTextButton} from "./components/products/productData/P
 export {default as Purchases} from "./components/products/productData/Purchases";
 export {default as Icons} from "./components/products/productData/Icons";
 export {default as QuantityButton} from "./components/products/productData/QuantityButton";
+
+export {default as ProductsReviewsSection} from "./components/products/productReviews/ProductsReviewsSection";
 export {default as ProductsReviews} from "./components/products/productReviews/ProductsReviews";
 export {default as Rating} from "./components/products/productReviews/Rating";
 export {default as ProductStars} from "./components/products/productReviews/ProductStars";

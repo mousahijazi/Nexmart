@@ -1,5 +1,5 @@
 import { getProduct, getCategoryProducts } from "@/helper/fetchApi"; 
-import { ProductGallary, ProductText, ProductsReviews, Rating, ProductsCard, Button } from "../../../../index"; 
+import { ProductGallary, ProductText, ProductsReviewsSection, ProductsCard, Button } from "../../../../index"; 
 import { getTranslations, getLocale } from "next-intl/server"; 
  
 export const metadata = { 
@@ -44,13 +44,10 @@ export default async function Product({params}) {
                 </div> 
             : "" 
         } 
-        <div className="py-24"> 
-            <div className="max-w-8xl mx-auto px-6"> 
-                <div className="flex flex-col items-center"> 
-                    <Rating rating={product.rating} /> 
-                    {/* <ProductsReviews reviews={product.reviews} />  */}
-                </div> 
-            </div> 
+        <div className="py-24">
+            <div className="max-w-8xl mx-auto px-6">
+                <ProductsReviewsSection product={product} />
+            </div>
         </div> 
     </> 
   ) 

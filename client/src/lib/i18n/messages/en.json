@@ -230,7 +230,13 @@
                 "title": "from 1,25K reviews"
             },
             "reviews": {
-                "title": "Review Lists"
+                "title": "Review Lists",
+                "addReview": "write your review",
+                "rating": "Select your rating",
+                "placeholder": "Share your experience with this product...",
+                "submit": "Submit Review",
+                "sending": "Sending...",
+                "alreadyReviewed": "You have already reviewed this product."
             }
         }
     },

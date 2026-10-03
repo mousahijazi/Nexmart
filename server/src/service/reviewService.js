@@ -73,7 +73,7 @@ const createReview = async (productId, userId, rating, comment) => {
   await updateProductRating(productId);
 
   return await Review.findById(review._id)
-    .populate("user", "firstName lastName avatar")
+    .populate("user", "firstName lastName avatar email")
     .populate("product", "title");
 };
 
@@ -93,7 +93,7 @@ const getProductReviews = async (productId, page = 1, limit = 10) => {
 
   const [reviews, total] = await Promise.all([
     Review.find(filter)
-      .populate("user", "firstName lastName avatar")
+      .populate("user", "firstName lastName avatar email")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit),

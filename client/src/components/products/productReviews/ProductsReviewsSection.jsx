@@ -8,7 +8,12 @@ export default function ProductsReviewsSection({ product }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitError, setSubmitError] = useState("");
-  const calculatedRating = reviews.length > 0 ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0;
+
+  const calculatedRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) /
+        reviews.length
+      : 0;
 
   useEffect(() => {
     if (!product?._id) {
@@ -33,7 +38,11 @@ export default function ProductsReviewsSection({ product }) {
       return;
     }
 
-    const result = await submitReview(product._id, rating, comment.trim());
+    const result = await submitReview(
+      product._id,
+      rating,
+      comment.trim()
+    );
 
     if (!result.success) {
       setSubmitError(result.message || "Failed to submit review");
@@ -49,8 +58,10 @@ export default function ProductsReviewsSection({ product }) {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col items-center">
-        <Rating rating={reviews.length > 0 ? calculatedRating : product?.rating || 0 } />
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col">
+        <div className="flex w-full justify-center">
+          <Rating rating={ reviews.length > 0 ? calculatedRating : product?.rating || 0} />
+        </div>
 
         <div className="w-full">
           <ProductsReviews
@@ -59,7 +70,7 @@ export default function ProductsReviewsSection({ product }) {
             error={error}
             total={total}
             currentUser={currentUser}
-            userAlreadyReviewed={ userAlreadyReviewed }
+            userAlreadyReviewed={userAlreadyReviewed}
             rating={rating}
             setRating={setRating}
             comment={comment}

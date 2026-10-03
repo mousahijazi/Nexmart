@@ -45,7 +45,7 @@ export default async function Product({params}) {
             : "" 
         } 
         <div className="py-24">
-            <div className="max-w-8xl mx-auto px-6">
+            <div className="max-w-8xl mx-auto min-[480px]:px-6">
                 <ProductsReviewsSection product={product} />
             </div>
         </div> 

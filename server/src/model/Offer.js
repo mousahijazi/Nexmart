@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import AppError from "../utils/AppError";
-import { FAIL } from "../utils/httpStatusText";
+import AppError from "../utils/AppError.js";
+import { FAIL } from "../utils/httpStatusText.js";
 
 const offerTargetSchema = new mongoose.Schema(
     {
@@ -87,6 +87,11 @@ const offerSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+
+        overrideApplied: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
@@ -99,10 +104,8 @@ offerSchema.pre("validate", function (next) {
     }
 
     if (this.type === "percentage") {
-        if (this.targetType === "category") {
-            if (this.discount !== null && this.discount > 100) {
-                return next(AppError.create("Percentage discount cannot be greater than 100", 400, FAIL));
-            }
+        if (this.targetType === "category" && this.discount !== null && this.discount > 100) {
+            return next(AppError.create("Percentage discount cannot be greater than 100", 400, FAIL));
         }
 
         if (this.targetType === "product") {
@@ -115,8 +118,8 @@ offerSchema.pre("validate", function (next) {
     }
 
     if (this.targetType === "product") {
-        if (!this.targets || this.targets.length === 0) {
-            return next(AppError.create("Product offer must contain at least one target product", 400, FAIL));
+        if (this.isActive && (!this.targets || this.targets.length === 0)) {
+            return next(AppError.create("Active product offer must contain at least one target product", 400, FAIL));
         }
 
         if (this.category) {
@@ -128,12 +131,13 @@ offerSchema.pre("validate", function (next) {
         }
 
         const productIds = this.targets.map((target) => String(target.product));
-
         const uniqueProductIds = new Set(productIds);
 
         if (productIds.length !== uniqueProductIds.size) {
             return next(AppError.create("A product cannot appear more than once in the same offer", 400, FAIL));
         }
+
+        this.overrideApplied = false;
     }
 
     if (this.targetType === "category") {
@@ -146,34 +150,16 @@ offerSchema.pre("validate", function (next) {
         }
 
         if (this.targets.length > 0) {
-            return next(AppError.create("Category offer cannot contain product targets", 400, FAIL)); 
+            return next(AppError.create("Category offer cannot contain product targets", 400, FAIL));
         }
     }
 
     next();
 });
 
-offerSchema.index({
-    targetType: 1,
-    isActive: 1,
-    startDate: 1,
-    endDate: 1,
-});
-
-offerSchema.index({
-    category: 1,
-    isActive: 1,
-    startDate: 1,
-    endDate: 1,
-});
-
-offerSchema.index({
-    "targets.product": 1,
-    isActive: 1,
-    startDate: 1,
-    endDate: 1,
-});
+offerSchema.index({ targetType: 1, "targets.product": 1, isActive: 1, startDate: 1, endDate: 1 });
+offerSchema.index({ targetType: 1, category: 1, isActive: 1, startDate: 1, endDate: 1 });
+offerSchema.index({ targetType: 1, overrideApplied: 1, startDate: 1, endDate: 1 });
 
 const Offer = mongoose.model("Offer", offerSchema);
-
 export default Offer;

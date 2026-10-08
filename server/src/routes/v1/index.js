@@ -4,6 +4,7 @@ import categoryRoutes from "./categoriesRoutes.js";
 import brandRoutes from "./brandRoutes.js";
 import userRoutes from "./userRoutes.js";
 import reviewRoutes from "./reviewRoutes.js";
+import offerRoutes from "./offerRoutes.js";
 
 const router = express.Router();
 
@@ -14,5 +15,7 @@ router.use("/brands", brandRoutes);
 
 router.use("/products", productRoutes);
 router.use("/reviews", reviewRoutes);
+
+router.use("/offers", offerRoutes);
 
 export default router;

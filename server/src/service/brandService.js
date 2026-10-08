@@ -53,7 +53,7 @@ const updateBrand = async (brandId, brandData) => {
     brandId,
     { $set: brandData },
     {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     }
   ).populate("productsCount");

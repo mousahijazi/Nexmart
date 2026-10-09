@@ -53,9 +53,22 @@ export const createOfferValidator = [
     }),
 
   body("discount")
-    .notEmpty().withMessage("Discount is required")
-    .isNumeric().withMessage("Discount must be a number")
-    .custom((value) => value >= 0).withMessage("Discount must be at least 0"),
+    .notEmpty()
+    .isNumeric()
+    .withMessage("Discount must be a number")
+    .custom((value, { req }) => {
+      const discount = Number(value);
+
+      if (discount < 0) {
+        throw AppError.create("Discount must be at least 0", 400, FAIL);
+      }
+
+      if (req.body.type === "percentage" && discount > 100) {
+        throw AppError.create("Percentage discount cannot be greater than 100", 400, FAIL);
+      }
+
+      return true;
+    }),
 
   body("startDate")
     .notEmpty().withMessage("Start date is required")
@@ -129,9 +142,22 @@ export const updateOfferValidator = [
     }),
 
   body("discount")
-    .optional()
-    .isNumeric().withMessage("Discount must be a number")
-    .custom((value) => value >= 0).withMessage("Discount must be at least 0"),
+    .notEmpty()
+    .isNumeric()
+    .withMessage("Discount must be a number")
+    .custom((value, { req }) => {
+      const discount = Number(value);
+
+      if (discount < 0) {
+        throw AppError.create("Discount must be at least 0", 400, FAIL);
+      }
+
+      if (req.body.type === "percentage" && discount > 100) {
+        throw AppError.create("Percentage discount cannot be greater than 100", 400, FAIL);
+      }
+
+      return true;
+    }),
 
   body("startDate")
     .optional()

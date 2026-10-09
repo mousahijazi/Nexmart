@@ -5,6 +5,7 @@ import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
 import { userRoles } from "../utils/userRoles.js";
 import { deleteFile, deleteFiles } from "../middlewares/fileService.js";
+import { addPricingToProduct } from "./offer/pricingService.js";
 
 const getAllProducts = async ({categories, brands, page = 1, limit = 10}, userRole) => {
   const filter = {};
@@ -53,17 +54,19 @@ const getAllProducts = async ({categories, brands, page = 1, limit = 10}, userRo
     filter.archivedByBrand = false;
   }
 
-  const products = await Product.find(filter).populate("category", "name slug image").populate("brand").sort({ createdAt: -1 }).skip(skip).limit(limit);
-
+  const products = await Product.find(filter, {"__v": false})
+    .populate("category", "name slug image").populate("brand").sort({ createdAt: -1 }).skip(skip).limit(limit);
+  
+  const productsWithPricing = await Promise.all(products.map((product) => addPricingToProduct(product)));
   const totalProducts = await Product.countDocuments(filter);
 
   return {
-      products,
-      total: totalProducts,
-      page: page,
-      limit: limit,
-      skip: skip,
-      totalPages: Math.ceil(totalProducts / limit),
+    products: productsWithPricing,
+    total: totalProducts,
+    page: page,
+    limit: limit,
+    skip: skip,
+    totalPages: Math.ceil(totalProducts / limit),
   };
 };
 
@@ -78,7 +81,14 @@ const getProductById = async (productId, userRole) => {
     filter.archivedByBrand = false;
   }
 
-  return await Product.findOne(filter).populate("category").populate("brand");
+  const product = await Product.findOne(filter)
+    .populate("category").populate("brand");
+
+  if (!product) {
+    return null;
+  }
+
+  return await addPricingToProduct(product);
 };
 
 const createProduct = async (productData) => {

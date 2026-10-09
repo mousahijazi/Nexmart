@@ -1,4 +1,4 @@
-import { createOffer, getAllOffers, getOfferById, updateOffer, deleteOffer } from "../service/offerService.js";
+import { createOffer, getAllOffers, getOfferById, updateOffer, deleteOffer } from "../service/offer/offerService.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";

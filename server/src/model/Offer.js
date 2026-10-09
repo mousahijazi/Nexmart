@@ -76,6 +76,12 @@ const offerSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    season: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Season",
+      default: null,
+    },
   },
   {
     timestamps: true,

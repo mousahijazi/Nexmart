@@ -1,5 +1,6 @@
 import Offer from "../../model/Offer.js";
 import Product from "../../model/Product.js";
+import Season from "../../model/Season.js";
 import AppError from "../../utils/AppError.js";
 import { FAIL } from "../../utils/httpStatusText.js";
 import { createOffer as createOfferRepository, getAllOffers as getAllOffersRepository, getOfferById as getOfferByIdRepository, updateOffer as updateOfferRepository, deleteOffer as deleteOfferRepository } from "../../repositories/offerRepository.js";
@@ -17,7 +18,7 @@ const validateOfferTarget = async (offerData) => {
   }
 
   if (offerData.targetType === "category") {
-    const products = await Product.find({ category: offerData.category?._id }).select("_id price");
+    const products = await Product.find({ category: offerData.category?._id || offerData.category }).select("_id price");
 
     return products;
   }
@@ -47,6 +48,7 @@ const removeWeakerProductOffers = async (categoryOffer, products) => {
       product: product._id,
       startDate: { $lt: categoryOffer.endDate },
       endDate: { $gt: categoryOffer.startDate },
+      isActive: true,
     });
 
     for (const productOffer of productOffers) {
@@ -61,6 +63,28 @@ const removeWeakerProductOffers = async (categoryOffer, products) => {
 };
 
 const createOffer = async (offerData) => {
+  if (offerData.season) {
+    const season = await Season.findById(offerData.season);
+
+    if (!season) {
+      throw AppError.create("Season not found", 404, FAIL);
+    }
+  }
+
+  const now = new Date();
+  const startDate = new Date(offerData.startDate);
+  const endDate = new Date(offerData.endDate);
+
+  if (startDate < now) {
+    throw AppError.create("Cannot create an offer with a start date in the past.", 400, FAIL);
+  }
+
+  if (startDate <= now && endDate > now) {
+    offerData.isActive = true;
+  } else {
+    offerData.isActive = false;
+  }
+
   const target = await validateOfferTarget(offerData);
 
   if (offerData.targetType === "product") {
@@ -122,6 +146,33 @@ const updateOffer = async (offerId, offerData) => {
     return null;
   }
 
+  const now = new Date();
+  const currentStartDate = new Date(existingOffer.startDate);
+  const currentEndDate = new Date(existingOffer.endDate);
+
+  const isExpired = currentEndDate <= now;
+  const isFuture = currentStartDate > now;
+
+  if (offerData.isActive !== undefined) {
+    if (isExpired && offerData.isActive === true) {
+      throw AppError.create("Cannot activate an expired offer.", 400, FAIL);
+    }
+    if (isFuture && offerData.isActive === true) {
+      throw AppError.create("Cannot activate a future offer before its start date.", 400, FAIL);
+    }
+  }
+
+  const newStartDate = new Date(offerData.startDate || existingOffer.startDate);
+  const newEndDate = new Date(offerData.endDate || existingOffer.endDate);
+
+  if (isFuture || isExpired) {
+    if (newStartDate <= now && newEndDate > now) {
+      offerData.isActive = true;
+    } else {
+      offerData.isActive = false;
+    }
+  }
+
   const updatedData = {
     ...existingOffer.toObject(),
     ...offerData,
@@ -136,8 +187,8 @@ const updateOffer = async (offerId, offerData) => {
 
     const existingProductOffer = await findOverlappingProductOffer(
       updatedData.product,
-      updatedData.startDate,
-      updatedData.endDate,
+      updatedData.startDate || existingOffer.startDate,
+      updatedData.endDate || existingOffer.endDate,
       offerId
     );
 

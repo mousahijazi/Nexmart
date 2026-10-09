@@ -16,6 +16,7 @@ router.use("/brands", brandRoutes);
 router.use("/products", productRoutes);
 router.use("/reviews", reviewRoutes);
 
+router.use("/seasons", offerRoutes);
 router.use("/offers", offerRoutes);
 
 export default router;

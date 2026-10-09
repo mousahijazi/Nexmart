@@ -6,7 +6,7 @@ const createOffer = async (offerData) => {
 
 const getAllOffers = async ({skip, limit}) => {
   const offers = await Offer.find({}, {"__v": false})
-    .populate("product").populate("category").sort({ createdAt: -1 }).skip(skip).limit(limit);
+    .populate("product").populate("category").populate("season").sort({ createdAt: -1 }).skip(skip).limit(limit);
 
   const totaloffers = await Offer.countDocuments();
 
@@ -18,7 +18,7 @@ const getAllOffers = async ({skip, limit}) => {
 
 const getOfferById = async (offerId) => {
   return await Offer.findById(offerId, {"__v": false})
-    .populate("product").populate("category");
+    .populate("product").populate("category").populate("season");
 };
 
 const updateOffer = async (offerId, offerData) => {
@@ -29,7 +29,7 @@ const updateOffer = async (offerId, offerData) => {
       returnDocument: "after",
       runValidators: true,
     }
-  ).populate("product").populate("category");
+  ).populate("product").populate("category").populate("season");
 };
 
 const deleteOffer = async (offerId) => {

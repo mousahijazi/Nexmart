@@ -52,6 +52,16 @@ export const createOfferValidator = [
       return true;
     }),
 
+  body("season")
+    .optional({ nullable: true })
+    .custom((value) => {
+      if (!isValidObjectId(value)) {
+        throw AppError.create("Invalid season ID format", 400, FAIL);
+      }
+
+      return true;
+    }),
+
   body("discount")
     .notEmpty()
     .isNumeric()
@@ -138,6 +148,16 @@ export const updateOfferValidator = [
       if (value && !isValidObjectId(value)) {
         throw AppError.create("Invalid category ID format", 400, FAIL);
       }
+      return true;
+    }),
+
+  body("season")
+    .optional({ nullable: true })
+    .custom((value) => {
+      if (!isValidObjectId(value)) {
+        throw AppError.create("Invalid season ID format", 400, FAIL);
+      }
+
       return true;
     }),
 

@@ -1,5 +1,6 @@
 import Offer from "../../model/Offer.js";
 import Product from "../../model/Product.js";
+import Category from "../../model/Category.js"
 import Season from "../../model/Season.js";
 import AppError from "../../utils/AppError.js";
 import { FAIL } from "../../utils/httpStatusText.js";
@@ -18,8 +19,14 @@ const validateOfferTarget = async (offerData) => {
   }
 
   if (offerData.targetType === "category") {
-    const products = await Product.find({ category: offerData.category?._id || offerData.category }).select("_id price");
+    const categoryId = offerData.category?._id || offerData.category;
+    
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      throw AppError.create("Category not found", 404, FAIL);
+    }
 
+    const products = await Product.find({ category: categoryId }).select("_id price");
     return products;
   }
 
@@ -75,14 +82,32 @@ const createOffer = async (offerData) => {
   const startDate = new Date(offerData.startDate);
   const endDate = new Date(offerData.endDate);
 
-  if (startDate < now) {
-    throw AppError.create("Cannot create an offer with a start date in the past.", 400, FAIL);
+  if (endDate <= now) {
+    throw AppError.create("Cannot create an offer with an end date in the past.", 400, FAIL);
+  }
+
+  if (endDate <= startDate) {
+    throw AppError.create("End date must be after start date.", 400, FAIL);
   }
 
   if (startDate <= now && endDate > now) {
     offerData.isActive = true;
   } else {
     offerData.isActive = false;
+  }
+
+  if (offerData.targetType === "product") {
+    if (!offerData.product) {
+      throw AppError.create("Product ID is required when target type is product.", 400, FAIL);
+    }
+
+    offerData.category = undefined; 
+  } else if (offerData.targetType === "category") {
+    if (!offerData.category) {
+      throw AppError.create("Category ID is required when target type is category.", 400, FAIL);
+    }
+
+    offerData.product = undefined; 
   }
 
   const target = await validateOfferTarget(offerData);
@@ -144,6 +169,26 @@ const updateOffer = async (offerId, offerData) => {
 
   if (!existingOffer) {
     return null;
+  }
+
+  const finalTargetType = offerData.targetType || existingOffer.targetType;
+
+  if (finalTargetType === "product") {
+    const targetProduct = offerData.product || existingOffer.product;
+    if (!targetProduct) {
+      throw AppError.create("Product ID is required for product offers.", 400, FAIL);
+    }
+    
+    offerData.product = targetProduct;
+    offerData.category = null;
+  } else if (finalTargetType === "category") {
+    const targetCategory = offerData.category || existingOffer.category;
+    if (!targetCategory) {
+      throw AppError.create("Category ID is required for category offers.", 400, FAIL);
+    }
+
+    offerData.category = targetCategory;
+    offerData.product = null;
   }
 
   const now = new Date();

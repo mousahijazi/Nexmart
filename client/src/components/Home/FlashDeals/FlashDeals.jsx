@@ -74,7 +74,7 @@ export default function FlashDeals() {
 
   return (
     <section id="FlashDeals" className="max-w-[1280px] mx-auto px-6 py-14" aria-busy={loading}>
-      <div className="rounded-[22px] bg-[var(--color-green-deep)] dark:bg-[var(--color-sand)] text-white p-5 md:p-[34px] grid grid-cols-1 gap-[34px] items-center xl:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]">
+      <div className="rounded-[22px] bg-[var(--color-green-deep)] dark:bg-[var(--color-sand)] text-white p-5 md:p-[34px] grid grid-cols-1 gap-[34px] items-center lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]">
         {loading ? (
           <FlashDealsSkeleton isProductOffer={isProductOffer} label={t("loading")} />
         ) : (

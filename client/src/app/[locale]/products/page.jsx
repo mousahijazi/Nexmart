@@ -1,4 +1,4 @@
-import { ProductsPage, CategoriesSlider } from "@/index";
+import { ProductsPage, CategoriesSlider, FlashDeals, NewArrivalsBanner } from "@/index";
 import { getCategories } from "@/helper/fetchApi";
 import { getTranslations } from "next-intl/server";
 
@@ -27,6 +27,8 @@ export default async function page() {
           <CategoriesSlider categories={categories} />
         </div>
       </section>
+      <NewArrivalsBanner />
+      <FlashDeals />
       <ProductsPage />
     </div>
   )

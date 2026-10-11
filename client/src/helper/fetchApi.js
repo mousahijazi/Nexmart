@@ -29,8 +29,6 @@ export async function getActiveSeasons(page = 1, limit = 1) {
       return (Number.isFinite(start) && Number.isFinite(end) && start <= now && now < end);
     });
 
-    console.log("activeSeasons", activeSeasons)
-
     return {
       season: activeSeasons[0],
       page: Number(data?.page ?? page),
@@ -71,6 +69,7 @@ export async function getSeasonOffers(seasonId, limit = 10) {
     const json = await res.json();
     const data = json?.data;
     const offers = Array.isArray(data?.offers) ? data.offers : [];
+    console.log(offers)
 
     const now = Date.now();
 
@@ -223,11 +222,11 @@ export async function getOfferProducts(offer, limit = 4) {
     }
 
     if (offer.targetType === "category") {
-      const categoryId = typeof offer.category === "object" ? offer.category?._id : offer.category;
-      if (!categoryId) return [];
+      const categorySlug = offer.category.slug;
+      if (!categorySlug) return [];
 
       const params = new URLSearchParams({
-        category: categoryId,
+        categories: categorySlug,
         page: "1",
         limit: String(limit),
       });

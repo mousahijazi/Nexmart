@@ -5,14 +5,18 @@ import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
 
 const getAllOffersController = asyncHandler(
   async (req, res) => {
-    const {page = 1, limit = 10} = req.query;
-    const offers = await getAllOffers({page: Number(page), limit: Number(limit)});
+    const { page = 1, limit = 10, season, isActive } = req.query;
+
+    const result = await getAllOffers({
+      page: Number(page),
+      limit: Number(limit),
+      season,
+      isActive: isActive === undefined ? undefined : isActive === "true",
+    });
 
     res.status(200).json({
       status: SUCCESS,
-      data: {
-        offers,
-      }, 
+      data: result,
     });
   }
 );

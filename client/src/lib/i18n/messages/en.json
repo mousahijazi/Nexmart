@@ -142,6 +142,10 @@
             "seconds": "seconds",
             "title": "DEAL OF THE DAY",
             "secondTitle": "End-of-Day Offers",
+            "loading": "Loading the offer...",
+            "previousOffer": "Previous Offer",
+            "nextOffer": "Next offer",
+            "goToOfferPage": "Go to the offer page",
             "Desc": "Hurry—quantities are limited, and prices will revert once the timer expires."
         },
         "feature": {
@@ -151,7 +155,10 @@
             "title": "New Arrivals",
             "secondTitle": "New Season Collection",
             "Desc": "Over 300 new items have arrived this week across all departments.",
-            "button": "See What's New"
+            "button": "See What's New",
+            "previousSeason": "Previous Season",
+            "nextSeason": "Next Season",
+            "goToSeasonPage": "Go to the season page"
         },
         "NewsletterBanner": {
             "title": "10% off your first order",

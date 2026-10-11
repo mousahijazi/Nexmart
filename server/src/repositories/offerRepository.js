@@ -4,16 +4,21 @@ const createOffer = async (offerData) => {
   return await Offer.create(offerData);
 };
 
-const getAllOffers = async ({skip, limit}) => {
-  const offers = await Offer.find({}, {"__v": false})
-    .populate("product").populate("category").populate("season").sort({ createdAt: -1 }).skip(skip).limit(limit);
+const getAllOffers = async ({ skip, limit, filter = {} }) => {
+  const offers = await Offer.find(filter, { __v: false })
+    .populate("product")
+    .populate("category")
+    .populate("season")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 
-  const totaloffers = await Offer.countDocuments();
+  const totaloffers = await Offer.countDocuments(filter);
 
   return {
     offers,
     totaloffers,
-  }
+  };
 };
 
 const getOfferById = async (offerId) => {

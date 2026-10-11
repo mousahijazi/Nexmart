@@ -1,12 +1,255 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-function normalizeListResponse(json, res) {
-  if (Array.isArray(json)) {
-    const total = Number(res.headers.get("X-Total-Count")) || json.length;
-    return { items: json, total };
+export async function getActiveSeasons(page = 1, limit = 1) {
+  try {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      isActive: "true",
+    });
+
+    const res = await fetch(`${API_URL}/api/v1/seasons?${params.toString()}`, { cache: "no-store" });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch seasons: ${res.status}`);
+    }
+
+    const json = await res.json();
+    const data = json?.data;
+    const seasons = Array.isArray(data?.seasons) ? data.seasons : [];
+
+    const now = Date.now();
+
+    const activeSeasons = seasons.filter((season) => {
+      if (season.isActive !== true) return false;
+
+      const start = new Date(season.startDate).getTime();
+      const end = new Date(season.endDate).getTime();
+
+      return (Number.isFinite(start) && Number.isFinite(end) && start <= now && now < end);
+    });
+
+    console.log("activeSeasons", activeSeasons)
+
+    return {
+      season: activeSeasons[0],
+      page: Number(data?.page ?? page),
+      limit: Number(data?.limit ?? limit),
+      total: Number(data?.total ?? seasons.length),
+      totalPages: Number(data?.totalPages ?? Math.ceil(Number(data?.total ?? data?.totalSeasons ?? seasons.length) / limit)),
+    };
+  } catch (error) {
+    console.error("getActiveSeasons:", error);
+
+    return {
+      season: null,
+      page,
+      limit,
+      total: 0,
+      totalPages: 0,
+    };
   }
- 
-  return { items: json.data || [], total: json.items ?? (json.data?.length || 0) };
+}
+
+export async function getSeasonOffers(seasonId, limit = 10) {
+  if (!seasonId) return [];
+
+  try {
+    const params = new URLSearchParams({
+      season: String(seasonId),
+      isActive: "true",
+      page: "1",
+      limit: limit,
+    });
+
+    const res = await fetch(`${API_URL}/api/v1/offers?${params.toString()}`, { cache: "no-store" });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch season offers: ${res.status}`);
+    }
+
+    const json = await res.json();
+    const data = json?.data;
+    const offers = Array.isArray(data?.offers) ? data.offers : [];
+
+    const now = Date.now();
+
+    return offers.filter((offer) => {
+      const offerSeasonId = typeof offer.season === "object" ? offer.season?._id : offer.season;
+
+      const start = new Date(offer.startDate).getTime();
+      const end = new Date(offer.endDate).getTime();
+
+      return (
+        String(offerSeasonId) === String(seasonId) && offer.isActive === true && Number.isFinite(start) && Number.isFinite(end) && start <= now && now < end
+      );
+    });
+  } catch (error) {
+    console.error("getSeasonOffers:", error);
+    return [];
+  }
+}
+
+export async function getSeasonProducts(seasonId, limit = 3) {
+  if (!seasonId) return [];
+
+  try {
+    const offers = await getSeasonOffers(seasonId);
+
+    const products = [];
+    const seenProductIds = new Set();
+
+    for (const offer of offers) {
+      if (products.length >= limit) break;
+
+      if (offer.targetType === "product") {
+        const product = await getOfferProducts(offer, 1).then((result) => result[0]);
+        if (!product?._id) continue;
+
+        const productId = String(product._id);
+        if (seenProductIds.has(productId)) continue;
+
+        seenProductIds.add(productId);
+
+        products.push({
+          ...product,
+          seasonOffer: offer,
+        });
+
+        continue;
+      }
+
+      if (offer.targetType === "category") {
+        const remaining = limit - products.length;
+        const offerProducts = await getOfferProducts(offer, remaining);
+
+        for (const product of offerProducts) {
+          if (!product?._id) continue;
+
+          const productId = String(product._id);
+
+          if (seenProductIds.has(productId)) continue;
+
+          seenProductIds.add(productId);
+
+          products.push({
+            ...product,
+            seasonOffer: offer,
+          });
+
+          if (products.length >= limit) break;
+        }
+      }
+    }
+
+    console.log("Season products:",
+      products.map((product) => ({
+        id: product._id,
+        title: product.title,
+        offerId: product.seasonOffer?._id,
+        targetType: product.seasonOffer?.targetType,
+      }))
+    );
+
+    return products;
+  } catch (error) {
+    console.error("getSeasonProducts:", error);
+    return [];
+  }
+}
+
+export async function getActiveOffers(page = 1, limit = 1) {
+  try {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      isActive: true
+    });
+
+    const res = await fetch(`${API_URL}/api/v1/offers?${params.toString()}`, { cache: "no-store" });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch offers: ${res.status}`);
+    }
+
+    const json = await res.json();
+    const data = json.data;
+    const offersArray = json?.data?.offers || [];
+    const activeOffer = offersArray.find(offer => offer.isActive === true) || null;
+
+    return {
+      offer: activeOffer,
+      page: data.page,
+      limit: data.limit,
+      total: data.total,
+      totalPages: data.totalPages,
+    };
+  } catch (error) {
+    console.error("getActiveOffers:", error);
+
+    return {
+      offer: null,
+      page,
+      limit,
+      total: 0,
+      totalPages: 0,
+    };
+  }
+}
+
+export async function getOfferProducts(offer, limit = 4) {
+  if (!offer) return [];
+
+  try {
+    if (offer.targetType === "product") {
+      if (offer.product && typeof offer.product === "object") {
+        return [offer.product];
+      }
+
+      const productId = typeof offer.product === "object" ? offer.product?._id : offer.product;
+      if (!productId) return [];
+
+      const res = await fetch(`${API_URL}/api/v1/products/${productId}`, { cache: "no-store" });
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch product: ${res.status}`);
+      }
+
+      const json = await res.json();
+      const product = json?.data?.product ?? json?.product ?? json?.data ?? json;
+      if (!product || !product._id) return [];
+
+      return [product];
+    }
+
+    if (offer.targetType === "category") {
+      const categoryId = typeof offer.category === "object" ? offer.category?._id : offer.category;
+      if (!categoryId) return [];
+
+      const params = new URLSearchParams({
+        category: categoryId,
+        page: "1",
+        limit: String(limit),
+      });
+
+      const res = await fetch(`${API_URL}/api/v1/products?${params.toString()}`, { cache: "no-store" });
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch category products: ${res.status}`);
+      }
+
+      const json = await res.json();
+      const productsList = json.data?.products || [];
+      const data = productsList.slice(0, limit);
+
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("getOfferProducts:", error);
+    return [];
+  }
 }
 
 
@@ -760,67 +1003,6 @@ export const logoutApi = async (token) => {
 
   return await response.json();
 };
-
-// todo
-export function endOfDay(dateInput) {
-  const date = new Date(dateInput);
-  date.setHours(23, 59, 59, 999);
-  return date;
-}
-
-// todo
-export async function getActiveOffer() {
-  try {
-    const res = await fetch(`${API_URL}/offers`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
- 
-    const json = await res.json();
-    const { items: offers } = normalizeListResponse(json, res);
- 
-    const now = new Date();
- 
-    const activeOffer = offers.find((offer) => {
-      if (!offer.isActive) return false;
- 
-      const start = new Date(offer.startDate);
-      const end = endOfDay(offer.endDate);
- 
-      return now >= start && now <= end;
-    });
- 
-    return activeOffer || null;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-}
-
-// todo
-export async function getOfferProducts(offer, limit = 4) {
-  if (!offer) return [];
- 
-  try {
-    let url;
- 
-    if (offer.targetType === "category" && offer.targetId) {
-      url = `${API_URL}/products?category=${offer.targetId}&_page=1&_per_page=${limit}`;
-    } else {
-      url = `${API_URL}/products?_page=1&_per_page=${limit}`;
-    }
- 
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
- 
-    const json = await res.json();
-    const { items } = normalizeListResponse(json, res);
- 
-    return items.filter((p) => p.discountPrice != null).slice(0, limit);
-  } catch (error) {
-    console.log(error);
-    return [];
-  }
-}
-
 
 // subscribeToNewsletter
 export async function subscribeToNewsletter(email) {

@@ -145,18 +145,28 @@ const createOffer = async (offerData) => {
   return offer;
 };
 
-const getAllOffers = async ({ page = 1, limit = 6 }) => {
+const getAllOffers = async ({ page = 1, limit = 10, season, isActive }) => {
   const skip = (page - 1) * limit;
 
-  const offers = await getAllOffersRepository({ skip, limit });
+  const filter = {};
+
+  if (season) {
+    filter.season = season;
+  }
+
+  if (isActive !== undefined) {
+    filter.isActive = isActive;
+  }
+
+  const result = await getAllOffersRepository({ skip, limit, filter });
 
   return {
-    offers: offers.offers,
-    total: offers.totaloffers,
+    offers: result.offers,
+    total: result.totaloffers,
     page,
     limit,
     skip,
-    totalPages: Math.ceil(offers.totaloffers / limit),
+    totalPages: Math.ceil(result.totaloffers / limit),
   };
 };
 

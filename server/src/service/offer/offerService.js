@@ -7,6 +7,60 @@ import { FAIL } from "../../utils/httpStatusText.js";
 import { createOffer as createOfferRepository, getAllOffers as getAllOffersRepository, getOfferById as getOfferByIdRepository, updateOffer as updateOfferRepository, deleteOffer as deleteOfferRepository } from "../../repositories/offerRepository.js";
 import { calculateDiscountAmount } from "../../utils/pricingUtils.js";
 
+const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate }) => {
+  let start = new Date(startDate);
+  let end = new Date(endDate);
+
+  if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) {
+    throw AppError.create("Invalid offer start date or end date.", 400, FAIL);
+  }
+
+  if (end <= start) {
+    throw AppError.create("End date must be after start date.", 400, FAIL);
+  }
+
+  if (!seasonId) {
+    return {
+      startDate: start,
+      endDate: end,
+    };
+  }
+
+  const season = await Season.findById(seasonId);
+
+  if (!season) {
+    throw AppError.create("Season not found.", 404, FAIL);
+  }
+
+  const seasonStart = new Date(season.startDate);
+  const seasonEnd = new Date(season.endDate);
+
+  if (!Number.isFinite(seasonStart.getTime()) || !Number.isFinite(seasonEnd.getTime()) || seasonEnd <= seasonStart) {
+    throw AppError.create("The season has invalid dates.", 400, FAIL);
+  }
+
+  if (end <= seasonStart || start >= seasonEnd) {
+    throw AppError.create("Offer dates must overlap with the season dates.", 400, FAIL);
+  }
+
+  if (start < seasonStart) {
+    start = seasonStart;
+  }
+
+  if (end > seasonEnd) {
+    end = seasonEnd;
+  }
+
+  if (end <= start) {
+    throw AppError.create("Offer duration must be within the season dates.", 400, FAIL);
+  }
+
+  return {
+    startDate: start,
+    endDate: end,
+  };
+};
+
 const validateOfferTarget = async (offerData) => {
   if (offerData.targetType === "product") {
     const product = await Product.findById(offerData.product);
@@ -69,6 +123,35 @@ const removeWeakerProductOffers = async (categoryOffer, products) => {
   }
 };
 
+const getAllOffers = async ({ page = 1, limit = 10, season, isActive }) => {
+  const skip = (page - 1) * limit;
+
+  const filter = {};
+
+  if (season) {
+    filter.season = season;
+  }
+
+  if (isActive !== undefined) {
+    filter.isActive = isActive;
+  }
+
+  const result = await getAllOffersRepository({ skip, limit, filter });
+
+  return {
+    offers: result.offers,
+    total: result.totaloffers,
+    page,
+    limit,
+    skip,
+    totalPages: Math.ceil(result.totaloffers / limit),
+  };
+};
+
+const getOfferById = async (offerId) => {
+  return await getOfferByIdRepository(offerId);
+};
+
 const createOffer = async (offerData) => {
   if (offerData.season) {
     const season = await Season.findById(offerData.season);
@@ -79,8 +162,17 @@ const createOffer = async (offerData) => {
   }
 
   const now = new Date();
-  const startDate = new Date(offerData.startDate);
-  const endDate = new Date(offerData.endDate);
+  const normalizedDates = await normalizeOfferDatesForSeason({
+    seasonId: offerData.season,
+    startDate: offerData.startDate,
+    endDate: offerData.endDate,
+  });
+
+  offerData.startDate = normalizedDates.startDate;
+  offerData.endDate = normalizedDates.endDate;
+  
+  const startDate = offerData.startDate;
+  const endDate = offerData.endDate;
 
   if (endDate <= now) {
     throw AppError.create("Cannot create an offer with an end date in the past.", 400, FAIL);
@@ -145,35 +237,6 @@ const createOffer = async (offerData) => {
   return offer;
 };
 
-const getAllOffers = async ({ page = 1, limit = 10, season, isActive }) => {
-  const skip = (page - 1) * limit;
-
-  const filter = {};
-
-  if (season) {
-    filter.season = season;
-  }
-
-  if (isActive !== undefined) {
-    filter.isActive = isActive;
-  }
-
-  const result = await getAllOffersRepository({ skip, limit, filter });
-
-  return {
-    offers: result.offers,
-    total: result.totaloffers,
-    page,
-    limit,
-    skip,
-    totalPages: Math.ceil(result.totaloffers / limit),
-  };
-};
-
-const getOfferById = async (offerId) => {
-  return await getOfferByIdRepository(offerId);
-};
-
 const updateOffer = async (offerId, offerData) => {
   const existingOffer = await Offer.findById(offerId);
 
@@ -201,16 +264,26 @@ const updateOffer = async (offerId, offerData) => {
     offerData.product = null;
   }
 
+  const finalSeason = offerData.season !== undefined ? offerData.season : existingOffer.season;
+  const requestedStartDate = offerData.startDate ?? existingOffer.startDate;
+  const requestedEndDate = offerData.endDate ?? existingOffer.endDate;
+
+  const normalizedDates = await normalizeOfferDatesForSeason({
+    seasonId: finalSeason,
+    startDate: requestedStartDate,
+    endDate: requestedEndDate,
+  });
+
   const now = new Date();
-  const currentStartDate = new Date(existingOffer.startDate);
-  const currentEndDate = new Date(existingOffer.endDate);
+  const currentStartDate = normalizedDates.startDate;
+  const currentEndDate = normalizedDates.endDate;
 
   const isExpired = currentEndDate <= now;
   const isFuture = currentStartDate > now;
 
   if (offerData.isActive !== undefined) {
-    if (isExpired && offerData.isActive === true) {
-      throw AppError.create("Cannot activate an expired offer.", 400, FAIL);
+    if (isExpired) {
+      throw AppError.create("Cannot update an offer to an end date in the past.", 400, FAIL);
     }
     if (isFuture && offerData.isActive === true) {
       throw AppError.create("Cannot activate a future offer before its start date.", 400, FAIL);

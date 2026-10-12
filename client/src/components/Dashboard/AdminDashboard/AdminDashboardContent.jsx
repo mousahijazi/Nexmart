@@ -1,15 +1,13 @@
 "use client";
 import { useAdminContext } from "@/Context/Adminprovider";
-import {DashboardPage} from "@/index";
 // import AllOrdersPage from "./pages/AllOrdersPage";
 // import InventoryPage from "./pages/InventoryPage";
 // import CategoriesPage from "./pages/CategoriesPage";
 import ProductsDashboard from "./products/ProductsDashboard";
-import {CustomersPage} from "@/index";
 // import SettlementsPage from "./pages/SettlementsPage";
 // import DealsPromosPage from "./pages/DealsPromosPage";
 // import ReportsSlaPage from "./pages/ReportsSlaPage";
-import { SettingsDashboard, CategoriesDashboard, BrandsDashboard } from "@/index";
+import { SettingsDashboard, CategoriesDashboard, BrandsDashboard, CustomersPage, DashboardPage, OffersDashboard, SeasonsDashboard } from "@/index";
 
 const PAGES = {
   dashboard: DashboardPage,
@@ -19,6 +17,8 @@ const PAGES = {
   categories: CategoriesDashboard,
   customers: CustomersPage,
   products: ProductsDashboard,
+  offers: OffersDashboard,
+  seasons: SeasonsDashboard,
 //   settlements: <h1>SettlementsPage</h1>,
 //   deals: <h1>DealsPromosPage</h1>,
 //   reports: <h1>ReportsSlaPage</h1>,

@@ -1,4 +1,4 @@
-import { LayoutGrid, ShoppingCart, Boxes, Tags, Package, Users, Receipt, BadgePercent, BarChart3, Settings, BadgeCheck } from "lucide-react";
+import { LayoutGrid, ShoppingCart, Boxes, Tags, Flame, Sparkles, Package, Users, Receipt, BadgePercent, BarChart3, Settings, BadgeCheck } from "lucide-react";
 
 export const QuickNavItems = [
   { key: "dashboard", label: "Dashboard", icon: LayoutGrid },
@@ -7,6 +7,8 @@ export const QuickNavItems = [
   { key: "brand", label: "Brand", icon: BadgeCheck },
   { key: "categories", label: "Categories", icon: Tags },
   { key: "products", label: "Products", icon: Package },
+  { key: "offers", label: "Offers", icon: Flame },
+  { key: "seasons", label: "Seasons", icon: Sparkles },
   { key: "customers", label: "Customers", icon: Users },
   { key: "settlements", label: "Settlements", icon: Receipt },
   { key: "deals", label: "Deals & Promos", icon: BadgePercent },

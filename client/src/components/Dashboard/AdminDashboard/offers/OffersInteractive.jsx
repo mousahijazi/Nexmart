@@ -1,27 +1,34 @@
 "use client";
 import { useMemo, useState } from "react";
 import { OffersFilters, OffersTable } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
+import { useLocale } from "next-intl";
+import OffersTableSkeleton from "./OffersTableSkeleton";
 
-export default function OffersInteractive({ offers }) {
+export default function OffersInteractive() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Statuses");
   const [target, setTarget] = useState("All Targets");
   const [season, setSeason] = useState("All Seasons");
+  const { offers, offersLoading } = useAdminContext();
+  const locale = useLocale();
 
-  const seasonOptions = useMemo(() => ["All Seasons", ...new Set(offers.map((offer) => offer.season))], [offers]);
+  const seasonOptions = useMemo(() => ["All Seasons", ...new Set(offers.map((offer) => offer.season?.name?.[locale]))], [offers, locale]);
 
   const filteredOffers = useMemo(() => {
     const value = search.trim().toLowerCase();
 
     return offers.filter((offer) => {
-      const matchesSearch = !value || offer.name.toLowerCase().includes(value) || offer.code.toLowerCase().includes(value) || offer.target.name.toLowerCase().includes(value);
+      const matchesSearch = !value || offer.name[locale].toLowerCase().includes(value);
       const matchesStatus = status === "All Statuses" || offer.status === status;
-      const matchesTarget = target === "All Targets" || offer.target.type === target;
-      const matchesSeason = season === "All Seasons" || offer.season === season;
+      const matchesTarget = target === "All Targets" || offer.targetType?.toLowerCase() === target?.toLowerCase();
+      const matchesSeason = season === "All Seasons" || offer.season?.name?.[locale] === season;
 
       return matchesSearch && matchesStatus && matchesTarget && matchesSeason;
     });
   }, [offers, search, status, target, season]);
+
+  console.log(filteredOffers)
 
   const resetFilters = () => {
     setSearch("");
@@ -45,7 +52,13 @@ export default function OffersInteractive({ offers }) {
         onReset={resetFilters}
       />
 
-      <OffersTable offers={filteredOffers} />
+      {offersLoading ? (
+        <OffersTableSkeleton />
+      ) : (
+        <>
+          <OffersTable offers={filteredOffers} />
+        </>
+      )}
     </>
   );
 }

@@ -33,14 +33,8 @@ export default function OffersTable({ offers }) {
             <span>Actions</span>
           </div>
 
-          {visibleOffers.length > 0 ? (
-            visibleOffers.map((offer) => (
-              <OfferRow
-                key={offer._id}
-                offer={offer}
-                isExpanded={openOffers.includes(offer._id)}
-                onToggle={() => toggleOffer(offer._id)}
-              />
+          {visibleOffers.length > 0 ? (visibleOffers.map((offer) => (
+              <OfferRow key={offer._id} offer={offer} isExpanded={openOffers.includes(offer._id)} onToggle={() => toggleOffer(offer._id)} />
             ))
           ) : (
             <div className="flex min-h-[180px] items-center justify-center text-[12px] text-[var(--color-muted)]">

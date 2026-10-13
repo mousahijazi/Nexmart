@@ -7,12 +7,29 @@ import { FAIL } from "../../utils/httpStatusText.js";
 import { createOffer as createOfferRepository, getAllOffers as getAllOffersRepository, getOfferById as getOfferByIdRepository, updateOffer as updateOfferRepository, deleteOffer as deleteOfferRepository } from "../../repositories/offerRepository.js";
 import { calculateDiscountAmount } from "../../utils/pricingUtils.js";
 
+const calculateOfferStatus = (isActive, startDate, endDate) => {
+  if (!isActive) return "Inactive";
+
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (now < start) return "Scheduled";
+  if (now >= start && now <= end) return "Active";
+  return "Expired";
+};
+
 const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate }) => {
-  let start = new Date(startDate);
-  let end = new Date(endDate);
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const now = new Date();
 
   if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) {
     throw AppError.create("Invalid offer start date or end date.", 400, FAIL);
+  }
+
+  if (start < now || end <= now) {
+    throw AppError.create("Offer dates cannot be in the past.", 400, FAIL);
   }
 
   if (end <= start) {
@@ -20,10 +37,7 @@ const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate }) =>
   }
 
   if (!seasonId) {
-    return {
-      startDate: start,
-      endDate: end,
-    };
+    return { startDate: start, endDate: end };
   }
 
   const season = await Season.findById(seasonId);
@@ -39,26 +53,15 @@ const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate }) =>
     throw AppError.create("The season has invalid dates.", 400, FAIL);
   }
 
-  if (end <= seasonStart || start >= seasonEnd) {
-    throw AppError.create("Offer dates must overlap with the season dates.", 400, FAIL);
+  if (start < seasonStart || end > seasonEnd) {
+    throw AppError.create(
+      `Offer dates must be strictly within the season dates (${seasonStart.toISOString().slice(0, 10)} to ${seasonEnd.toISOString().slice(0, 10)}).`,
+      400,
+      FAIL
+    );
   }
 
-  if (start < seasonStart) {
-    start = seasonStart;
-  }
-
-  if (end > seasonEnd) {
-    end = seasonEnd;
-  }
-
-  if (end <= start) {
-    throw AppError.create("Offer duration must be within the season dates.", 400, FAIL);
-  }
-
-  return {
-    startDate: start,
-    endDate: end,
-  };
+  return { startDate: start, endDate: end };
 };
 
 const validateOfferTarget = async (offerData) => {
@@ -182,11 +185,15 @@ const createOffer = async (offerData) => {
     throw AppError.create("End date must be after start date.", 400, FAIL);
   }
 
-  if (startDate <= now && endDate > now) {
-    offerData.isActive = true;
-  } else {
+  const isFuture = startDate > now;
+
+  if (isFuture) {
     offerData.isActive = false;
+  } else {
+    offerData.isActive = offerData.isActive !== undefined ? offerData.isActive : true;
   }
+
+  offerData.status = calculateOfferStatus(offerData.isActive, offerData.startDate, offerData.endDate);
 
   if (offerData.targetType === "product") {
     if (!offerData.product) {
@@ -341,6 +348,12 @@ const updateOffer = async (offerId, offerData) => {
       }
     }
   }
+
+  offerData.status = calculateOfferStatus(
+    offerData.isActive !== undefined ? offerData.isActive : existingOffer.isActive,
+    offerData.startDate || existingOffer.startDate,
+    offerData.endDate || existingOffer.endDate
+  );
 
   const updatedOffer = await updateOfferRepository(offerId, offerData);
 

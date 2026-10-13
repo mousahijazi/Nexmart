@@ -46,11 +46,32 @@ const seasonSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    status: {
+      type: String,
+      enum: ["Active", "Inactive", "Scheduled", "Expired"],
+      default: "Active",
+    },
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: function (doc, ret) {
+        delete ret.id;
+        return ret;
+      },
+    },
+    toObject: { virtuals: true },
   }
 );
+
+seasonSchema.virtual("offersCount", {
+  ref: "Offer",
+  localField: "_id",
+  foreignField: "season",
+  count: true,
+});
 
 const Season = mongoose.model("Season", seasonSchema);
 export default Season;

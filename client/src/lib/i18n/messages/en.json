@@ -158,7 +158,8 @@
             "button": "See What's New",
             "previousSeason": "Previous Season",
             "nextSeason": "Next Season",
-            "goToSeasonPage": "Go to the season page"
+            "goToSeasonPage": "Go to the season page",
+            "loading": "Loading the season..."
         },
         "NewsletterBanner": {
             "title": "10% off your first order",

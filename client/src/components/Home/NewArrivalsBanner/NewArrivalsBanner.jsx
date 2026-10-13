@@ -146,7 +146,6 @@ export default function NewArrivalsBanner() {
         )}
       </div>
 
-      {/* أول تحميل: نحجز مكان الـ pagination (h-11) */}
       {isInitialLoad && <div className="mt-6 h-11" aria-hidden="true" />}
 
       {!isInitialLoad && totalPages > 1 && (

@@ -1,5 +1,5 @@
-import { OffersHeader, OffersStats, OffersInteractive } from "@/index";
-import { offerStats, offersData } from "./offersData";
+import { OffersHeader, OffersStats, OffersInteractive, OfferModal } from "@/index";
+import { offerStats } from "./offersData";
 
 export default function OffersDashboard() {
   return (
@@ -7,7 +7,8 @@ export default function OffersDashboard() {
       <div className="mx-auto w-full max-w-[1120px] py-5 lg:py-3">
         <OffersHeader />
         <OffersStats stats={offerStats} />
-        <OffersInteractive offers={offersData} />
+        <OffersInteractive />
+        <OfferModal />
       </div>
     </div>
   );

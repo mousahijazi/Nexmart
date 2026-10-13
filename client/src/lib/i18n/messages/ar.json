@@ -158,7 +158,8 @@
             "button": "شوف الجديد",
             "previousSeason": "الموسم السابق",
             "nextSeason": "الموسم التالي",
-            "goToSeasonPage": "اذهب الى صفحة الموسم"
+            "goToSeasonPage": "اذهب الى صفحة الموسم",
+            "loading": "يتم تحميل الموسم..."
         },
         "NewsletterBanner": {
             "title": "خصم ١٠٪ على أول طلب",

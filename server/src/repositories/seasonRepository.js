@@ -6,7 +6,7 @@ const createSeason = async (seasonData) => {
 
 const getAllSeasons = async ({ skip, limit }) => {
   const seasons = await Season.find({}, { __v: false })
-    .sort({ createdAt: -1 }).skip(skip).limit(limit);
+    .populate('offersCount').sort({ createdAt: -1 }).skip(skip).limit(limit);
 
   const totalSeasons = await Season.countDocuments();
 

@@ -94,6 +94,7 @@ export default function ProductModal() {
       try {
         setLoadingOptions(true);
 
+        // todo
         const [categoriesResult, brandsResult] = await Promise.all([
           getCategories(),
           getBrand(),

@@ -77,6 +77,12 @@ const offerSchema = new mongoose.Schema(
       default: true,
     },
 
+    status: {
+      type: String,
+      enum: ["Active", "Scheduled", "Expired", "Inactive"],
+      default: "Active",
+    },
+
     season: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Season",

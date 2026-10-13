@@ -9,5 +9,5 @@ export function formatDate(iso) {
 
 export function daysBetween(startIso, endIso) {
   const ms = new Date(endIso) - new Date(startIso);
-  return Math.round(ms / 86400000) + 1;
+  return Math.ceil(ms / 86400000);
 }

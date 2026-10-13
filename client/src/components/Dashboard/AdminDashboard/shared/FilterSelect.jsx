@@ -10,8 +10,8 @@ export default function FilterSelect({ label, value, onChange, options }) {
         aria-label={label}
         className="w-full appearance-none rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] py-2.5 pl-3 pr-8 text-[12px] font-medium text-[var(--color-ink)] outline-none transition focus:border-[var(--color-green-light)]"
       >
-        {options.map((option) => (
-          <option key={option} value={option}>
+        {options.map((option, index) => (
+          <option key={index} value={option}>
             {label}: {option}
           </option>
         ))}

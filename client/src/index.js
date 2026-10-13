@@ -165,6 +165,10 @@ export {default as OffersTable} from "./components/Dashboard/AdminDashboard/offe
 export {default as OfferRow} from "./components/Dashboard/AdminDashboard/offers/OfferRow";
 export {default as OffersStats} from "./components/Dashboard/AdminDashboard/offers/OffersStats";
 
+export {default as OfferModal} from "./components/Dashboard/AdminDashboard/offers/offerModel/OfferModal";
+export {default as OfferForm} from "./components/Dashboard/AdminDashboard/offers/offerModel/OfferForm";
+export {default as OfferModalFooter} from "./components/Dashboard/AdminDashboard/offers/offerModel/OfferModalFooter";
+
 export {default as SeasonsDashboard} from "./components/Dashboard/AdminDashboard/seasons/SeasonsDashboard";
 export {default as SeasonsHeader} from "./components/Dashboard/AdminDashboard/seasons/SeasonsHeader";
 export {default as SeasonsStats} from "./components/Dashboard/AdminDashboard/seasons/SeasonsStats";

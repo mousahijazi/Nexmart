@@ -1,28 +1,31 @@
 "use client";
 import { useMemo, useState } from "react";
 import { SeasonsFilters, SeasonsTable } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
 
-export default function SeasonsInteractive({ seasons }) {
+export default function SeasonsInteractive() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All Statuses");
-  const [timing, setTiming] = useState("All Periods");
+  const { seasons, seasonsLoading } = useAdminContext();
 
   const filteredSeasons = useMemo(() => {
     const value = search.trim().toLowerCase();
 
-    return seasons.filter((season) => {
-      const matchesSearch = !value || season.nameEn.toLowerCase().includes(value) || season.nameAr.includes(value);
-      const matchesStatus = status === "All Statuses" || season.status === status.toLowerCase();
-      const matchesTiming = timing === "All Periods" || season.timing === timing.toLowerCase();
+    return (seasons || []).filter((season) => {
+      const matchesSearch =
+        !value ||
+        season.name?.en?.toLowerCase().includes(value) ||
+        season.name?.ar?.includes(value);
 
-      return matchesSearch && matchesStatus && matchesTiming;
+      const matchesStatus = status === "All Statuses" || season.status === status;
+
+      return matchesSearch && matchesStatus;
     });
-  }, [seasons, search, status, timing]);
+  }, [seasons, search, status]);
 
   const resetFilters = () => {
     setSearch("");
     setStatus("All Statuses");
-    setTiming("All Periods");
   };
 
   return (
@@ -32,12 +35,16 @@ export default function SeasonsInteractive({ seasons }) {
         setSearch={setSearch}
         status={status}
         setStatus={setStatus}
-        timing={timing}
-        setTiming={setTiming}
         onReset={resetFilters}
       />
 
-      <SeasonsTable seasons={filteredSeasons} />
+      {seasonsLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <p className="text-[12px] text-[var(--color-soft)]">Loading seasons...</p>
+        </div>
+      ) : (
+        <SeasonsTable seasons={filteredSeasons} />
+      )}
     </>
   );
 }

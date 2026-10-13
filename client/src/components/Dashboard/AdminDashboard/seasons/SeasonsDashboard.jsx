@@ -1,5 +1,5 @@
 import { SeasonsHeader, SeasonsStats, SeasonsInteractive } from "@/index";
-import { seasonStats, seasonsData } from "./seasonsData";
+import { seasonStats } from "./seasonsData";
 
 export default function SeasonsDashboard() {
   return (
@@ -7,7 +7,7 @@ export default function SeasonsDashboard() {
       <div className="mx-auto w-full max-w-[1120px] py-5 lg:py-3">
         <SeasonsHeader />
         <SeasonsStats stats={seasonStats} />
-        <SeasonsInteractive seasons={seasonsData} />
+        <SeasonsInteractive />
       </div>
     </div>
   );

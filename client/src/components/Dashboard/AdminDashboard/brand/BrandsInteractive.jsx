@@ -1,8 +1,9 @@
 "use client";
 import { useMemo, useState } from "react";
-import { BrandsToolbar, BrandsTable, BrandsPagination } from "@/index";
+import { BrandsToolbar, BrandsTable } from "@/index";
 import { useLocale } from "next-intl";
 import { useAdminContext } from "@/Context/Adminprovider";
+import BrandsTableSkeleton from "./BrandsTableSkeleton";
 
 export default function BrandsInteractive() {
   const [search, setSearch] = useState("");
@@ -33,11 +34,7 @@ export default function BrandsInteractive() {
         setStatus={setStatus}
       />
       {brandsLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <p className="text-[12px] text-[var(--color-soft)]">
-              جاري تحميل الفئات...
-            </p>
-          </div>
+          <BrandsTableSkeleton />
         ) : (
           <>
             <BrandsTable brands={filteredBrands} />

@@ -49,6 +49,39 @@ export async function getActiveSeasons(page = 1, limit = 1) {
   }
 }
 
+// todo
+export async function getAdminSeasonOffers(seasonId, limit = 5, token) {
+  if (!seasonId) return { success: false, offers: [], total: 0 };
+
+  try {
+    const params = new URLSearchParams({
+      season: String(seasonId),
+      page: "1",
+      limit: String(limit),
+    });
+
+    const res = await fetch(`${API_URL}/api/v1/offers?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || json.status !== "success") {
+      return { success: false, offers: [], total: 0, message: json.message };
+    }
+
+    return {
+      success: true,
+      offers: Array.isArray(json.data?.offers) ? json.data.offers : [],
+      total: json.data?.total || 0,
+    };
+  } catch (error) {
+    console.error("getAdminSeasonOffers:", error);
+    return { success: false, offers: [], total: 0 };
+  }
+}
+
 export async function getSeasonOffers(seasonId, limit = 10) {
   if (!seasonId) return [];
 
@@ -69,7 +102,6 @@ export async function getSeasonOffers(seasonId, limit = 10) {
     const json = await res.json();
     const data = json?.data;
     const offers = Array.isArray(data?.offers) ? data.offers : [];
-    console.log(offers)
 
     const now = Date.now();
 
@@ -141,19 +173,154 @@ export async function getSeasonProducts(seasonId, limit = 3) {
       }
     }
 
-    console.log("Season products:",
-      products.map((product) => ({
-        id: product._id,
-        title: product.title,
-        offerId: product.seasonOffer?._id,
-        targetType: product.seasonOffer?.targetType,
-      }))
-    );
-
     return products;
   } catch (error) {
     console.error("getSeasonProducts:", error);
     return [];
+  }
+}
+
+export async function getSeasons(limit = 10, page = 1, token = null) {
+  try {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+
+    const headers = {};
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const res = await fetch(`${API_URL}/api/v1/seasons?${params.toString()}`,
+      {
+        headers,
+        cache: "no-store",
+      }
+    );
+
+    const json = await res.json();
+    const data = json?.data;
+
+    return { 
+      success: true,
+      seasons: Array.isArray(data?.seasons) ? data.seasons : [],
+      total: Number(data?.total ?? 0),
+      page: Number(data?.page ?? page),
+      limit: Number(data?.limit ?? limit),
+      totalPages: Number(data?.totalPages ?? 0),
+    };
+  } catch (error) {
+    return { 
+      success: true,
+      seasons: [],
+      message: error.message || "Failed to fetch seasons",
+      total: 0,
+      page,
+      limit,
+      totalPages: 0,
+    };
+  }
+}
+
+export async function getOffers(limit = 10, page = 1, token = null) {
+  try {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+
+    const headers = {};
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const res = await fetch(`${API_URL}/api/v1/offers?${params.toString()}`,
+      {
+        headers,
+        cache: "no-store",
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch offers: ${res.status}`);
+    }
+
+    const json = await res.json();
+    const data = json?.data;
+
+    return {
+      success: true,
+      offers: Array.isArray(data?.offers) ? data.offers : [],
+      total: Number(data?.total ?? 0),
+      page: Number(data?.page ?? page),
+      limit: Number(data?.limit ?? limit),
+      totalPages: Number(data?.totalPages ?? 0),
+    };
+  } catch (error) {
+    console.error("getOffers:", error);
+
+    return {
+      success: false,
+      message: error.message || "Failed to fetch offers",
+      offers: [],
+      total: 0,
+      page,
+      limit,
+      totalPages: 0,
+    };
+  }
+}
+
+export async function createOffer(payload, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/offers`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || json.status !== "success") {
+      return { success: false, message: data.message || "Failed to create offer" };
+    }
+    
+    const data = json.data;
+
+    return { success: true, offer: data?.offer };
+  } catch {
+    return { success: false, message: "Something went wrong" };
+  }
+}
+
+export async function updateOffer(offerId, payload, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/offers/${offerId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || data.status !== "success") {
+      return { success: false, message: data.message || "Failed to update offer" };
+    }
+
+    const data = json.data;
+
+    return { success: true, offer: data?.offer };
+  } catch {
+    return { success: false, message: "Something went wrong" };
   }
 }
 

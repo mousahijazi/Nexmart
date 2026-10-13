@@ -1,9 +1,9 @@
 "use client";
 import { Search, RotateCcw } from "lucide-react";
 import { FilterSelect } from "@/index";
-import { seasonStatusOptions, seasonTimingOptions } from "./seasonsData";
+import { seasonStatusOptions } from "./seasonsData";
 
-export default function SeasonsFilters({ search, setSearch, status, setStatus, timing, setTiming, onReset }) {
+export default function SeasonsFilters({ search, setSearch, status, setStatus, onReset }) {
   return (
     <section className="mb-5 rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
@@ -20,7 +20,6 @@ export default function SeasonsFilters({ search, setSearch, status, setStatus, t
 
         <div className="flex flex-wrap items-center gap-2">
           <FilterSelect label="Status" value={status} onChange={setStatus} options={seasonStatusOptions} />
-          <FilterSelect label="Timing" value={timing} onChange={setTiming} options={seasonTimingOptions} />
 
           <button
             type="button"

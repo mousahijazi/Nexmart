@@ -28,8 +28,6 @@ export default function OffersInteractive() {
     });
   }, [offers, search, status, target, season]);
 
-  console.log(filteredOffers)
-
   const resetFilters = () => {
     setSearch("");
     setStatus("All Statuses");

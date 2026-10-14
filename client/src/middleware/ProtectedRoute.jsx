@@ -2,8 +2,9 @@
 import { useEffect } from "react";
 import { useUserContext } from "@/Context/UserProvider";
 import { useRouter } from "@/lib/i18n/routing";
+import PageSkeleton from "./PageSkeleton";
 
-export default function ProtectedRoute({children, allowedRole, redirectTo = "/auth?mode=login"}) {
+export default function ProtectedRoute({ children, allowedRole, redirectTo = "/auth?mode=login" }) {
   const router = useRouter();
   const { user, role, loading } = useUserContext();
 
@@ -21,11 +22,11 @@ export default function ProtectedRoute({children, allowedRole, redirectTo = "/au
   }, [user, role, loading, allowedRole, redirectTo, router]);
 
   if (loading || !user) {
-    return null;
+    return <PageSkeleton />;
   }
 
   if (allowedRole && role !== allowedRole) {
-    return null;
+    return <PageSkeleton />;
   }
 
   return children;

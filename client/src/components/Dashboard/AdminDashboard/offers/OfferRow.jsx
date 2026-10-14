@@ -1,13 +1,14 @@
 "use client";
 import Image from "next/image";
-import { ChevronDown, ChevronRight, MoreVertical, Package, LayoutGrid, Flag, Pencil, LineChart } from "lucide-react";
+import { ChevronDown, ChevronRight, Package, LayoutGrid, Flag, Pencil, LineChart } from "lucide-react";
 import { getImageUrl } from "@/helper/getImage";
 import { formatDate } from "@/components/Dashboard/AdminDashboard/shared/formatDate";
 import { formatDiscount } from "./offersData";
 import { useLocale } from "next-intl";
 import { useAdminContext } from "@/Context/Adminprovider";
-import { AdminEditButton } from "@/index";
+import { AdminEditButton, AdminArchiveButton } from "@/index";
 import { offerGridCols } from "./offersData";
+import { getToggleState } from "../shared/periodUtils";
 
 const statusStyles = {
   Active: "bg-[var(--color-green)] text-white",
@@ -27,7 +28,9 @@ function InfoBox({ label, value }) {
 
 export default function OfferRow({ offer, isExpanded, onToggle }) {
   const locale = useLocale();
-  const { openEditOffer } = useAdminContext();
+  const { openEditOffer, toggleOfferActive } = useAdminContext();
+  const toggle = getToggleState(offer, "offer");
+  const offerName = offer?.name?.en || offer?.name?.ar || "offer";
   const TargetIcon = offer.targetType === "product" ? Package : LayoutGrid;
   const discountText = formatDiscount(offer.discount, offer.type);
   const targetImage = offer.targetType === "product" ? offer.product?.mainImage : offer.category?.image;
@@ -93,8 +96,17 @@ export default function OfferRow({ offer, isExpanded, onToggle }) {
           </span>
         </div>
 
-        <div className="flex items-center justify-end gap-1 pl-5">
-          <AdminEditButton name={offer?.name?.en || offer?.name?.ar || "offer"} onClick={() => openEditOffer(offer)} />
+        <div className="flex flex-col items-center gap-1">
+          <AdminArchiveButton
+            name={offerName}
+            entity="offer"
+            isActive={offer.isActive}
+            disabled={toggle.disabled}
+            disabledReason={toggle.reason}
+            onClick={() => toggleOfferActive(offer._id, !offer.isActive)}
+          />
+          
+          <AdminEditButton name={offerName} onClick={() => openEditOffer(offer)} />
         </div>
       </div>
 

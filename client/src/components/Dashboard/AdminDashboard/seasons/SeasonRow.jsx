@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ChevronDown, ChevronRight, Sun, Tag, Percent, Loader2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { Link } from "@/lib/i18n/routing";
 import { formatDate, daysBetween } from "@/components/Dashboard/AdminDashboard/shared/formatDate";
-import { getAdminSeasonOffers } from "@/helper/fetchApi";
-import { AdminEditButton } from "@/index";
+import { getToggleState } from "@/components/Dashboard/AdminDashboard/shared/periodUtils";
+import { AdminEditButton, AdminArchiveButton } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
 import { seasonGridCols } from "./seasonsData";
 
@@ -50,39 +50,25 @@ function getOfferTarget(offer, locale) {
   return `Category: ${name?.[locale] || name?.en || name?.ar || "—"}`;
 }
 
-export default function SeasonRow({ season, isExpanded, onToggle }) {
+export default function SeasonRow({ season, isExpanded, onToggle, offersData, onLoadOffers, onLoadMoreOffers  }) {
   const locale = useLocale();
-  const { openEditSeason } = useAdminContext();
+  const { openEditSeason, toggleSeasonActive } = useAdminContext();
 
-  const [offers, setOffers] = useState([]);
-  const [offersLoading, setOffersLoading] = useState(false);
+  const offers = offersData?.offers || [];
+  const offersLoading = offersData?.loading || false;
+  const hasMore = (offersData?.page || 1) < (offersData?.totalPages || 1);
+  const remaining = Math.max(0, (offersData?.total || 0) - offers.length);
 
   const offersCount = season.offersCount || 0;
   const durationDays = daysBetween(season.startDate, season.endDate);
-  const hiddenOffers = Math.max(0, offersCount - offers.length);
+  const toggle = getToggleState(season, "season");
+  const seasonName = season.name?.en || season.name?.ar || "season";
 
   useEffect(() => {
-    if (!isExpanded || offersCount === 0) return;
-
-    let cancelled = false;
-
-    async function loadOffers() {
-      setOffersLoading(true);
-      const token = localStorage.getItem("nexmart-token");
-      const result = await getAdminSeasonOffers(season._id, 5, token);
-
-      if (cancelled) return;
-
-      setOffers(result.offers);
-      setOffersLoading(false);
+    if (isExpanded && offersCount > 0 && !offersData) {
+      onLoadOffers(season._id);
     }
-
-    loadOffers();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isExpanded, season._id, offersCount]);
+  }, [isExpanded, offersCount, offersData, season._id, onLoadOffers]);
 
   return (
     <>
@@ -122,8 +108,17 @@ export default function SeasonRow({ season, isExpanded, onToggle }) {
           <StatusBadge status={season.status} />
         </div>
 
-        <div className="flex items-center justify-end gap-1 pl-5">
-          <AdminEditButton name={season?.name?.en || season?.name?.ar || "offer"} onClick={() => openEditSeason(season)} />
+        <div className="flex flex-col items-center gap-1">
+          <AdminArchiveButton
+            name={seasonName}
+            entity="season"
+            isActive={season.isActive}
+            disabled={toggle.disabled}
+            disabledReason={toggle.reason}
+            onClick={() => toggleSeasonActive(season._id, !season.isActive)}
+          />
+          
+          <AdminEditButton name={seasonName} onClick={() => openEditSeason(season)} />
         </div>
       </div>
 
@@ -158,7 +153,7 @@ export default function SeasonRow({ season, isExpanded, onToggle }) {
                 </p>
               </div>
 
-              {offersLoading && offers.length === 0 ? (
+              {!offersData || (offersLoading && offers.length === 0) ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 size={20} className="animate-spin text-[var(--color-soft)]" />
                 </div>
@@ -186,11 +181,22 @@ export default function SeasonRow({ season, isExpanded, onToggle }) {
                 </div>
               )}
 
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px]">
-                <p className="italic text-[var(--color-muted)]">
-                  {hiddenOffers > 0 ? `+${hiddenOffers} more offers associated with this season` : ""}
-                </p>
-                <Link href="/offers" className="font-semibold text-[var(--color-green)]">
+              {hasMore && (
+                <div className="mt-3 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => onLoadMoreOffers(season._id)}
+                    disabled={offersLoading}
+                    className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-[10px] font-semibold text-[var(--color-green-dark)] hover:bg-[var(--color-sand)] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {offersLoading && <Loader2 size={13} className="animate-spin" />}
+                    {offersLoading ? "Loading..." : `Load More Offers (${remaining} left)`}
+                  </button>
+                </div>
+              )}
+
+              <div className="mt-3 flex flex-wrap items-center justify-end gap-2 text-[10px]">
+                <Link href="/products" className="font-semibold text-[var(--color-green)]">
                   View all in Offers Console →
                 </Link>
               </div>

@@ -1,15 +1,14 @@
 "use client";
 import { X } from "lucide-react";
-import { createContext, useContext, useState, useRef } from "react";
+import { createContext, useContext, useState, useRef, useCallback } from "react";
 
 const AlertContext = createContext();
 
 export default function AlertProvider({ children }) {
     const [alert, setAlert] = useState(null);
-    // todo 
     const timeoutRef = useRef(null);
 
-    const showAlert = (message, type = "success") => {
+    const showAlert = useCallback((message, type = "success") => {
         if(timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
@@ -18,7 +17,7 @@ export default function AlertProvider({ children }) {
         timeoutRef.current = setTimeout(() => {
             setAlert(null);
         }, 3000);
-    };
+    }, []);
     
     // todo 
     const closeAlert = () => {

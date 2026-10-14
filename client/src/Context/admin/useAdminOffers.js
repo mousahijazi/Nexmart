@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { getOffers, createOffer, updateOffer } from "@/helper/fetchApi";
+import { getOffers, createOffer, updateOffer, updateOfferStatus } from "@/helper/fetchApi";
 
 export default function useAdminOffers({ showAlert }) {
   const [offers, setOffers] = useState([]);
@@ -111,6 +111,27 @@ export default function useAdminOffers({ showAlert }) {
     return result;
   };
 
+  const toggleOfferActive = async (offerId, isActive) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
+
+    const result = await updateOfferStatus(offerId, isActive, token);
+
+    if (!result.success) {
+      showAlert(result.message, "danger");
+      return result;
+    }
+
+    setOffers((current) => current.map((offer) => (offer._id === offerId ? { ...offer, ...result.offer } : offer)));
+    showAlert(isActive ? "Offer restored successfully!" : "Offer archived successfully!", "success");
+
+    return result;
+  };
+
   return {
     offers,
     offersLoading,
@@ -130,5 +151,7 @@ export default function useAdminOffers({ showAlert }) {
     closeOfferModal,
     addOffer,
     editOffer,
+
+    toggleOfferActive,
   };
 }

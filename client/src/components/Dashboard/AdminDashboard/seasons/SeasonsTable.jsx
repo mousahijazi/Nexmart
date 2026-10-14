@@ -2,8 +2,10 @@
 import { useMemo, useState } from "react";
 import { SeasonRow, TablePagination } from "@/index";
 import { seasonGridCols, seasonTableMinWidth } from "./seasonsData";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function SeasonsTable({ seasons }) {
+  const { seasonOffers, fetchSeasonOffers, loadMoreSeasonOffers } = useAdminContext();
   const [openSeasons, setOpenSeasons] = useState([]);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(6);
@@ -43,6 +45,9 @@ export default function SeasonsTable({ seasons }) {
                 season={season}
                 isExpanded={openSeasons.includes(season._id)}
                 onToggle={() => toggleSeason(season._id)}
+                offersData={seasonOffers[season._id]}
+                onLoadOffers={fetchSeasonOffers}
+                onLoadMoreOffers={loadMoreSeasonOffers}
               />
             ))
           ) : (

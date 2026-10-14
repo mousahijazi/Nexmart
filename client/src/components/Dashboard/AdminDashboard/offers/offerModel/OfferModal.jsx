@@ -92,7 +92,7 @@ export default function OfferModal() {
   }, [isOfferModalOpen]);
 
   useEffect(() => {
-    if (!isOfferModalOpen || loadingOptions) return;
+    if (!isOfferModalOpen) return;
 
     if (isEdit && editingOffer) {
       reset({

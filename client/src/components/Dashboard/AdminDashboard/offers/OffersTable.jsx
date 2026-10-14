@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { OfferRow, TablePagination } from "@/index";
+import { offerGridCols, offerTableMinWidth } from "./offersData";
 
 export default function OffersTable({ offers }) {
   const [openOffers, setOpenOffers] = useState([]);
@@ -22,8 +23,8 @@ export default function OffersTable({ offers }) {
   return (
     <section className="grid w-full grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="min-w-0 overflow-x-auto scrollbar-thin">
-        <div className="min-w-[1050px] w-full">
-          <div className="grid grid-cols-[minmax(240px,1.6fr)_minmax(200px,1.3fr)_110px_170px_130px_100px_45px] gap-3 bg-[var(--color-sand)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]">
+        <div className={`${offerTableMinWidth} w-full`}>
+          <div className={`grid ${offerGridCols} gap-3 bg-[var(--color-sand)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]`}>
             <span>Offer Name &amp; Code</span>
             <span>Target</span>
             <span>Discount</span>

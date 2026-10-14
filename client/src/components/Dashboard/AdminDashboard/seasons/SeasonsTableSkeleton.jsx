@@ -1,4 +1,4 @@
-import { seasonGridCols } from "./seasonsData";
+import { seasonGridCols, seasonTableMinWidth } from "./seasonsData";
 
 function Bar({ className = "" }) {
   return <div className={`animate-pulse rounded-md bg-[var(--color-sand)] ${className}`} />;
@@ -8,7 +8,7 @@ export default function SeasonsTableSkeleton({ rows = 6 }) {
   return (
     <section className="grid w-full grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="min-w-0 overflow-x-auto scrollbar-thin">
-        <div className="min-w-[900px] w-full">
+        <div className={`${seasonTableMinWidth} w-full`}>
           <div className={`grid ${seasonGridCols} gap-3 bg-[var(--color-sand)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]`}>
             <span>Season</span>
             <span>Offers</span>

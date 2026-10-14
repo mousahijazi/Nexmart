@@ -4,16 +4,13 @@ const createSeason = async (seasonData) => {
   return await Season.create(seasonData);
 };
 
-const getAllSeasons = async ({ skip, limit }) => {
-  const seasons = await Season.find({}, { __v: false })
-    .populate('offersCount').sort({ createdAt: -1 }).skip(skip).limit(limit);
+const getAllSeasons = async ({ skip, limit, filter = {} }) => {
+  const seasons = await Season.find(filter, { __v: false })
+    .populate("offersCount").sort({ createdAt: -1 }).skip(skip).limit(limit);
 
-  const totalSeasons = await Season.countDocuments();
+  const totalSeasons = await Season.countDocuments(filter);
 
-  return {
-    seasons,
-    totalSeasons,
-  };
+  return { seasons, totalSeasons };
 };
 
 const getSeasonById = async (seasonId) => {

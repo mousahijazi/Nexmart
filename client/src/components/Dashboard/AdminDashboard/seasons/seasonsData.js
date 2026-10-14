@@ -9,3 +9,4 @@ export const seasonStats = {
 
 export const seasonStatusOptions = ["All Statuses", "Active", "Scheduled", "Expired", "Inactive"];
 export const seasonGridCols = "grid-cols-[minmax(260px,1.7fr)_110px_110px_110px_90px_150px_45px]";
+export const seasonTableMinWidth = "min-w-[990px]";

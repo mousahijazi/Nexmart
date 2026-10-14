@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { SeasonRow, TablePagination } from "@/index";
-import { seasonGridCols } from "./seasonsData";
+import { seasonGridCols, seasonTableMinWidth } from "./seasonsData";
 
 export default function SeasonsTable({ seasons }) {
   const [openSeasons, setOpenSeasons] = useState([]);
@@ -25,7 +25,7 @@ export default function SeasonsTable({ seasons }) {
   return (
     <section className="grid w-full grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="min-w-0 overflow-x-auto scrollbar-thin">
-        <div className="min-w-[900px] w-full">
+        <div className={`${seasonTableMinWidth} w-full`}>
           <div className={`grid ${seasonGridCols} gap-3 bg-[var(--color-sand)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]`}>
             <span>Season</span>
             <span>Offers</span>

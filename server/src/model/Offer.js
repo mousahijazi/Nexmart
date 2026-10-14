@@ -72,6 +72,11 @@ const offerSchema = new mongoose.Schema(
       required: true,
     },
 
+    archivedBySeason: {
+      type: Boolean,
+      default: false,
+    },
+
     isActive: {
       type: Boolean,
       default: true,

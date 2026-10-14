@@ -89,6 +89,7 @@ export {default as EmptyWishlist} from "./components/Wishlist/EmptyWishlist";
 
 // dashboard
 export {default as Dashbaord} from "./components/Dashboard/Dashbaord";
+export {default as AdminArchiveButton} from "./components/Dashboard/AdminDashboard/shared/AdminArchiveButton";
 
 export {default as SettingsDashboard} from "./components/Dashboard/settings/SettingsDashboard";
 

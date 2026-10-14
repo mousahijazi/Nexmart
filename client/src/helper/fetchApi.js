@@ -50,13 +50,13 @@ export async function getActiveSeasons(page = 1, limit = 1) {
 }
 
 // todo
-export async function getAdminSeasonOffers(seasonId, limit = 5, token) {
+export async function getAdminSeasonOffers(seasonId, limit = 10, page = 1, token) {
   if (!seasonId) return { success: false, offers: [], total: 0 };
 
   try {
     const params = new URLSearchParams({
       season: String(seasonId),
-      page: "1",
+      page: String(page),
       limit: String(limit),
     });
 
@@ -71,14 +71,26 @@ export async function getAdminSeasonOffers(seasonId, limit = 5, token) {
       return { success: false, offers: [], total: 0, message: json.message };
     }
 
+    const data = json.data;
+
     return {
       success: true,
-      offers: Array.isArray(json.data?.offers) ? json.data.offers : [],
-      total: json.data?.total || 0,
+      offers: Array.isArray(data?.offers) ? json.data.offers : [],
+      total: Number(data?.total ?? 0),
+      page: Number(data?.page ?? page),
+      limit: Number(data?.limit ?? limit),
+      totalPages: Number(data?.totalPages ?? 0),
     };
   } catch (error) {
     console.error("getAdminSeasonOffers:", error);
-    return { success: false, offers: [], total: 0 };
+    return { 
+      success: false, 
+      offers: [], 
+      total: 0,
+      page: page,
+      limit: limit,
+      totalPages: 0,
+    };
   }
 }
 
@@ -467,6 +479,42 @@ export async function getOfferProducts(offer, limit = 4) {
   }
 }
 
+async function patchStatus(resource, id, isActive, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/${resource}/${id}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ isActive }),
+      cache: "no-store",
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || json.status !== "success") {
+      return { success: false, message: json.message || `Failed to update ${resource} status` };
+    }
+
+    const data = json.data;
+
+    return { success: true, data: data };
+  } catch (error) {
+    console.error(`patchStatus(${resource}):`, error);
+    return { success: false, message: "Something went wrong" };
+  }
+}
+
+export async function updateOfferStatus(offerId, isActive, token) {
+  const result = await patchStatus("offers", offerId, isActive, token);
+  return result.success ? { success: true, offer: result.data?.offer } : result;
+}
+
+export async function updateSeasonStatus(seasonId, isActive, token) {
+  const result = await patchStatus("seasons", seasonId, isActive, token);
+  return result.success ? { success: true, season: result.data?.season } : result;
+}
 
 export async function getProducts(limit = 20, skip = 0, token = null) {
   try {

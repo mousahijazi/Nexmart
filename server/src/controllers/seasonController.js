@@ -1,4 +1,4 @@
-import { createSeason, getAllSeasons, getSeasonById, updateSeason, deleteSeason } from "../service/seasonService.js";
+import { createSeason, getAllSeasons, getSeasonById, updateSeason, updateSeasonStatus, deleteSeason } from "../service/seasonService.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
@@ -6,29 +6,21 @@ import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
 const getAllSeasonsController = asyncHandler(
   async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
-    const result = await getAllSeasons({ page: Number(page), limit: Number(limit) });
+    const result = await getAllSeasons({ page: Number(page), limit: Number(limit) }, req.userRole);
 
-    res.status(200).json({
-      status: SUCCESS,
-      data: result,
-    });
+    res.status(200).json({ status: SUCCESS, data: result });
   }
 );
 
 const getSeasonByIdController = asyncHandler(
   async (req, res, next) => {
-    const season = await getSeasonById(req.params.seasonId);
+    const season = await getSeasonById(req.params.seasonId, req.userRole);
 
     if (!season) {
       return next(AppError.create("Season not found", 404, FAIL));
     }
 
-    res.status(200).json({
-      status: SUCCESS,
-      data: {
-        season,
-      },
-    });
+    res.status(200).json({ status: SUCCESS, data: { season } });
   }
 );
 
@@ -62,6 +54,14 @@ const updateSeasonController = asyncHandler(
   }
 );
 
+const updateSeasonStatusController = asyncHandler(
+  async (req, res) => {
+    const season = await updateSeasonStatus(req.params.seasonId, req.body.isActive);
+
+    res.status(200).json({ status: SUCCESS, data: { season } });
+  }
+);
+
 const deleteSeasonController = asyncHandler(
   async (req, res, next) => {
     const season = await deleteSeason(req.params.seasonId);
@@ -87,5 +87,6 @@ export {
   getAllSeasonsController,
   getSeasonByIdController,
   updateSeasonController,
+  updateSeasonStatusController,
   deleteSeasonController,
 };

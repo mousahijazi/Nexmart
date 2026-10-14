@@ -6,6 +6,8 @@ import AppError from "../../utils/AppError.js";
 import { FAIL } from "../../utils/httpStatusText.js";
 import { createOffer as createOfferRepository, getAllOffers as getAllOffersRepository, getOfferById as getOfferByIdRepository, updateOffer as updateOfferRepository, deleteOffer as deleteOfferRepository } from "../../repositories/offerRepository.js";
 import { calculateDiscountAmount } from "../../utils/pricingUtils.js";
+import { userRoles } from "../../utils/userRoles.js";
+import { isCurrentPeriod } from "../../utils/periodUtils.js";
 
 const calculateOfferStatus = (isActive, startDate, endDate) => {
   if (!isActive) return "Inactive";
@@ -19,7 +21,7 @@ const calculateOfferStatus = (isActive, startDate, endDate) => {
   return "Expired";
 };
 
-const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate }) => {
+const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate, checkPast = false }) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
   const now = new Date();
@@ -28,7 +30,7 @@ const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate }) =>
     throw AppError.create("Invalid offer start date or end date.", 400, FAIL);
   }
 
-  if (start < now || end <= now) {
+  if (checkPast && (start < now || end <= now)) {
     throw AppError.create("Offer dates cannot be in the past.", 400, FAIL);
   }
 
@@ -126,17 +128,23 @@ const removeWeakerProductOffers = async (categoryOffer, products) => {
   }
 };
 
-const getAllOffers = async ({ page = 1, limit = 10, season, isActive }) => {
+const getAllOffers = async ({ page = 1, limit = 10, season, isActive }, userRole) => {
   const skip = (page - 1) * limit;
-
   const filter = {};
 
   if (season) {
     filter.season = season;
   }
 
-  if (isActive !== undefined) {
-    filter.isActive = isActive;
+  // todo
+  if (userRole === userRoles.ADMIN) {
+    if (isActive !== undefined) {
+      filter.isActive = isActive;
+    }
+  } else {
+    filter.isActive = true;
+    // todo
+    filter.archivedBySeason = { $ne: true };
   }
 
   const result = await getAllOffersRepository({ skip, limit, filter });
@@ -151,8 +159,14 @@ const getAllOffers = async ({ page = 1, limit = 10, season, isActive }) => {
   };
 };
 
-const getOfferById = async (offerId) => {
-  return await getOfferByIdRepository(offerId);
+const getOfferById = async (offerId, userRole) => {
+  const offer = await getOfferByIdRepository(offerId);
+
+  if (!offer || (userRole !== userRoles.ADMIN && (!offer.isActive || offer.archivedBySeason))) {
+    return null;
+  }
+
+  return offer;
 };
 
 const createOffer = async (offerData) => {
@@ -169,6 +183,7 @@ const createOffer = async (offerData) => {
     seasonId: offerData.season,
     startDate: offerData.startDate,
     endDate: offerData.endDate,
+    checkPast: true,
   });
 
   offerData.startDate = normalizedDates.startDate;
@@ -366,6 +381,29 @@ const updateOffer = async (offerId, offerData) => {
   return updatedOffer;
 };
 
+const updateOfferStatus = async (offerId, isActive) => {
+  const offer = await Offer.findById(offerId);
+
+  if (!offer) {
+    throw AppError.create("Offer not found", 404, FAIL);
+  }
+
+  if (!isCurrentPeriod(offer.startDate, offer.endDate)) {
+    throw AppError.create("Only a current offer can be activated or deactivated.", 400, FAIL);
+  }
+
+  if (isActive && offer.archivedBySeason) {
+    throw AppError.create("This offer belongs to an inactive season. Activate the season first.", 409, FAIL);
+  }
+
+  offer.isActive = isActive;
+  offer.status = calculateOfferStatus(isActive, offer.startDate, offer.endDate);
+  await offer.save();
+
+  await offer.populate("product category season");
+  return offer;
+};
+
 const deleteOffer = async (offerId) => {
   return await deleteOfferRepository(offerId);
 };
@@ -375,5 +413,6 @@ export {
   getAllOffers,
   getOfferById,
   updateOffer,
+  updateOfferStatus,
   deleteOffer,
 };

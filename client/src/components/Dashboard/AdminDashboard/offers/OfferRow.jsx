@@ -7,6 +7,7 @@ import { formatDiscount } from "./offersData";
 import { useLocale } from "next-intl";
 import { useAdminContext } from "@/Context/Adminprovider";
 import { AdminEditButton } from "@/index";
+import { offerGridCols } from "./offersData";
 
 const statusStyles = {
   Active: "bg-[var(--color-green)] text-white",
@@ -34,7 +35,7 @@ export default function OfferRow({ offer, isExpanded, onToggle }) {
 
   return (
     <>
-      <div className="grid grid-cols-[minmax(240px,1.6fr)_minmax(200px,1.3fr)_110px_170px_130px_100px_45px] items-center gap-3 border-b border-[var(--color-divider)] px-4 py-3">
+      <div className={`grid ${offerGridCols} items-center gap-3 border-b border-[var(--color-divider)] px-4 py-3`}>
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"

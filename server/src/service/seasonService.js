@@ -1,5 +1,8 @@
 import { createSeason as createSeasonRepository, getAllSeasons as getAllSeasonsRepository, getSeasonById as getSeasonByIdRepository, updateSeason as updateSeasonRepository, deleteSeason as deleteSeasonRepository } from "../repositories/seasonRepository.js";
 import Season from "../model/Season.js";
+import Offer from "../model/Offer.js";
+import { userRoles } from "../utils/userRoles.js";
+import { isCurrentPeriod } from "../utils/periodUtils.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
 
@@ -15,9 +18,15 @@ const calculateSeasonStatus = (isActive, startDate, endDate) => {
   return "Expired";
 };
 
-const getAllSeasons = async ({ page = 1, limit = 10 }) => {
+const getAllSeasons = async ({ page = 1, limit = 10 }, userRole) => {
   const skip = (page - 1) * limit;
-  const result = await getAllSeasonsRepository({ skip, limit });
+  const filter = {};
+
+  if (userRole !== userRoles.ADMIN) {
+    filter.isActive = true;
+  }
+
+  const result = await getAllSeasonsRepository({ skip, limit, filter });
 
   return {
     seasons: result.seasons,
@@ -29,8 +38,14 @@ const getAllSeasons = async ({ page = 1, limit = 10 }) => {
   };
 };
 
-const getSeasonById = async (seasonId) => {
-  return await getSeasonByIdRepository(seasonId);
+const getSeasonById = async (seasonId, userRole) => {
+  const season = await getSeasonByIdRepository(seasonId);
+
+  if (!season || (userRole !== userRoles.ADMIN && !season.isActive)) {
+    return null;
+  }
+
+  return season;
 };
 
 const createSeason = async (seasonData) => {
@@ -106,6 +121,29 @@ const updateSeason = async (seasonId, seasonData) => {
   return await updateSeasonRepository(seasonId, seasonData);
 };
 
+const updateSeasonStatus = async (seasonId, isActive) => {
+  const season = await Season.findById(seasonId);
+
+  if (!season) {
+    throw AppError.create("Season not found", 404, FAIL);
+  }
+
+  if (!isCurrentPeriod(season.startDate, season.endDate)) {
+    throw AppError.create("Only a current season can be activated or deactivated.", 400, FAIL);
+  }
+
+  season.isActive = isActive;
+  season.status = calculateSeasonStatus(isActive, season.startDate, season.endDate);
+  await season.save();
+
+  await Offer.updateMany(
+    { season: seasonId },
+    { $set: { archivedBySeason: !isActive } }
+  );
+
+  return season;
+};
+
 const deleteSeason = async (seasonId) => {
   return await deleteSeasonRepository(seasonId);
 };
@@ -115,5 +153,6 @@ export {
   getAllSeasons,
   getSeasonById,
   updateSeason,
+  updateSeasonStatus,
   deleteSeason,
 };

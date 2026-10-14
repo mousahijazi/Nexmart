@@ -1,4 +1,4 @@
-import { SeasonsHeader, SeasonsStats, SeasonsInteractive } from "@/index";
+import { SeasonsHeader, SeasonsStats, SeasonsInteractive, SeasonModal } from "@/index";
 import { seasonStats } from "./seasonsData";
 
 export default function SeasonsDashboard() {
@@ -8,6 +8,7 @@ export default function SeasonsDashboard() {
         <SeasonsHeader />
         <SeasonsStats stats={seasonStats} />
         <SeasonsInteractive />
+        <SeasonModal />
       </div>
     </div>
   );

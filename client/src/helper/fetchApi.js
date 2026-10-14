@@ -224,6 +224,56 @@ export async function getSeasons(limit = 10, page = 1, token = null) {
   }
 }
 
+export async function createSeason(payload, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/seasons`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || json.status !== "success") {
+      return { success: false, message: json.message || "Failed to create season" };
+    }
+
+    const data = json.data;
+
+    return { success: true, season: data?.season };
+  } catch {
+    return { success: false, message: "Something went wrong" };
+  }
+}
+
+export async function updateSeason(seasonId, payload, token) {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/seasons/${seasonId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || json.status !== "success") {
+      return { success: false, message: json.message || "Failed to update season" };
+    }
+
+    const data = json.data;
+
+    return { success: true, season: data?.season };
+  } catch {
+    return { success: false, message: "Something went wrong" };
+  }
+}
+
 export async function getOffers(limit = 10, page = 1, token = null) {
   try {
     const params = new URLSearchParams({
@@ -286,12 +336,12 @@ export async function createOffer(payload, token) {
     });
 
     const json = await res.json();
+    const data = json.data;
 
     if (!res.ok || json.status !== "success") {
       return { success: false, message: data.message || "Failed to create offer" };
     }
     
-    const data = json.data;
 
     return { success: true, offer: data?.offer };
   } catch {
@@ -311,12 +361,11 @@ export async function updateOffer(offerId, payload, token) {
     });
 
     const json = await res.json();
+    const data = json.data;
 
-    if (!res.ok || data.status !== "success") {
+    if (!res.ok || json.status !== "success") {
       return { success: false, message: data.message || "Failed to update offer" };
     }
-
-    const data = json.data;
 
     return { success: true, offer: data?.offer };
   } catch {

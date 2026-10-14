@@ -1,5 +1,3 @@
-export const seasonStatusOptions = ["All Statuses", "Active", "Inactive"];
-
 export const seasonStats = {
   total: 8,
   plannedNextYear: 2,
@@ -8,3 +6,6 @@ export const seasonStats = {
   withOffers: 7,
   withOffersPercent: 87.5,
 };
+
+export const seasonStatusOptions = ["All Statuses", "Active", "Scheduled", "Expired", "Inactive"];
+export const seasonGridCols = "grid-cols-[minmax(260px,1.7fr)_110px_110px_110px_90px_150px_45px]";

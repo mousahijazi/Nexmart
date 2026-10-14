@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { getSeasons } from "@/helper/fetchApi";
+import { getSeasons, createSeason, updateSeason } from "@/helper/fetchApi";
 
 export default function useAdminSeasons({ showAlert }) {
   const [seasons, setSeasons] = useState([]);
@@ -10,6 +10,10 @@ export default function useAdminSeasons({ showAlert }) {
   const [seasonsLimit, setSeasonsLimit] = useState(10);
   const [seasonsTotal, setSeasonsTotal] = useState(0);
   const [seasonsTotalPages, setSeasonsTotalPages] = useState(0);
+
+  const [isSeasonModalOpen, setIsSeasonModalOpen] = useState(false);
+  const [seasonModalMode, setSeasonModalMode] = useState("create");
+  const [editingSeason, setEditingSeason] = useState(null);
 
   const fetchSeasons = useCallback(async (page, limit) => {
     setSeasonsLoading(true);
@@ -52,6 +56,64 @@ export default function useAdminSeasons({ showAlert }) {
     fetchSeasons(seasonsPage, seasonsLimit);
   }, [seasonsPage, seasonsLimit, fetchSeasons]);
 
+  const openSeasonModal = () => {
+    setSeasonModalMode("create");
+    setEditingSeason(null);
+    setIsSeasonModalOpen(true);
+  };
+
+  const openEditSeason = (season) => {
+    setSeasonModalMode("edit");
+    setEditingSeason(season);
+    setIsSeasonModalOpen(true);
+  };
+
+  const closeSeasonModal = () => {
+    setIsSeasonModalOpen(false);
+    setEditingSeason(null);
+    setSeasonModalMode("create");
+  };
+
+  const addSeason = async (payload) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
+
+    const result = await createSeason(payload, token);
+
+    if (result.success) {
+      fetchSeasons(seasonsPage, seasonsLimit);
+      showAlert("Season created successfully", "success");
+    } else {
+      showAlert(result.message || "Failed to create season", "danger");
+    }
+
+    return result;
+  };
+
+  const editSeason = async (seasonId, payload) => {
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
+
+    const result = await updateSeason(seasonId, payload, token);
+
+    if (result.success) {
+      fetchSeasons(seasonsPage, seasonsLimit);
+      showAlert("Season updated successfully", "success");
+    } else {
+      showAlert(result.message || "Failed to update season", "danger");
+    }
+
+    return result;
+  };
+
   return {
     seasons,
     seasonsLoading,
@@ -62,5 +124,14 @@ export default function useAdminSeasons({ showAlert }) {
     seasonsTotal,
     seasonsTotalPages,
     fetchSeasons,
+
+    isSeasonModalOpen,
+    seasonModalMode,
+    editingSeason,
+    openSeasonModal,
+    openEditSeason,
+    closeSeasonModal,
+    addSeason,
+    editSeason,
   };
 }

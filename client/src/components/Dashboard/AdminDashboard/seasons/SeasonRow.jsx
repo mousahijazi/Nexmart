@@ -1,10 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronRight, MoreVertical, Sun, Tag, Percent, Plus, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Sun, Tag, Percent, Loader2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { Link } from "@/lib/i18n/routing";
 import { formatDate, daysBetween } from "@/components/Dashboard/AdminDashboard/shared/formatDate";
 import { getAdminSeasonOffers } from "@/helper/fetchApi";
+import { AdminEditButton } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
+import { seasonGridCols } from "./seasonsData";
 
 const statusStyles = {
   Active: "bg-[var(--color-green)] text-white",
@@ -49,6 +52,7 @@ function getOfferTarget(offer, locale) {
 
 export default function SeasonRow({ season, isExpanded, onToggle }) {
   const locale = useLocale();
+  const { openEditSeason } = useAdminContext();
 
   const [offers, setOffers] = useState([]);
   const [offersLoading, setOffersLoading] = useState(false);
@@ -82,7 +86,7 @@ export default function SeasonRow({ season, isExpanded, onToggle }) {
 
   return (
     <>
-      <div className="grid grid-cols-[minmax(260px,1.7fr)_110px_110px_110px_90px_150px_45px] items-center gap-3 border-b border-[var(--color-divider)] px-4 py-3">
+      <div className={`grid ${seasonGridCols} items-center gap-3 border-b border-[var(--color-divider)] px-4 py-3`}>
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
@@ -118,10 +122,8 @@ export default function SeasonRow({ season, isExpanded, onToggle }) {
           <StatusBadge status={season.status} />
         </div>
 
-        <div className="flex justify-end">
-          <button type="button" aria-label="Season actions" className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--color-soft)] hover:bg-[var(--color-sand)]">
-            <MoreVertical size={16} />
-          </button>
+        <div className="flex items-center justify-end gap-1 pl-5">
+          <AdminEditButton name={season?.name?.en || season?.name?.ar || "offer"} onClick={() => openEditSeason(season)} />
         </div>
       </div>
 

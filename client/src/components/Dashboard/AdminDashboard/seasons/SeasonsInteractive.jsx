@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { SeasonsFilters, SeasonsTable } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
+import SeasonsTableSkeleton from "./SeasonsTableSkeleton";
 
 export default function SeasonsInteractive() {
   const [search, setSearch] = useState("");
@@ -39,9 +40,7 @@ export default function SeasonsInteractive() {
       />
 
       {seasonsLoading ? (
-        <div className="flex items-center justify-center py-16">
-          <p className="text-[12px] text-[var(--color-soft)]">Loading seasons...</p>
-        </div>
+        <SeasonsTableSkeleton />
       ) : (
         <SeasonsTable seasons={filteredSeasons} />
       )}

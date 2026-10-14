@@ -1,6 +1,11 @@
-import { Download, Plus, Sun } from "lucide-react";
+"use client"
+import { Download, Sun } from "lucide-react";
+import { useAdminContext } from "@/Context/Adminprovider";
+import { AdminAddButton } from "@/index";
 
 export default function SeasonsHeader() {
+  const { openSeasonModal } = useAdminContext();
+
   return (
     <section className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
       <div className="flex min-w-0 items-start gap-3">
@@ -30,10 +35,7 @@ export default function SeasonsHeader() {
           Export Seasons CSV
         </button>
 
-        <button type="button" className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] bg-[var(--color-gold)] px-5 text-[11px] font-bold text-[var(--color-green-dark)] transition hover:bg-[var(--color-gold-light)]">
-          <Plus size={16} />
-          Create New Season
-        </button>
+        <AdminAddButton label="Add New Season" onClick={openSeasonModal} />
       </div>
     </section>
   );

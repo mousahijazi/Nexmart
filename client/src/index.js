@@ -177,6 +177,10 @@ export {default as SeasonsFilters} from "./components/Dashboard/AdminDashboard/s
 export {default as SeasonsTable} from "./components/Dashboard/AdminDashboard/seasons/SeasonsTable";
 export {default as SeasonRow} from "./components/Dashboard/AdminDashboard/seasons/SeasonRow";
 
+export {default as SeasonModal} from "./components/Dashboard/AdminDashboard/seasons/seasonModel/SeasonModal";
+export {default as SeasonForm} from "./components/Dashboard/AdminDashboard/seasons/seasonModel/SeasonForm";
+export {default as SeasonModalFooter} from "./components/Dashboard/AdminDashboard/seasons/seasonModel/SeasonModalFooter";
+
 export {default as FilterSelect} from "./components/Dashboard/AdminDashboard/shared/FilterSelect";
 export {default as StatCard} from "./components/Dashboard/AdminDashboard/shared/StatCard";
 export {default as TablePagination} from "./components/Dashboard/AdminDashboard/shared/TablePagination";

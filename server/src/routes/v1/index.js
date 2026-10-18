@@ -5,7 +5,8 @@ import brandRoutes from "./brandRoutes.js";
 import userRoutes from "./userRoutes.js";
 import reviewRoutes from "./reviewRoutes.js";
 import offerRoutes from "./offerRoutes.js";
-import seasonRoutes from "./seasonRoutes.js"
+import seasonRoutes from "./seasonRoutes.js";
+import cartRoutes from "./cartRoutes.js";
 
 const router = express.Router();
 
@@ -19,5 +20,7 @@ router.use("/reviews", reviewRoutes);
 
 router.use("/seasons", seasonRoutes);
 router.use("/offers", offerRoutes);
+
+router.use("/cart", cartRoutes);
 
 export default router;

@@ -9,16 +9,19 @@ import { calculateDiscountAmount } from "../../utils/pricingUtils.js";
 import { userRoles } from "../../utils/userRoles.js";
 import { isCurrentPeriod } from "../../utils/periodUtils.js";
 
-const calculateOfferStatus = (isActive, startDate, endDate) => {
-  if (!isActive) return "Inactive";
-
+const calculateOfferStatus = (isActive, startDate, endDate, archivedBySeason = false) => {
   const now = new Date();
   const start = new Date(startDate);
   const end = new Date(endDate);
 
+  if (archivedBySeason) return "Inactive";
+
+  if (now >= end) return "Expired";
   if (now < start) return "Scheduled";
-  if (now >= start && now <= end) return "Active";
-  return "Expired";
+
+  if (!isActive) return "Inactive";
+
+  return "Active";
 };
 
 const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate, checkPast = false }) => {
@@ -30,7 +33,10 @@ const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate, chec
     throw AppError.create("Invalid offer start date or end date.", 400, FAIL);
   }
 
-  if (checkPast && (start < now || end <= now)) {
+  const currentMinute = new Date(now);
+  currentMinute.setSeconds(0, 0);
+
+  if (checkPast && (start < currentMinute || end <= now)) {
     throw AppError.create("Offer dates cannot be in the past.", 400, FAIL);
   }
 
@@ -56,11 +62,7 @@ const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate, chec
   }
 
   if (start < seasonStart || end > seasonEnd) {
-    throw AppError.create(
-      `Offer dates must be strictly within the season dates (${seasonStart.toISOString().slice(0, 10)} to ${seasonEnd.toISOString().slice(0, 10)}).`,
-      400,
-      FAIL
-    );
+    throw AppError.create(`Offer dates must be strictly within the season dates (${seasonStart.toISOString().slice(0, 10)} to ${seasonEnd.toISOString().slice(0, 10)}).`, 400, FAIL);
   }
 
   return { startDate: start, endDate: end };
@@ -96,6 +98,7 @@ const findOverlappingProductOffer = async (productId, startDate, endDate, exclud
   const filter = {
     targetType: "product",
     product: productId,
+    archivedBySeason: { $ne: true },
     startDate: { $lt: new Date(endDate) },
     endDate: { $gt: new Date(startDate) },
   };
@@ -208,7 +211,7 @@ const createOffer = async (offerData) => {
     offerData.isActive = offerData.isActive !== undefined ? offerData.isActive : true;
   }
 
-  offerData.status = calculateOfferStatus(offerData.isActive, offerData.startDate, offerData.endDate);
+  offerData.status = calculateOfferStatus(offerData.isActive, offerData.startDate, offerData.endDate, offerData.archivedBySeason);
 
   if (offerData.targetType === "product") {
     if (!offerData.product) {
@@ -236,6 +239,7 @@ const createOffer = async (offerData) => {
     const categoryOffer = await Offer.findOne({
       targetType: "category",
       category: target.category,
+      archivedBySeason: { $ne: true },
       startDate: { $lt: new Date(offerData.endDate) },
       endDate: { $gt: new Date(offerData.startDate) },
     });
@@ -349,6 +353,7 @@ const updateOffer = async (offerId, offerData) => {
     const categoryOffer = await Offer.findOne({
       targetType: "category",
       category: product.category,
+      archivedBySeason: { $ne: true },
       startDate: { $lt: new Date(updatedData.endDate) },
       endDate: { $gt: new Date(updatedData.startDate) },
       _id: { $ne: offerId },

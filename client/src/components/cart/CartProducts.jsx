@@ -2,7 +2,6 @@
 import { useProductContext } from "../../Context/CartProvider";
 import { Button, CartSkeleton, ShowCard, ProductsWishlistIcon } from "../../index";
 import { useTranslations, useLocale } from "next-intl";
-import { getLocalizedField } from "../../lib/locale";
 import { Link } from "../../lib/i18n/routing";
 import Image from "next/image";
 import { useState } from "react";

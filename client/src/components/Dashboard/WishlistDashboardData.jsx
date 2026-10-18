@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 export default function WishlistDashboardData() {
     const t = useTranslations();
-    const {wishlist} = useWishlistContext();
+    const { wishlist } = useWishlistContext();
     const totalPrice = wishlist.reduce((total, product) => total + product.price, 0);
     const averageRating = wishlist.length === 0 ? 0 : (wishlist.reduce((sum, product) => sum + product.rating, 0) / wishlist.length).toFixed(1);
     const totalBrands = new Set(wishlist.map(product => product.brand)).size;

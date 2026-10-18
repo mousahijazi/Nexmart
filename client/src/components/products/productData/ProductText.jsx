@@ -15,11 +15,11 @@ export default function ProductText({data}) {
         <div className="flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row justify-between pb-8 border-b-2 border-[var(--color-border)] dark:border-[#22332e] border-dashed"> 
             <div className="flex gap-3 items-center max-[300px]:flex-col max-[300px]:items-start"> 
                 <span className="text-3xl font-bold text-[var(--color-green-dark)] dark:text-[var(--color-gold)]"> 
-                    ${data.price.toFixed(2)} 
+                    ${data?.pricing?.finalPrice.toFixed(2)} 
                 </span> 
-                {data?.discountPrice  
+                {data?.pricing?.discount?.amount  
                     ? <span className="text-lg line-through text-[var(--color-muted)] dark:text-gray-500"> 
-                            ${data.discountPrice} 
+                            ${data.pricing?.discount?.amount} 
                         </span> 
                     : "" 
                 } 
@@ -45,7 +45,7 @@ export default function ProductText({data}) {
             <h3 dir={locale === "ar" ? "rtl" : "ltr"} className="text-2xl font-bold text-[var(--color-green-dark)] dark:text-gray-100">{t("shop.products.product.Desc")} :</h3> 
             <p className="text-[var(--color-muted)] leading-7 dark:text-gray-400">{data.description[locale]}</p> 
         </div> 
-        <Purchases stock={data.stock} productPrice={data?.discountPrice} discount={data.price} /> 
+        <Purchases stock={data.stock} productPrice={data?.pricing?.discount?.amount} discount={data?.pricing?.finalPrice} /> 
         <ProductsTextButton product={data} /> 
     </div> 
   )

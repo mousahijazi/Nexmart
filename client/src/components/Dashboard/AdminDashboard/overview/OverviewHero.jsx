@@ -46,8 +46,8 @@ export default function OverviewHero({adminName = "Eng. Tariq Al-Mansoor", dateL
       <ProductModal />
 
       <div className="mt-5 flex flex-wrap gap-2">
-        {heroStats.map(({ key, icon: Icon, label, value }) => (
-          <span key={key} className="inline-flex flex-wrap items-center gap-2 rounded-2xl xs:rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs text-white">
+        {heroStats.map(({ icon: Icon, label, value }, index) => (
+          <span key={index} className="inline-flex flex-wrap items-center gap-2 rounded-2xl xs:rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs text-white">
             <Icon size={13} className="text-[var(--color-gold-light)]" />
             <span className="text-white/60">{label}:</span>
             <span className="font-medium">{value}</span>

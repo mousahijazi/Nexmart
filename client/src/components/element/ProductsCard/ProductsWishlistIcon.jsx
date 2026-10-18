@@ -3,7 +3,7 @@ import { Heart } from "lucide-react";
 import { useWishlistContext } from "../../../Context/WishlistProvider";
 
 export default function ProductsWishlistIcon({ product }) {
-  const {isInWishlist, toggleWishlist} = useWishlistContext();
+  const { isInWishlist, toggleWishlist } = useWishlistContext();
   const active = isInWishlist(product._id);
 
   return (

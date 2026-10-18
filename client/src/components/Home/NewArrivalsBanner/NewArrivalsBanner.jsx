@@ -65,7 +65,7 @@ export default function NewArrivalsBanner() {
   const goToPrevious = () => setPage((c) => Math.max(1, c - 1));
   const goToNext = () => setPage((c) => Math.min(totalPages, c + 1));
 
-  if (!loading && (!season || products.length === 0)) return null;
+  // if (!loading && (!season || products.length === 0)) return null;
 
   const isInitialLoad = loading && totalPages === 0;
 

@@ -403,6 +403,7 @@ export async function getActiveOffers(page = 1, limit = 1) {
     const data = json.data;
     const offersArray = json?.data?.offers || [];
     const activeOffer = offersArray.find(offer => offer.isActive === true) || null;
+    console.log(activeOffer);
 
     return {
       offer: activeOffer,

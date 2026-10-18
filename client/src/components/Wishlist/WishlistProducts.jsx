@@ -3,7 +3,7 @@ import { ProductsCard, EmptyWishlist } from "../../index";
 import { useWishlistContext } from "../../Context/WishlistProvider";
 
 export default function WishlistProducts() {
-    const {wishlist, loadingWishlist} = useWishlistContext();
+    const { wishlist, loadingWishlist} = useWishlistContext();
 
   return (
     <>

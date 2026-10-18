@@ -5,7 +5,7 @@ import { useProductContext } from "../../../Context/CartProvider";
 import { useLocale } from "next-intl";
 
 export default function ShowCard({showCard, product}) {
-    const {removeFromCart, addToStorage} = useProductContext();
+    const { removeFromCart, addToStorage} = useProductContext();
     const locale = useLocale();
     
     const handleAdd = () => {

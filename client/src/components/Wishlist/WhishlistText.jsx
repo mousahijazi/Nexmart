@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 export default function WhishlistText() {
     const t = useTranslations("wishlist");
     const locale = useLocale();
-    const {wishlist, resetWishlist, moveToCart} = useWishlistContext(); 
+    const { wishlist, resetWishlist, moveToCart } = useWishlistContext(); 
 
   return (
     <div className="flex items-end justify-between mb-6 gap-[14px] flex-wrap">

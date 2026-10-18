@@ -12,10 +12,10 @@ export default function WishlistProvider({children}) {
     const [loadingWishlist, setLoadingWishlist] = useState(true);
     const locale = useLocale();
 
-    const {showAlert} = useAlertContext();
-    const {user} = useUserContext();
-    const {setCart} = useProductContext();
-    const wishlistKey = user?.id ? `wishlist-${user.id}` : "wishlist-guest";
+    const { showAlert } = useAlertContext();
+    const { user } = useUserContext();
+    const { setCart, cart } = useProductContext();
+    const wishlistKey = user?._id ? `wishlist-${user._id}` : "wishlist-guest";
 
     useEffect(() => {
         setLoadingWishlist(true);
@@ -62,11 +62,36 @@ export default function WishlistProvider({children}) {
             return;
         }
 
-        setCart(prev => [...prev, ...wishlist]);
-        setWishlist([]);
+        const productsToMove = wishlist.filter(
+            wishItem => !cart.some(cartItem => cartItem._id === wishItem._id)
+        );
 
-        showAlert("Products moved successfully to cart");
-    }
+        setCart(prevCart => {
+            const updatedCart = [...prevCart];
+
+            productsToMove.forEach(wishItem => {
+                const exists = updatedCart.some(cartItem => cartItem._id === wishItem._id);
+
+                if (!exists) {
+                    updatedCart.push({ ...wishItem });
+                }
+            });
+
+            return updatedCart;
+        });
+
+        setWishlist(prevWishlist =>
+            prevWishlist.filter(wishItem =>
+                cart.some(cartItem => cartItem._id === wishItem._id)
+            )
+        );
+
+        if (productsToMove.length > 0) {
+            showAlert("Products moved successfully to cart");
+        } else {
+            showAlert("All products already exist in cart", "danger");
+        }
+    };
 
     const removeFromWishlist = (product) => {
         setWishlist(prev => prev.filter(item => item?._id !== product?._id));

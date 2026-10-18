@@ -9,9 +9,9 @@ const ProductsContext = createContext();
 export default function ProductProvider({children}) {
   const [cart, setCart] = useState([]);
   const [loadingCart, setLoadingCart] = useState(true)
-  const {showAlert} = useAlertContext();
-  const {user} = useUserContext();
-  const cartKey = user?.id ? `cart-${user.id}` : "cart-guest";
+  const { showAlert } = useAlertContext();
+  const { user } = useUserContext();
+  const cartKey = user?._id ? `cart-${user._id}` : "cart-guest";
   const locale = useLocale();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function ProductProvider({children}) {
       showAlert(`${product?.title?.[locale]} removed from cart`, "danger");
   };
 
-  let totalPrice = cart.reduce((total, product) => total + product?.price, 0);
+  let totalPrice = cart.reduce((total, product) => total + product?.pricing?.finalPrice, 0);
 
   const value = {
       cart, 

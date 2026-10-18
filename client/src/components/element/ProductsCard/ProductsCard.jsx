@@ -27,7 +27,7 @@ export default function ProductsCard({data, showCard = true}) {
                         <div className="absolute top-0 left-0 w-fit p-2 rounded-br-3xl flex items-center justify-between bg-[var(--color-green-dark)] dark:bg-[#0f2e25]">
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-base text-white">{product?.pricing?.finalPrice?.toFixed(2)}</span>
-                                {product?.pricing?.discount ? <span className="text-xs text-gray-300 line-through">{product?.pricing.discount.amount.toFixed(2)} <small className="text-xs">ر.س</small></span> : ""}
+                                {product?.pricing?.discount?.amount ? <span className="text-xs text-gray-300 line-through">{product?.pricing.discount.amount.toFixed(2)} <small className="text-xs">ر.س</small></span> : ""}
                             </div>
                         </div>
                         

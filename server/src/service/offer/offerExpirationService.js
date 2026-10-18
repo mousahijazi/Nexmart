@@ -3,29 +3,37 @@ import Offer from "../../model/Offer.js";
 const updateOffersStatus = async () => {
   const now = new Date();
 
-  const deactivateResult = await Offer.updateMany(
+  const expireResult = await Offer.updateMany(
     {
-      isActive: true,
       endDate: { $lte: now },
+      status: { $ne: "Expired" },
     },
     {
-      $set: { isActive: false },
+      $set: {
+        isActive: false,
+        status: "Expired",
+      },
     }
   );
 
   const activateResult = await Offer.updateMany(
     {
+      status: "Scheduled",
       isActive: false,
+      archivedBySeason: { $ne: true },
       startDate: { $lte: now },
       endDate: { $gt: now },
     },
     {
-      $set: { isActive: true },
+      $set: {
+        isActive: true,
+        status: "Active",
+      },
     }
   );
 
   return {
-    deactivatedCount: deactivateResult.modifiedCount,
+    expiredCount: expireResult.modifiedCount,
     activatedCount: activateResult.modifiedCount,
   };
 };

@@ -4,7 +4,7 @@ import { SUCCESS } from "../utils/httpStatusText.js";
 
 const priceCartController = asyncHandler(
     async (req, res) => {
-        const result = await priceCart(req.body.items);
+        const result = await priceCart(req.body.items, req.body.coupon);
 
         res.status(200).json({
             status: SUCCESS,

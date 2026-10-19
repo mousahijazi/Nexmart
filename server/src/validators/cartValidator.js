@@ -11,6 +11,15 @@ export const priceCartValidator = [
     .isArray({ min: 1, max: MAX_CART_ITEMS })
     .withMessage(`items must be an array of 1 to ${MAX_CART_ITEMS} elements`),
 
+  body("coupon")
+    .optional()
+    .isString()
+    .withMessage("Coupon must be a string")
+    .bail()
+    .trim()
+    .isLength({ max: 30 })
+    .withMessage("Coupon code is too long"),
+
   body("items.*.productId")
     .custom(isString)
     .withMessage("Invalid product ID")

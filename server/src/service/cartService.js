@@ -117,9 +117,7 @@ const priceCart = async (items, couponCode = "") => {
     },
     totals: {
       originalSubtotal: fromMinorUnits(originalSubtotalMinor),
-      discountTotal: fromMinorUnits(
-        originalSubtotalMinor - subtotalMinor
-      ),
+      discountTotal: fromMinorUnits(originalSubtotalMinor - subtotalMinor),
       subtotal: fromMinorUnits(subtotalMinor),
       tax: fromMinorUnits(taxMinor),
       shipping: fromMinorUnits(shippingMinor),

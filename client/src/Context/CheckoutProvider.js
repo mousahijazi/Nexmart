@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useUserContext } from "./UserProvider";
-import { getUserOrders } from "../helper/fetchApi";
+import { getUserOrders, fetchCartPricing } from "../helper/fetchApi";
 
 const CheckoutContext = createContext();
 const STORAGE_KEY = "checkout-items";
@@ -15,6 +15,10 @@ export default function CheckoutProvider({ children }) {
     const [orders, setOrders] = useState([]);
     const [ordersLoading, setOrdersLoading] = useState(true);
 
+    const [serverPricing, setServerPricing] = useState(null);
+    const [checkoutPricingLoading, setCheckoutPricingLoading] = useState(false);
+    const [checkoutPricingError, setCheckoutPricingError] = useState("");
+
     useEffect(() => {
         if (!user) {
             setOrders([]);
@@ -24,7 +28,7 @@ export default function CheckoutProvider({ children }) {
 
         setOrdersLoading(true);
 
-        getUserOrders(user.id)
+        getUserOrders(user._id)
             .then((result) => {
                 setOrders(result.orders || []);
             })
@@ -53,10 +57,50 @@ export default function CheckoutProvider({ children }) {
     }, [currentOrderId]);
 
     const [coupon, setCoupon] = useState("");
-    const [needShipping, setNeedShipping] = useState(true);
 
-    const SHIPPING_PRICE = 5.5;
-    const TAX_RATE = 0.10;
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        if (checkoutItems.length === 0) {
+            setServerPricing(null);
+            setCheckoutPricingError("");
+            return;
+        }
+
+        const controller = new AbortController();
+
+        const timer = setTimeout(async () => {
+            setCheckoutPricingLoading(true);
+            setCheckoutPricingError("");
+
+            try {
+                const items = checkoutItems.map((product) => ({
+                    productId: product._id,
+                    quantity: product.quantity || 1,
+                }));
+
+                const result = await fetchCartPricing(items, coupon, controller.signal);
+
+                if (!controller.signal.aborted) {
+                    setServerPricing(result);
+                }
+
+            } catch (error) {
+                if (error.name !== "AbortError") {
+                    setCheckoutPricingError(error.message);
+                }
+            } finally {
+                if (!controller.signal.aborted) {
+                    setCheckoutPricingLoading(false);
+                }
+            }
+        }, 250);
+
+        return () => {
+            clearTimeout(timer);
+            controller.abort();
+        };
+    }, [checkoutItems, coupon, isLoaded]);
 
     useEffect(() => {
         try {
@@ -103,34 +147,12 @@ export default function CheckoutProvider({ children }) {
         setCurrentOrderId(null)
     };
 
-    // Calculations
-    const subtotal = useMemo(() => {
-        return checkoutItems.reduce((total, product) => {
-            return total + product.price * (product.quantity || 1);
-        }, 0);
-    }, [checkoutItems]);
-
-    const totalItems = useMemo(() => {
-        return checkoutItems.reduce((total, product) => {
-            return total + (product.quantity || 1);
-        }, 0);
-    }, [checkoutItems]);
-
-    const shippingPrice = subtotal > 300 ? 0 : needShipping ? SHIPPING_PRICE : 0;
-    const taxes = subtotal * TAX_RATE;
-
-
-    const discountAmount = useMemo(() => {
-        const code = coupon.trim().toLowerCase();
-        switch (code) {
-            case "mousa":
-                return taxes;
-            default:
-                return 0;
-        }
-    }, [coupon, taxes]);
-
-    const grandTotal = subtotal + shippingPrice + taxes - discountAmount;
+    const subtotal = serverPricing?.totals?.subtotal ?? 0;
+    const shippingPrice = serverPricing?.totals?.shipping ?? 0;
+    const taxes = serverPricing?.totals?.tax ?? 0;
+    const discountAmount = serverPricing?.coupon?.discount ?? 0;
+    const grandTotal = serverPricing?.totals?.grandTotal ?? 0;
+    const totalItems = serverPricing?.items.length;
 
     const value = {
         checkoutItems,
@@ -148,8 +170,10 @@ export default function CheckoutProvider({ children }) {
         
         coupon,
         setCoupon,
-        needShipping,
-        setNeedShipping,
+
+        serverPricing,
+        checkoutPricingLoading,
+        checkoutPricingError,
 
         totalItems,
         subtotal,

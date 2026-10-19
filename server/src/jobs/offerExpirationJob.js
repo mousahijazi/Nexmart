@@ -4,9 +4,9 @@ import { updateOffersStatus } from "../service/offer/offerExpirationService.js";
 const startOfferExpirationJob = () => {
   cron.schedule("0 * * * *", async () => {
       try {
-        const { deactivatedCount, activatedCount } = await updateOffersStatus();
+        const { expiredCount, activatedCount } = await updateOffersStatus();
 
-        console.log(`[Offer Expiration Job] Deactivated ${deactivatedCount}, Activated: ${activatedCount}`);
+        console.log(`[Offer Expiration Job] Deactivated ${expiredCount}, Activated: ${activatedCount}`);
       } catch (error) {
         console.error("[Offer Expiration Job] Failed:", error.message);
       }

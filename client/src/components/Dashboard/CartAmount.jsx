@@ -4,10 +4,10 @@ import { useTranslations } from "next-intl";
 
 export default function CartAmount() {
     const t = useTranslations("cart");
-    const {totalPrice} = useProductContext();
+    const { totalPrice } = useProductContext();
 
-    const targetAmount = 300;
-    const remainingAmount = targetAmount - totalPrice;
+    const targetAmount = 200;
+    const remainingAmount = Math.max(0, targetAmount - totalPrice);
 
   return (
     <>

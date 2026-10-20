@@ -7,6 +7,8 @@ import reviewRoutes from "./reviewRoutes.js";
 import offerRoutes from "./offerRoutes.js";
 import seasonRoutes from "./seasonRoutes.js";
 import cartRoutes from "./cartRoutes.js";
+import orderRoutes from "./orderRoutes.js";
+import orderItemRoutes from "./orderItemRoutes.js";
 
 const router = express.Router();
 
@@ -22,5 +24,7 @@ router.use("/seasons", seasonRoutes);
 router.use("/offers", offerRoutes);
 
 router.use("/cart", cartRoutes);
+router.use("orders", orderRoutes);
+router.use("orders", orderItemRoutes);
 
 export default router;

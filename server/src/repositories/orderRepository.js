@@ -6,16 +6,16 @@ const createOrder = async (data, session) => {
 };
 
 const findOrderById = async (orderId, session) => {
-    return Order.findById(orderId).session(session || null);
+    return Order.findById(orderId).populate("totalItems").session(session || null);
 };
 
 const findUserOrderById = async (orderId, userId, session) => {
-    return Order.findOne({ _id: orderId, user: userId }).session(session || null);
+    return Order.findOne({ _id: orderId, user: userId }).populate("totalItems").session(session || null);
 };
 
 const findOrdersByUser = async (userId, { page, limit }) => {
     return Order.find({ user: userId })
-        .sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean();
+        .sort({ createdAt: -1 }).populate("totalItems").skip((page - 1) * limit).limit(limit).lean();
 };
 
 const countUserOrders = async (userId) => {
@@ -31,7 +31,7 @@ const updateOrderById = async (orderId, update, session) => {
             runValidators: true,
             session,
         }
-    );
+    ).populate("totalItems");
 };
 
 export {

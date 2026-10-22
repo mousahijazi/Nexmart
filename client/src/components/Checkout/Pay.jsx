@@ -6,14 +6,14 @@ import { useCheckoutContext } from "../../Context/CheckoutProvider";
 import { useUserContext } from "../../Context/UserProvider";
 import { useAlertContext } from "../../Context/AlertProvider";
 import { PaymentForm, PaymentSummary, PaymentTestNotice } from "../../index"; 
-import { getOrderById, updateOrderPaymentStatus } from "../../helper/fetchApi";
+import { getBackendOrderById, getBackendOrderItems } from "../../helper/fetchApi";
 
 export default function Pay() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { currentOrderId, clearCheckout, setOrders } = useCheckoutContext();
     const { user, loading } = useUserContext();
-    const {showAlert} = useAlertContext();
+    const { showAlert } = useAlertContext();
     const [order, setOrder] = useState(null);
     const [loadingPay, setLoadingPay] = useState(true);
     const hasFinishedRef = useRef(false);
@@ -43,12 +43,24 @@ export default function Pay() {
 
         const processPayPage = async () => {
             setLoadingPay(true);
-            try {
-                const orderResult = await getOrderById(targetOrderId, user.id);
-                const currentOrderData = orderResult.success ? orderResult.order : null;
-                setOrder(currentOrderData);
 
-                if (!currentOrderData) {
+            try {
+                const token = localStorage.getItem("nexmart-token");
+                if (!token) {
+                    throw new Error("Authentication token not found");
+                }
+
+                const orderData = await getBackendOrderById(targetOrderId, token);
+                const itemsData = await getBackendOrderItems(targetOrderId, token);
+
+                const fullOrder = {
+                    ...(orderData.order || orderData),
+                    items: itemsData.items || itemsData || []
+                };
+
+                setOrder(fullOrder);
+
+                if (!fullOrder) {
                     showAlert("Order not found.", "danger");
                     router.push("/user");
                     return;
@@ -64,12 +76,11 @@ export default function Pay() {
 
                     if (verifyResult.success && verifyResult.payment?.status === "paid") {
                         hasFinishedRef.current = true;
-                        await updateOrderPaymentStatus(targetOrderId, user.id, "paid", paymentId);
-
+                        
                         setOrders((prevOrders) =>
-                            (prevOrders).map((ord) =>
-                                ord.id === targetOrderId
-                                    ? { ...ord, payment_status: "paid", payment_id: paymentId }
+                            (prevOrders || []).map((ord) =>
+                                (ord._id === targetOrderId || ord.id === targetOrderId)
+                                    ? { ...ord, paymentStatus: "paid", paymentId: paymentId }
                                     : ord
                             )
                         );
@@ -80,21 +91,12 @@ export default function Pay() {
                         return;
                     } else {
                         hasFinishedRef.current = true;
-                        await updateOrderPaymentStatus(targetOrderId, user.id, "failed", paymentId);
-
-                        setOrders((prevOrders) =>
-                            (prevOrders).map((ord) =>
-                                ord.id === targetOrderId
-                                    ? { ...ord, payment_status: "failed", payment_id: paymentId }
-                                    : ord
-                            )
-                        );
-
                         showAlert("Payment verification failed or declined.", "danger");
                     }
                 }
             } catch (err) {
                 console.error("Pay page error:", err);
+                showAlert("Could not load order details.", "danger");
             } finally {
                 setLoadingPay(false);
             }

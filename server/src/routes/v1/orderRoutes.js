@@ -1,6 +1,6 @@
 import express from "express";
 import { authToken } from "../../middlewares/auth.js"; 
-import { createOrderController, getMyOrdersController, getMyOrderByIdController, updateMyOrderController, cancelMyOrderController } from "../../controllers/orderController.js";
+import { createOrderController, getMyOrdersController, getMyOrderByIdController, updateMyOrderController, cancelMyOrderController, replaceMyOrderItemsController } from "../../controllers/orderController.js";
 
 const router = express.Router();
 
@@ -16,5 +16,8 @@ router.route("/:orderId")
     .get(getMyOrderByIdController)
     .patch(updateMyOrderController)
     .delete(cancelMyOrderController);
+
+router.route("/:orderId/items")
+    .patch(replaceMyOrderItemsController);
 
 export default router;

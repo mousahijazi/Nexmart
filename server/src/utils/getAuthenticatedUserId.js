@@ -7,7 +7,7 @@ const getAuthenticatedUserId = (currentUser) => {
         throw AppError.create("Authentication is required", 401, ERROR);
     }
 
-    const userId = currentUser._id ?? currentUser.userId;
+    const userId = currentUser.id ?? currentUser.userId ?? currentUser._id;
 
     if (typeof userId !== "string" || !mongoose.Types.ObjectId.isValid(userId) || !/^[a-f\d]{24}$/i.test(userId)) {
         throw AppError.create("Invalid authenticated user ID", 401, ERROR);

@@ -162,6 +162,7 @@ export default function ProductProvider({ children }) {
   const totalPrice = cartPricing?.totals?.subtotal ?? 0;
   const subtotal = cartPricing?.totals?.subtotal ?? 0;
   const taxes = cartPricing?.totals?.tax ?? 0;
+  const shipping = cartPricing?.totals?.shipping ?? 0;
   const grandTotal = cartPricing?.totals?.grandTotal ?? 0;
 
   const value = {
@@ -180,6 +181,7 @@ export default function ProductProvider({ children }) {
     totalPrice,
     subtotal,
     taxes,
+    shipping,
     grandTotal,
   };
 

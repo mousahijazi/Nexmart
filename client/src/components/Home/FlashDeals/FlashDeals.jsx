@@ -68,7 +68,6 @@ export default function FlashDeals() {
 
   if (error) return null;
   if (!loading && (!offer || products.length === 0 || totalPages === 0)) return null;
-  console.log(products)
 
   const isInitialLoad = loading && totalPages === 0;
   const isProductOffer = offer?.targetType === "product";

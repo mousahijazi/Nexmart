@@ -4,29 +4,39 @@ import { Text, Coupon } from "../../index";
 import { useLocale, useTranslations } from "next-intl";
 
 export default function CheckoutData() {
-  const { subtotal, shippingPrice, taxes, grandTotal, totalItems } = useCheckoutContext();
+  const { subtotal, shippingPrice, taxes, discountAmount, grandTotal, totalItems, checkoutPricingLoading, checkoutPricingError } = useCheckoutContext();
   const locale = useLocale();
   const t = useTranslations();
 
   const ItemsData = [
     {
+        id: "subtotal-item",
         type: "normal",
         text: t("checkout.addressPage.data.itemsData.items", {totalItems: totalItems}),
         value: subtotal.toFixed(2),
     },
     {
+        id: "taxes-item",
         type: "normal",
         text: t("checkout.addressPage.data.itemsData.taxes"),
         value: taxes.toFixed(2),
     },
     {
+        id: "shipping-item",
         type: "shipping",
         text: t("checkout.addressPage.data.itemsData.shipping.title"),
         value: shippingPrice.toFixed(2),
     },
     {
+        id: "coupon-item",
         type: "coupon",
         text: t("checkout.addressPage.data.itemsData.coupon.title"),
+    },
+    {
+        id: "discount-item",
+        type: "normal",
+        text: "Discount amount",
+        value: discountAmount.toFixed(2),
     },
   ];
     
@@ -34,11 +44,16 @@ export default function CheckoutData() {
     <div dir={locale === "ar" ? "rtl" : "ltr"} className="px-3 min-[480px]:px-6 py-8">
         <div className="py-5 text-[var(--color-soft-2)] dark:text-[var(--color-soft)]">
             <h1 className="text-xl font-bold text-[var(--color-green)] dark:text-[var(--color-gold)]">{t("checkout.addressPage.data.title")}</h1>
+            
+            {checkoutPricingError && (
+                <p className="mt-2 text-xs text-red-500">{checkoutPricingError}</p>
+            )}
+            
             <div className="mt-3 flex flex-col gap-3">
                 {ItemsData.map((ele) => {
                     if (ele.type === "shipping") {
                         return (
-                            <div key={ele.text} className="py-3 flex max-[480px]:flex-col min-[480px]:items-center justify-between gap-3">
+                            <div key={ele.id} className="py-3 flex max-[480px]:flex-col min-[480px]:items-center justify-between gap-3">
                                 <div>
                                     <p className="font-semibold">{t("checkout.addressPage.data.itemsData.shipping.title")}</p>
                                     {subtotal > 200 
@@ -47,18 +62,11 @@ export default function CheckoutData() {
                                     }
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <span>${ele.value}</span>
-                                    {/* <div className="flex items-center gap-3">
-                                        <label htmlFor={ele.text} className="text-sm font-bold tracking-widest text-[var(--color-green)]/90 dark:text-[var(--color-gold)] uppercase">{t("checkout.addressPage.data.itemsData.shipping.label")}</label>
-                                        <input
-                                            id={ele.text}
-                                            type="checkbox"
-                                            disabled={subtotal > 300}
-                                            checked={needShipping}
-                                            className="w-5 h-5 rounded accent-[var(--color-green)] cursor-pointer"
-                                            onChange={(e) => setNeedShipping(e.target.checked)}
-                                        />
-                                    </div>   */}
+                                    {checkoutPricingLoading ? (
+                                        <div className="w-16 h-5 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+                                    ) : (
+                                        <span>${ele.value}</span>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -66,14 +74,20 @@ export default function CheckoutData() {
 
                     if (ele.type === "coupon") {
                         return (
-                            <Coupon />
+                            <div key={ele.id}>
+                                <Coupon />
+                            </div>
                         );
                     }
 
                     return (
-                        <div key={ele.text} className="flex justify-between items-center">
+                        <div key={ele.id} className="flex justify-between items-center">
                             <h2 className="font-semibold">{ele.text}</h2>
-                            <p>${ele.value}</p>
+                            {checkoutPricingLoading ? (
+                                <div className="w-16 h-5 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+                            ) : (
+                                <p>${ele.value}</p>
+                            )}
                         </div>
                     );
                 })}
@@ -81,7 +95,13 @@ export default function CheckoutData() {
         </div>
         <div className="pt-5 border-t-2 border-t-[var(--color-muted-3)] flex items-center justify-between">
             <h1 className="text-xl font-bold text-[var(--color-green)] dark:text-[var(--color-gold)]">{t("checkout.addressPage.data.itemsData.total")}</h1>
-            <p className="text-[var(--color-soft-2)] dark:text-[var(--color-soft)]">{grandTotal.toFixed(2)} {" "} ر.س</p>
+            {checkoutPricingLoading ? (
+                <div className="w-20 h-6 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+            ) : (
+                <p className="text-[var(--color-soft-2)] dark:text-[var(--color-soft)] font-bold">
+                    {grandTotal.toFixed(2)} {" "} ر.س
+                </p>
+            )}
         </div>
         <div className="hidden lg:block mt-12">
             <Text />

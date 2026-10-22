@@ -7,7 +7,7 @@ export default function OrderSummaryRow({isPaid, isPending, isFailed, order, goT
   return (
     <>
         <div className="text-[var(--color-muted)] dark:text-gray-400">
-            {new Date(order.created_at).toLocaleDateString(
+            {new Date(order.createdAt).toLocaleDateString(
                 locale === "ar" ? "ar" : "en-US"
             )}
         </div>
@@ -44,7 +44,7 @@ export default function OrderSummaryRow({isPaid, isPending, isFailed, order, goT
             {isFailed && (
                 <button
                     type="button"
-                    onClick={() => goToPayment(order.id)}
+                    onClick={() => goToPayment(order._id)}
                     className="
                         inline-block
                         text-[12.5px]
@@ -65,7 +65,7 @@ export default function OrderSummaryRow({isPaid, isPending, isFailed, order, goT
             )}
         </div>
         <div className="font-bold text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">
-            {order.total_price.toFixed(2)} 
+            {order.totalPrice.toFixed(2)} 
             <span className={`text-xs ${locale === "ar" ? "mr-2" : "ml-2"}`}>ر.س</span>
         </div>
     </>

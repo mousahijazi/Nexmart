@@ -56,16 +56,16 @@ export default function PaymentSummary({order, loading}) {
     
     const orderData = [
         {
-            text: t("profile.orders.data.order"),
-            value: `#${order.id.slice(0, 8)}`,
+            text: "order ID",
+            value: `#${order._id.slice(0, 8)}`,
         },
         {
             text: t("checkout.payPage.data.itemsLabel"),
-            value: order.order_items.length,
+            value: order.totalItems.length,
         },
         {
             text: t("checkout.payPage.data.shippingTo"),
-            value: order.city,
+            value: order.shippingInfo.city,
         },
     ];
 
@@ -84,7 +84,9 @@ export default function PaymentSummary({order, loading}) {
                 <div className="pt-4 border-t-2 border-t-[var(--color-divider)] dark:border-t-[var(--color-divider)] flex justify-between items-center">
                     <span className="font-bold text-[var(--color-green)] dark:text-[var(--color-gold-light)]">{t("checkout.addressPage.data.itemsData.total")}</span>
                     <span className="text-xl font-extrabold text-[var(--color-green)] dark:text-[var(--color-gold-light)]">
-                        ${order.total_price.toFixed(2)}
+                        {order.totalPrice.toFixed(2)}
+                        {" "}
+                        SAR
                     </span>
                 </div>
             </div>

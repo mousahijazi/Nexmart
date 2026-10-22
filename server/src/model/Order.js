@@ -121,8 +121,27 @@ const orderSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
+
+        toJSON: {
+            virtuals: true,
+            transform: function (doc, ret) {
+                delete ret.id;
+                return ret;
+            },
+        },
+
+        toObject: {
+            virtuals: true,
+        },
     }
 );
+
+orderSchema.virtual("totalItems", {
+    ref: "OrderItem",
+    localField: "_id",
+    foreignField: "order",
+    count: true,
+});
 
 orderSchema.index({ user: 1, createdAt: -1 });
 

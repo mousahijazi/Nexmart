@@ -10,7 +10,7 @@ export default function StatsSection() {
     const { orders, ordersLoading } = useCheckoutContext();
 
     const activeOrdersCount = orders?.filter(
-        (order) => order.payment_status === "pending" || order.payment_status === "paid"
+        (order) => order.paymentStatus === "pending" || order.paymentStatus === "paid"
     ).length || 0;
 
     const totalOrdersCount = orders?.length || 0;

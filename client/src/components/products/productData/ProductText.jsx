@@ -19,7 +19,7 @@ export default function ProductText({data}) {
                 </span> 
                 {data?.pricing?.discount?.amount  
                     ? <span className="text-lg line-through text-[var(--color-muted)] dark:text-gray-500"> 
-                            ${data.pricing?.discount?.amount} 
+                            ${data.pricing?.discount?.amount.toFixed(2)} 
                         </span> 
                     : "" 
                 } 

@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
  
 export default function CartDashboardData() { 
     const t = useTranslations(); 
-    const { cart, totalPrice, grandTotal, taxes } = useProductContext(); 
+    const { cart, totalPrice, grandTotal, taxes, shipping } = useProductContext(); 
  
     const categoriesCount = new Set(cart.map(product => product.category)).size; 
     const totalItems = cart.reduce((total, product) => total + (product.quantity || 1), 0);
@@ -25,6 +25,10 @@ export default function CartDashboardData() {
         { 
             title: "Taxes", 
             value: `${taxes.toFixed(2)}`, 
+        }, 
+        { 
+            title: "Shipping", 
+            value: `${shipping.toFixed(2)}`, 
         }, 
         { 
             title: t("cart.cartDashboard.dashboardData.total"), 

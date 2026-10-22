@@ -429,7 +429,6 @@ export async function getActiveOffers(page = 1, limit = 1) {
     const data = json.data;
     const offersArray = json?.data?.offers || [];
     const activeOffer = offersArray.find(offer => offer.isActive === true) || null;
-    console.log(activeOffer);
 
     return {
       offer: activeOffer,
@@ -1314,103 +1313,99 @@ export async function subscribeToNewsletter(email) {
   }
 }
 
-// create order
-export async function createOrder({ userId, shippingInfo, needShipping, grandTotal }) {
-    const { data: orderData, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-            user_id: userId,
-            payment_status: "pending",
-            total_price: grandTotal,
-            shipping_address: needShipping
-                ? `${shippingInfo.address}, ${shippingInfo.city}`
-                : "No shipping",
-            phone: shippingInfo.phone,
-            notes: shippingInfo.notes || null,
-            full_name: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
-            city: shippingInfo.city,
-            address: shippingInfo.address,
-        })
-        .select()
-        .single();
+// checkout - order | payment
+async function orderApiRequest(path, { method = "GET", token, body, signal } = {}) {
+  if (!token) {
+    throw new Error("You must log in to manage orders");
+  }
 
-    if (orderError) {
-        return { success: false, message: orderError.message };
+  const response = await fetch(`${API_URL}${path}`,
+    {
+      method,
+      headers: {
+          Authorization: `Bearer ${token}`,
+          ...(body ? { "Content-Type": "application/json" } : {}),
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+      signal,
     }
+  );
 
-    return { success: true, order: orderData };
+  let payload;
+
+  try {
+    payload = await response.json();
+  } catch {
+    throw new Error("The server returned an invalid response");
+  }
+
+  if (!response.ok) {
+    throw new Error(payload?.message || payload?.data?.message || `Request failed with status ${response.status}`);
+  }
+
+  return payload?.data ?? payload;
 }
 
-// create order items
-export async function createOrderItems(orderId, checkoutItems) {
-    const orderItemsPayload = checkoutItems.map((item) => ({
-        order_id: orderId,
-        product_id: item.id,
-        product_title: item.title,
-        thumbnail: item.thumbnail || null,
-        price: item.price,
+export async function createBackendOrder({ token, shippingInfo, items, coupon }) {
+  return orderApiRequest("/api/v1/orders", {
+    method: "POST",
+    token,
+    body: {
+      shippingInfo,
+      items: items.map((item) => ({
+        productId: item.productId ?? item._id,
         quantity: item.quantity || 1,
-        subtotal: item.price * (item.quantity || 1),
-    }));
+      })),
 
-    const { data, error } = await supabase
-        .from("order_items")
-        .insert(orderItemsPayload);
-
-    if (error) {
-        return { success: false, message: error.message };
-    }
-
-    return { success: true, items: data };
+      coupon: coupon?.trim().toLowerCase() || "",
+    },
+  });
 }
 
-// get user orders
-export async function getUserOrders(userId) {
-    const { data, error } = await supabase
-        .from("orders")
-        .select("*, order_items(*)")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        return { success: false, orders: [] };
-    }
-
-    return { success: true, orders: data };
+export async function getBackendMyOrders(token, { page = 1, limit = 10 } = {}) {
+  return orderApiRequest(`/api/v1/orders/my?page=${page}&limit=${limit}`, { token });
 }
 
-// get order by id 
-export async function getOrderById(orderId, userId) {
-    const { data, error } = await supabase
-        .from("orders")
-        .select("*, order_items(*)")
-        .eq("id", orderId)
-        .eq("user_id", userId)
-        .single();
-
-    if (error || !data) {
-        return { success: false };
-    }
-
-    return { success: true, order: data };
+export async function getBackendOrderById(orderId, token) {
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}`, { token });
 }
 
-// update order
-export async function updateOrderPaymentStatus(orderId, userId, status, paymentId = null) {
-    const { data, error } = await supabase
-        .from("orders")
-        .update({ payment_status: status, payment_id: paymentId })
-        .eq("id", orderId)
-        .eq("user_id", userId)
-        .select()
-        .single();
-
-    if (error) {
-        return { success: false, message: error.message };
-    }
-
-    return { success: true, order: data };
+export async function getBackendOrderItems(orderId, token) {
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}/items`, { token });
 }
+
+export async function updateBackendOrder(orderId, shippingInfo, token) {
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}`,
+    {
+      method: "PATCH",
+      token,
+      body: { shippingInfo },
+    }
+  );
+}
+
+export async function replaceBackendOrderItems(orderId, items, coupon, token) {
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}/items`,
+    {
+      method: "PATCH",
+      token,
+      body: {
+        items: items.map((item) => ({
+          productId: item.productId ?? item._id,
+          quantity: item.quantity || 1,
+        })),
+
+        coupon: coupon?.trim().toLowerCase() || "",
+      },
+    }
+  );
+}
+
+export async function cancelBackendOrder(orderId, token) {
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}`, { method: "DELETE", token });
+}
+
+
 
 // create pay
 export async function createMoyasarPayment(paymentData) {

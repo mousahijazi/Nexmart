@@ -10,9 +10,21 @@ const INITIAL_VISIBLE = 4;
 
 export default function CheckoutItems() {
     const t = useTranslations();
-    const { checkoutItems } = useCheckoutContext();
+    const { checkoutItems, serverPricing, checkoutPricingLoading } = useCheckoutContext();
     const [showAll, setShowAll] = useState(false);
     const locale = useLocale();
+
+    const getProductPrice = (product) => {
+        const productId = String(product._id ?? product.productId ?? product.id);
+
+        const pricedItem = serverPricing?.items?.find((item) => {
+            const pricedProductId = String(item.productId ?? item._id ?? item.product);
+
+            return pricedProductId === productId;
+        });
+
+        return pricedItem?.pricing?.finalPrice ?? null;
+    };
 
     if (checkoutItems.length === 0) return null;
 
@@ -40,9 +52,12 @@ export default function CheckoutItems() {
                             </p>
                         </div>
                         <span className="text-sm font-bold text-[var(--color-green)] dark:text-[var(--color-gold)]">
-                            {item?.pricing?.finalPrice.toFixed(2)}
-                            {" "}
-                            ر.س
+                            {checkoutPricingLoading
+                                ? "Calculating..."
+                                : getProductPrice(item) !== null
+                                    ? `${Number(getProductPrice(item)).toFixed(2)} SAR`
+                                    : "Price unavailable"
+                            }
                         </span>
                     </div>
                 ))}

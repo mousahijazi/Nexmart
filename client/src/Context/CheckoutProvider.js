@@ -1,115 +1,47 @@
 "use client";
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useUserContext } from "./UserProvider";
-import { getUserOrders, fetchCartPricing } from "../helper/fetchApi";
+import { getBackendMyOrders, fetchCartPricing } from "../helper/fetchApi";
 
 const CheckoutContext = createContext();
+
 const STORAGE_KEY = "checkout-items";
+const ORDER_STORAGE_KEY = "current-order-id";
 
 export default function CheckoutProvider({ children }) {
     const [checkoutItems, setCheckoutItems] = useState([]);
     const [currentOrderId, setCurrentOrderId] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const {user} = useUserContext();
+    const { user, loading: userLoading } = useUserContext();
     const [orders, setOrders] = useState([]);
     const [ordersLoading, setOrdersLoading] = useState(true);
+    const [ordersError, setOrdersError] = useState("");
 
     const [serverPricing, setServerPricing] = useState(null);
     const [checkoutPricingLoading, setCheckoutPricingLoading] = useState(false);
     const [checkoutPricingError, setCheckoutPricingError] = useState("");
 
-    useEffect(() => {
-        if (!user) {
-            setOrders([]);
-            setOrdersLoading(true);
-            return;
-        }
-
-        setOrdersLoading(true);
-
-        getUserOrders(user._id)
-            .then((result) => {
-                setOrders(result.orders || []);
-            })
-            .catch((error) => {
-                console.error("Failed to fetch orders:", error);
-                setOrders([]);
-            })
-            .finally(() => {
-                setOrdersLoading(false);
-            });
-    }, [user]);
-
-    useEffect(() => {
-        const stored = sessionStorage.getItem("current-order-id");
-        if (stored) {
-            setCurrentOrderId(stored);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (currentOrderId) {
-            sessionStorage.setItem("current-order-id", currentOrderId);
-        } else {
-            sessionStorage.removeItem("current-order-id");
-        }
-    }, [currentOrderId]);
-
     const [coupon, setCoupon] = useState("");
 
     useEffect(() => {
-        if (!isLoaded) return;
+        try {
+            const storedItems = sessionStorage.getItem(STORAGE_KEY);
+            const storedOrderId = sessionStorage.getItem(ORDER_STORAGE_KEY);
 
-        if (checkoutItems.length === 0) {
-            setServerPricing(null);
-            setCheckoutPricingError("");
-            return;
-        }
+            if (storedItems) {
+                const parsedItems = JSON.parse(storedItems);
 
-        const controller = new AbortController();
-
-        const timer = setTimeout(async () => {
-            setCheckoutPricingLoading(true);
-            setCheckoutPricingError("");
-
-            try {
-                const items = checkoutItems.map((product) => ({
-                    productId: product._id,
-                    quantity: product.quantity || 1,
-                }));
-
-                const result = await fetchCartPricing(items, coupon, controller.signal);
-
-                if (!controller.signal.aborted) {
-                    setServerPricing(result);
-                }
-
-            } catch (error) {
-                if (error.name !== "AbortError") {
-                    setCheckoutPricingError(error.message);
-                }
-            } finally {
-                if (!controller.signal.aborted) {
-                    setCheckoutPricingLoading(false);
+                if (Array.isArray(parsedItems)) {
+                    setCheckoutItems(parsedItems);
                 }
             }
-        }, 250);
 
-        return () => {
-            clearTimeout(timer);
-            controller.abort();
-        };
-    }, [checkoutItems, coupon, isLoaded]);
-
-    useEffect(() => {
-        try {
-            const stored = sessionStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                setCheckoutItems(JSON.parse(stored));
+            if (storedOrderId) {
+                setCurrentOrderId(storedOrderId);
             }
         } catch (error) {
-            console.error("Failed to load checkout items:", error);
+            console.error("Could not restore checkout data:", error);
         } finally {
             setIsLoaded(true);
         }
@@ -125,6 +57,107 @@ export default function CheckoutProvider({ children }) {
         }
     }, [checkoutItems, isLoaded]);
 
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        if (currentOrderId) {
+            sessionStorage.setItem(ORDER_STORAGE_KEY, currentOrderId);
+        } else {
+            sessionStorage.removeItem(ORDER_STORAGE_KEY);
+        }
+    }, [currentOrderId, isLoaded]);
+
+    useEffect(() => {
+        if (userLoading) return;
+
+        if (!user) {
+            setOrders([]);
+            setOrdersError("");
+            setOrdersLoading(false);
+            return;
+        }
+
+        let cancelled = false;
+
+        async function loadOrders() {
+            setOrdersLoading(true);
+            setOrdersError("");
+
+            try {
+                const token = localStorage.getItem("nexmart-token");
+
+                if (!token) {
+                    throw new Error("You must log in to view your orders");
+                }
+
+                const result = await getBackendMyOrders(token);
+
+                if (!cancelled) {
+                    setOrders(result.orders || []);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    setOrdersError(error.message || "Could not load orders");
+                    setOrders([]);
+                }
+            } finally {
+                if (!cancelled) {
+                    setOrdersLoading(false);
+                }
+            }
+        }
+
+        loadOrders();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [user, userLoading]);
+
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        if (checkoutItems.length === 0) {
+            setServerPricing(null);
+            setCheckoutPricingError("");
+            setCheckoutPricingLoading(false);
+            return;
+        }
+
+        const controller = new AbortController();
+
+        const timer = setTimeout(async () => {
+            setCheckoutPricingLoading(true);
+            setCheckoutPricingError("");
+
+            try {
+                const items = checkoutItems.map((product) => ({
+                    productId: String(product._id ?? product.productId ?? product.id),
+                    quantity: Number(product.quantity || 1),
+                }));
+
+                const result = await fetchCartPricing(items, coupon, controller.signal);
+
+                if (!controller.signal.aborted) {
+                    setServerPricing(result);
+                }
+            } catch (error) {
+                if (!controller.signal.aborted && error.name !== "AbortError") {
+                    setCheckoutPricingError(error.message);
+                }
+            } finally {
+                if (!controller.signal.aborted) {
+                    setCheckoutPricingLoading(false);
+                }
+            }
+        }, 250);
+
+        return () => {
+            clearTimeout(timer);
+            controller.abort();
+        };
+    }, [checkoutItems, coupon, isLoaded]);
+
     const checkoutSingleProduct = (product, quantity = 1) => {
         if (!product) return;
 
@@ -137,37 +170,47 @@ export default function CheckoutProvider({ children }) {
     };
 
     const checkoutCart = (cartProducts) => {
-        if (!cartProducts || cartProducts.length === 0) return;
+        if (!Array.isArray(cartProducts) || cartProducts.length === 0) {
+            return;
+        }
 
         setCheckoutItems(cartProducts);
     };
 
     const clearCheckout = () => {
         setCheckoutItems([]);
-        setCurrentOrderId(null)
+        setCurrentOrderId(null);
+        setCoupon("");
+        setServerPricing(null);
+        setCheckoutPricingError("");
     };
+
+    const totalItems = useMemo(() => 
+        checkoutItems.reduce((total, item) => total + Number(item.quantity || 1), 0), [checkoutItems]
+    );
 
     const subtotal = serverPricing?.totals?.subtotal ?? 0;
     const shippingPrice = serverPricing?.totals?.shipping ?? 0;
     const taxes = serverPricing?.totals?.tax ?? 0;
     const discountAmount = serverPricing?.coupon?.discount ?? 0;
     const grandTotal = serverPricing?.totals?.grandTotal ?? 0;
-    const totalItems = serverPricing?.items.length;
 
     const value = {
         checkoutItems,
         setCheckoutItems,
+
         currentOrderId,
         setCurrentOrderId,
 
         orders,
         setOrders,
         ordersLoading,
+        ordersError,
 
         checkoutSingleProduct,
         checkoutCart,
         clearCheckout,
-        
+
         coupon,
         setCoupon,
 

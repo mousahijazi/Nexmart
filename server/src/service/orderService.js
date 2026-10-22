@@ -6,7 +6,7 @@ import { priceCart } from "./cartService.js";
 import { toMinorUnits, fromMinorUnits } from "../utils/moneyUtils.js";
 import getAuthenticatedUserId from "../utils/getAuthenticatedUserId.js";
 import { createOrder, findUserOrderById, findOrdersByUser, countUserOrders } from "../repositories/orderRepository.js";
-import { createOrderItems, findItemsByOrderId } from "../repositories/orderItemRepository.js";
+import { createOrderItems, findItemsByOrderId, deleteItemsByOrderId } from "../repositories/orderItemRepository.js";
 
 const SHIPPING_PRICE_MINOR = 1500;
 const FREE_SHIPPING_THRESHOLD_MINOR = 20000;
@@ -91,6 +91,95 @@ const calculatePricing = async (items, couponInput = "") => {
     };
 };
 
+const replaceMyOrderItemsService = async (currentUser, orderId, body) => {
+    const userId = getAuthenticatedUserId(currentUser);
+
+    if (!mongoose.isValidObjectId(orderId)) {
+        throw AppError.create("Invalid order ID", 400, FAIL);
+    }
+
+    const pricing = await calculatePricing(body.items, body.coupon);
+
+    const session = await mongoose.startSession();
+    let updatedOrder;
+
+    try {
+        await session.withTransaction(async () => {
+            const order = await findUserOrderById(orderId, userId, session);
+
+            if (!order) {
+                throw AppError.create("Order not found", 404, ERROR);
+            }
+
+            if (order.orderStatus !== "pending" || order.paymentStatus !== "pending") {
+                throw AppError.create("Only pending unpaid orders can be edited", 409, FAIL);
+            }
+
+            const oldItems = await findItemsByOrderId(order._id, session);
+
+            for (const item of oldItems) {
+                await Product.updateOne(
+                    { _id: item.product },
+                    { $inc: { stock: item.quantity } },
+                    { session }
+                );
+            }
+
+            for (const item of pricing.pricedCart.items) {
+                const stockResult = await Product.updateOne(
+                    {
+                        _id: item.productId,
+                        stock: { $gte: item.quantity },
+                        isActive: true,
+                        archivedByCategory: { $ne: true },
+                        archivedByBrand: { $ne: true },
+                    },
+                    { $inc: { stock: -item.quantity } },
+                    { session }
+                );
+
+                if (stockResult.modifiedCount !== 1) {
+                    throw AppError.create(`Insufficient stock for product ${item.productId}`, 409, FAIL);
+                }
+            }
+
+            await deleteItemsByOrderId(order._id, session);
+
+            const newItems = pricing.pricedCart.items.map((item) => ({
+                order: order._id,
+                product: item.productId,
+                productTitle: item.title,
+                thumbnail: item.mainImage || null,
+                price: item.pricing.finalPrice,
+                quantity: item.quantity,
+                subtotal: item.lineTotal,
+            }));
+
+            await createOrderItems(newItems, session);
+
+            order.subtotal = pricing.subtotal;
+            order.tax = pricing.tax;
+            order.shipping = pricing.shipping;
+            order.couponCode = pricing.couponCode;
+            order.discount = pricing.discount;
+            order.totalPrice = pricing.totalPrice;
+
+            await order.save({ session });
+
+            updatedOrder = order;
+        });
+    } finally {
+        await session.endSession();
+    }
+
+    const items = await findItemsByOrderId(updatedOrder._id);
+
+    return {
+        order: updatedOrder,
+        items,
+    };
+};
+
 const createOrderService = async (currentUser, body) => {
     const userId = getAuthenticatedUserId(currentUser);
     const shippingInfo = normalizeShippingInfo(body.shippingInfo);
@@ -122,7 +211,7 @@ const createOrderService = async (currentUser, body) => {
                 }
             }
 
-            const [order] = await OrderCreateInTransaction(
+            const order = await OrderCreateInTransaction(
                 {
                     user: userId,
                     shippingInfo,
@@ -272,5 +361,6 @@ export {
     getMyOrdersService,
     getMyOrderByIdService,
     updateMyOrderService,
+    replaceMyOrderItemsService,
     cancelMyOrderService,
 };

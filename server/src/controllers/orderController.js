@@ -1,6 +1,6 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import { SUCCESS } from "../utils/httpStatusText.js";
-import { createOrderService, getMyOrdersService, getMyOrderByIdService, updateMyOrderService, cancelMyOrderService } from "../service/orderService.js";
+import { createOrderService, getMyOrdersService, getMyOrderByIdService, updateMyOrderService, cancelMyOrderService, replaceMyOrderItemsService } from "../service/orderService.js";
 
 const createOrderController = asyncHandler(async (req, res) => {
     const result = await createOrderService(req.currentUser, req.body);
@@ -47,10 +47,20 @@ const cancelMyOrderController = asyncHandler(async (req, res) => {
     });
 });
 
+const replaceMyOrderItemsController = asyncHandler(async (req, res) => {
+    const result = await replaceMyOrderItemsService(req.currentUser, req.params.orderId, req.body);
+
+    res.status(200).json({
+        status: SUCCESS,
+        data: result,
+    });
+});
+
 export {
     createOrderController,
     getMyOrdersController,
     getMyOrderByIdController,
     updateMyOrderController,
     cancelMyOrderController,
+    replaceMyOrderItemsController,
 };

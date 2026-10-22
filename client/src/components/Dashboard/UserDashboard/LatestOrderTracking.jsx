@@ -61,10 +61,10 @@ export default function LatestOrderTracking() {
 
   const latestOrder = orders[0];
   const dateFormatter = new Intl.DateTimeFormat(locale === "ar" ? "ar" : "en-US");
-  const time = dateFormatter.format(new Date(latestOrder.created_at));
+  const time = dateFormatter.format(new Date(latestOrder.createdAt));
 
-  const paymentStatus = latestOrder.payment_status;
-  const shippingStatus = latestOrder.status;
+  const paymentStatus = latestOrder.paymentStatus;
+  const shippingStatus = latestOrder.orderStatus;
 
   const paymentStepStatus = paymentStatus === "paid" ? "done" : paymentStatus === "failed" ? "failed" : "pending";
 
@@ -108,7 +108,7 @@ export default function LatestOrderTracking() {
   return (
     <div className="bg-white dark:bg-[#18221f] border border-[var(--color-border)] dark:border-[#22332e] rounded-2xl p-6">
       <div className="font-bold text-[17px] mb-[6px] dark:text-gray-100">
-        {t("trackingTitle")}{latestOrder.id.slice(0, 8)}
+        {t("trackingTitle")}{latestOrder._id.slice(0, 8)}
       </div>
       <div className="text-[13px] text-gray-600 dark:text-gray-400 mb-[22px]">
         متوقع الوصول اليوم بين ٤ و ٧ مساءً

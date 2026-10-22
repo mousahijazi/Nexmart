@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useUserContext } from "../../../Context/UserProvider";
 import { useCheckoutContext } from "../../../Context/CheckoutProvider";
@@ -13,9 +12,9 @@ const ORDERS_PER_PAGE = 5;
 export default function OrderDashboardData() {
     const t = useTranslations("profile.orders");
     const locale = useLocale();
+    const router = useRouter();
     const { user, loading } = useUserContext();
     const { orders, setCurrentOrderId, ordersLoading } = useCheckoutContext();
-    const router = useRouter();
     const [expandedOrders, setExpandedOrders] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState("all");
@@ -48,11 +47,11 @@ export default function OrderDashboardData() {
         if (activeTab === "all") return true;
 
         if (activeTab === "processing") {
-            return order.payment_status === "pending";
+            return order.paymentStatus === "pending";
         } else if (activeTab === "delivered") {
-            return order.payment_status === "paid";
+            return order.paymentStatus === "paid";
         } else if (activeTab === "returned") {
-            return order.payment_status === "failed";
+            return order.paymentStatus === "failed";
         }
 
         return true;
@@ -160,15 +159,15 @@ export default function OrderDashboardData() {
             <div className="px-5">
                 <div className="py-5 flex flex-col gap-3">
                     {paginatedOrders.map((order) => {
-                        const isPending = order.payment_status === "pending";
-                        const isFailed = order.payment_status === "failed";
-                        const isPaid = order.payment_status === "paid";
+                        const isPending = order.paymentStatus === "pending";
+                        const isFailed = order.paymentStatus === "failed";
+                        const isPaid = order.paymentStatus === "paid";
 
                         return (
-                            <div key={order.id}>
+                            <div key={order._id}>
                                 <div className="flex flex-col gap-2 justify-between md:items-center md:grid grid-cols-[1.1fr_1fr_1fr_1fr_0.8fr] py-4">
                                     <p className="font-semibold text-[#5B3A21] dark:text-[#F5EBE6]">
-                                        NX-{order.id.slice(0, 8)}
+                                        NX-{order._id.slice(0, 8)}
                                     </p>
                                     <div className="flex flex-wrap items-center gap-3 md:contents">
                                         <OrderSummaryRow goToPayment={goToPayment} isPaid={isPaid} isFailed={isFailed} isPending={isPending} order={order} />
@@ -177,7 +176,7 @@ export default function OrderDashboardData() {
                                         {isPaid ? (
                                             <button
                                                 type="button"
-                                                onClick={() => toggleOrder(order.id)}
+                                                onClick={() => toggleOrder(order._id)}
                                                 className="
                                                     text-[13.5px]
                                                     text-[var(--color-green-dark)]
@@ -196,7 +195,7 @@ export default function OrderDashboardData() {
                                         ) : (
                                             <button
                                                 type="button"
-                                                onClick={() => goToPayment(order.id)}
+                                                onClick={() => goToPayment(order._id)}
                                                 className="
                                                     text-[13.5px]
                                                     text-[var(--color-green-dark)]
@@ -215,20 +214,22 @@ export default function OrderDashboardData() {
                                         )}
                                     </div>
                                 </div>
-                                {isPaid && expandedOrders[order.id] && (
+                                {isPaid && expandedOrders[order._id] && (
                                     <div className="bg-[#FAF9F4] dark:bg-[#121a17] rounded-2xl mt-2 border-b border-[var(--color-divider)] dark:border-[#22332e] px-2 min-[480px]:px-6 py-5">
                                         <div className="flex flex-col gap-5">
-                                            {order.order_items.map((item) => (
-                                                <div key={item.id} className="flex max-[480px]:flex-col min-[480px]:items-center justify-between gap-2 text-sm">
+                                            {/* todo */}
+                                            <h1>لم يتم اضافة هذه الميزة بعد</h1>
+                                            {/* {order.orderItems.map((item) => (
+                                                <div key={item._id} className="flex max-[480px]:flex-col min-[480px]:items-center justify-between gap-2 text-sm">
                                                     <span className="text-[var(--color-muted)] dark:text-gray-300">
-                                                        {item.product_title} × {item.quantity}
+                                                        {item.productTitle} × {item.quantity}
                                                     </span>
 
                                                     <span className={`font-semibold text-[var(--color-green-dark)] dark:text-[var(--color-gold)] ${locale === "ar" ? "mr-2" : "ml-2"}`}>
                                                         {item.subtotal.toFixed(2)} {t("currency")}
                                                     </span>
                                                 </div>
-                                            ))}
+                                            ))} */}
                                         </div>
                                     </div>
                                 )}

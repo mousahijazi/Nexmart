@@ -5,16 +5,12 @@ import { Package } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function AccountDashboard() {
-    const { user } = useUserContext();
+    const { user, loading } = useUserContext();
     const { orders, ordersLoading } = useCheckoutContext();
     const t = useTranslations("profile");
     const tDash = useTranslations("profile.accountDashboard");
 
-    const firstName =
-        user?.firstName ||
-        user?.firstName ||
-        user?.email?.split("@")[0] ||
-        t("guest");
+    const firstName = user?.firstName || user?.email?.split("@")[0] || t("guest");
 
     return (
         <div className="flex flex-col gap-5">
@@ -24,7 +20,7 @@ export default function AccountDashboard() {
                         {tDash("badge")}
                     </div>
                     <h1 className="text-2xl sm:text-3xl font-extrabold">
-                        {tDash("welcome", { name: ordersLoading ? "" : firstName})}
+                        {tDash("welcome", { name: loading ? "" : firstName})}
                     </h1>
                     <p className="mt-2 text-sm leading-7 text-[#C7D5D0] max-w-xl">
                         {tDash("subtitle")}
@@ -85,30 +81,30 @@ export default function AccountDashboard() {
                     ) : (
                         <div className="flex flex-col">
                             {orders.slice(0, 3).map((order) => (
-                                <div key={order.id} className="flex items-center justify-between gap-4 py-4 border-b last:border-b-0 border-[var(--color-divider)] dark:border-[#22332e]">
+                                <div key={order._id} className="flex items-center justify-between gap-4 py-4 border-b last:border-b-0 border-[var(--color-divider)] dark:border-[#22332e]">
                                     <div>
                                         <p className="font-semibold text-sm text-[#5B3A21] dark:text-gray-100">
-                                            NX-{order.id.slice(0, 8)}
+                                            NX-{order._id.slice(0, 8)}
                                         </p>
 
                                         <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                            {tDash("productsCount", { count: order.order_items?.length || 0 })}
+                                            {tDash("productsCount", { count: order.orderItems || 0 })}
                                         </p>
                                     </div>
 
                                     <span className={`text-[11px] font-bold px-3 py-1.5 rounded-full
                                             ${
-                                                order.payment_status === "paid"
+                                                order.paymentStatus === "paid"
                                                     ? "bg-[#E7F2EC] text-[#0E4D3A] dark:bg-[#15382E] dark:text-[#D4A94A]"
-                                                    : order.payment_status === "pending"
+                                                    : order.paymentStatus === "pending"
                                                     ? "bg-[#F8F1DD] text-[#8A6B1F] dark:bg-[#352D17] dark:text-[#D4A94A]"
                                                     : "bg-[#F7E8E6] text-[#9B4038] dark:bg-[#3A211F] dark:text-[#E7A39C]"
                                             }
                                         `}
                                     >
-                                        {order.payment_status === "paid"
+                                        {order.paymentStatus === "paid"
                                             ? tDash("statusPaid")
-                                            : order.payment_status === "pending"
+                                            : order.paymentStatus === "pending"
                                             ? tDash("statusPending")
                                             : tDash("statusFailed")}
                                     </span>

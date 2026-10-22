@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "../../lib/i18n/routing";
 import { useUserContext } from "../../Context/UserProvider";
 import { useAlertContext } from "../../Context/AlertProvider";
-import { updateOrderPaymentStatus, createMoyasarPayment } from "../../helper/fetchApi";
+import { createMoyasarPayment } from "../../helper/fetchApi";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "../../lib/schemas/paymentSchema";
@@ -34,10 +34,10 @@ export default function PaymentForm({ order, loading }) {
 
         try {
             const paymentResult = await createMoyasarPayment({
-                amount: Math.round(order.total_price * 100),
-                currency: "USD",
-                description: `Nexmart Order #${order.id.slice(0, 8)}`,
-                callback_url: `${window.location.origin}/${locale}/checkout?mode=pay&order_id=${order.id}`,
+                amount: Math.round(order.totalPrice * 100),
+                currency: "SAR",
+                description: `Nexmart Order #${order._id.slice(0, 8)}`,
+                callback_url: `${window.location.origin}/${locale}/checkout?mode=pay&order_id=${order._id}`,
                 "source[type]": "creditcard",
                 "source[name]": data.name,
                 "source[number]": data.number.replace(/\s/g, ""),
@@ -49,7 +49,7 @@ export default function PaymentForm({ order, loading }) {
             if (!paymentResult.success) {
                 setErrorMessage(paymentResult.message || "Payment could not be started.");
                 showAlert("Payment failed. Please review the details below.", "danger");
-                await updateOrderPaymentStatus(order.id, user.id, "failed", null);
+                // await updateOrderPaymentStatus(order.id, user.id, "failed", null);
                 return;
             }
 
@@ -61,11 +61,11 @@ export default function PaymentForm({ order, loading }) {
             }
 
             if (paymentData.status === "paid") {
-                await updateOrderPaymentStatus(order.id, user.id, "paid", paymentData.id);
+                // await updateOrderPaymentStatus(order.id, user.id, "paid", paymentData.id);
                 showAlert("Payment successful! Your order is confirmed.", "success");
                 router.push("/user");
             } else {
-                await updateOrderPaymentStatus(order.id, user.id, "failed", paymentData.id);
+                // await updateOrderPaymentStatus(order.id, user.id, "failed", paymentData.id);
                 setErrorMessage(paymentData.source?.message || "Payment was declined.");
                 showAlert("Payment failed. Please try another card.", "danger");
             }
@@ -196,7 +196,7 @@ export default function PaymentForm({ order, loading }) {
                     className="mt-2 cursor-pointer px-7 py-3.5 text-center bg-[var(--color-green)] dark:bg-[var(--color-green)] text-white rounded-full font-medium hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                     <Lock size={16} />
-                    {submitting ? t("checkout.payPage.form.payingButton") : loading ? t("element.loadingButton") : order ? t("checkout.payPage.form.payButton", {total: order.total_price.toFixed(2)}) : 0}
+                    {submitting ? t("checkout.payPage.form.payingButton") : loading ? t("element.loadingButton") : order ? t("checkout.payPage.form.payButton", {total: order.totalPrice.toFixed(2)}) : 0}
                 </button>
             </form>
         </div>

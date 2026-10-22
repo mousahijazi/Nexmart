@@ -4,14 +4,14 @@ import { useTranslations } from "next-intl";
 
 export default function CartAmount() {
     const t = useTranslations("cart");
-    const { totalPrice } = useProductContext();
+    const { grandTotal } = useProductContext();
 
     const targetAmount = 200;
-    const remainingAmount = Math.max(0, targetAmount - totalPrice);
+    const remainingAmount = Math.max(0, targetAmount - grandTotal);
 
   return (
     <>
-        {totalPrice < targetAmount && totalPrice > 0 && (
+        {grandTotal < targetAmount && grandTotal > 0 && (
             <div className="bg-[var(--color-sand)] rounded-2xl px-5 py-[18px] text-[13.5px] text-[var(--color-soft-2)] leading-[1.8]">
                 {t.rich("freeShippingNotice", {
                     amount: remainingAmount,

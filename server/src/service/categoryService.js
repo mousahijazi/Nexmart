@@ -16,12 +16,12 @@ const getAllCategories = async ({page = 1, limit = 10}, userRole) => {
     const totalCategories = await Category.countDocuments(filter);
 
     return {
-        categories,
-        total: totalCategories,
-        page: page,
-        limit: limit,
-        skip: skip,
-        totalPages: Math.ceil(totalCategories / limit),
+      categories,
+      total: totalCategories,
+      page: page,
+      limit: limit,
+      skip: skip,
+      totalPages: Math.ceil(totalCategories / limit),
     };
 };
 

@@ -2,9 +2,8 @@
 import { useCheckoutContext } from "../../Context/CheckoutProvider";
 import { useUserContext } from "../../Context/UserProvider";
 import { useAlertContext } from "../../Context/AlertProvider";
-import { createOrder } from "../../helper/fetchApi";
+import { createBackendOrder } from "../../helper/fetchApi";
 import { useProductContext } from "../../Context/CartProvider";
-import { createOrderItems } from "../../helper/fetchApi";
 import { useRouter } from "../../lib/i18n/routing";
 import { useForm } from "react-hook-form";
 import { useEffect, useRef } from "react";
@@ -16,57 +15,107 @@ import { useLocale, useTranslations } from "next-intl";
 export default function CheckoutForm() {
     const t = useTranslations();
     const locale = useLocale();
-    const {user, loading} = useUserContext();
-    const {setCart} = useProductContext();
-    const {showAlert} = useAlertContext();
-    const isProcessingRef = useRef(false);
-    const {checkoutItems, setCheckoutItems, grandTotal, needShipping, setCurrentOrderId, setOrders} = useCheckoutContext();
-    const {register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(addressSchema)});
     const router = useRouter();
+
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({resolver: zodResolver(addressSchema)});
+    const { checkoutItems, setCheckoutItems, currentOrderId, setCurrentOrderId, setOrders, coupon, serverPricing, checkoutPricingLoading, checkoutPricingError } = useCheckoutContext();
+    const { user, loading } = useUserContext();
+    const { setCart } = useProductContext();
+    const { showAlert } = useAlertContext();
+
+    const isProcessingRef = useRef(false);
     const placing = isSubmitting;
 
     const handlePlaceOrder = async (data) => {
         if (isProcessingRef.current) return;
 
+        if (loading) {
+            showAlert("Please wait while your account is loading.", "danger");
+            return;
+        }
+
         if (!user) {
-            showAlert("Please log in to place an order", "danger");
+            showAlert("You must log in before placing an order.", "danger");
             return;
         }
-        if (checkoutItems.length === 0) {
-            showAlert("Please return to your cart and checkout !", "danger");
+
+        if (!checkoutItems.length) {
+            showAlert("Your checkout is empty.", "danger");
             return;
         }
+
+        if (checkoutPricingLoading) {
+            showAlert("Please wait while we calculate your order.", "danger");
+            return;
+        }
+
+        if (checkoutPricingError || !serverPricing) {
+            showAlert(checkoutPricingError || "Unable to verify the cart prices.", "danger");
+            return;
+        }
+
+        isProcessingRef.current = true;
 
         try {
-            isProcessingRef.current = true;
-            const orderResult = await createOrder({ userId: user.id, shippingInfo: data, needShipping, grandTotal, checkoutItems });
-            if (!orderResult.success) {
-                showAlert(orderResult.message, "danger");
-                isProcessingRef.current = false;
+            const token = localStorage.getItem("nexmart-token");
+
+            if (!token) {
+                showAlert("Your login session has expired. Please log in again.", "danger");
                 return;
             }
 
-            const itemsResult = await createOrderItems(orderResult.order.id, checkoutItems);
-            if (!itemsResult.success) {
-                showAlert(itemsResult.message, "danger");
-                isProcessingRef.current = false;
-                return;
-            }
-
-            setOrders((prevOrders) => [orderResult.order, ...(prevOrders || [])]);
-
-            setCart((prevCart) => {
-                return prevCart.filter(
-                    (cartItem) => !checkoutItems.some((checkoutItem) => checkoutItem.id === cartItem.id)
-                );
+            const result = await createBackendOrder({
+                token,
+                shippingInfo: {
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    phone: data.phone,
+                    city: data.city,
+                    address: data.address,
+                    notes: data.notes || "",
+                },
+                items: checkoutItems.map((item) => ({
+                    productId: item._id ?? item.productId ?? item.id,
+                    quantity: Number(item.quantity || 1),
+                })),
+                coupon,
             });
 
-            setCurrentOrderId(orderResult.order.id);
+            const createdOrder = result?.order;
+            const createdItems = result?.items || [];
+
+            if (!createdOrder?._id) {
+                throw new Error("The server did not return a valid order.");
+            }
+
+            // todo
+            setOrders((previousOrders) => [
+                { ...createdOrder, items: createdItems },
+                ...previousOrders.filter((order) => order._id !== createdOrder._id),
+            ]);
+
+            // todo
+            setCart((previousCart) =>
+                previousCart.filter((cartItem) => {
+                    const cartProductId = String(cartItem._id ?? cartItem.productId ?? cartItem.id);
+
+                    return !checkoutItems.some((checkoutItem) => {
+                        const checkoutProductId = String(checkoutItem._id ?? checkoutItem.productId ?? checkoutItem.id);
+
+                        return checkoutProductId === cartProductId;
+                    });
+                })
+            );
+
+            setCurrentOrderId(createdOrder._id);
             setCheckoutItems([]);
+            showAlert("Your order has been created successfully.", "success");
             router.push("/checkout?mode=pay");
         } catch (error) {
-            console.error("Place Order Error:", error);
-            showAlert("Something went wrong, please try again.", "danger");
+            console.error("Create order error:", error);
+
+            showAlert(error.message || "Unable to create your order. Please try again.", "danger");
+        } finally {
             isProcessingRef.current = false;
         }
     };

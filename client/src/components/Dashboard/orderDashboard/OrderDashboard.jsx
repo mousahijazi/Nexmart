@@ -164,17 +164,7 @@ export default function OrderDashboardData() {
                                             <OrderSummaryRow goToPayment={goToPayment} isPaid={isPaid} isFailed={isFailed} isPending={isPending} order={order} />
                                             
                                             <div className="text-start md:text-end">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => toggleOrder(order._id)}
-                                                    className="text-[13.5px] text-[var(--color-green-dark)] dark:text-[var(--color-gold)] font-semibold cursor-pointer hover:opacity-70 transition"
-                                                >
-                                                    {t("details")}
-                                                    <span className={locale === "ar" ? "mr-1 inline-block" : "ml-1 inline-block rotate-180"}>
-                                                        ←
-                                                    </span>
-                                                </button>
-                                                {/* {isPaid ? (
+                                                {isPaid ? (
                                                     <button
                                                         type="button"
                                                         onClick={() => toggleOrder(order._id)}
@@ -196,7 +186,7 @@ export default function OrderDashboardData() {
                                                             ←
                                                         </span>
                                                     </button>
-                                                )} */}
+                                                )}
                                             </div>
                                         </div>
 

@@ -1,21 +1,19 @@
 "use client"
 import { useState } from "react";
 import { useRouter } from "../../lib/i18n/routing";
-import { useUserContext } from "../../Context/UserProvider";
 import { useAlertContext } from "../../Context/AlertProvider";
-import { createMoyasarPayment } from "../../helper/fetchApi";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { paymentSchema } from "../../lib/schemas/paymentSchema";
 import { useLocale, useTranslations } from "next-intl";
 import { RHFerrors } from "../../index";
 import { Lock } from "lucide-react";
+import { createMoyasarPayment, verifyBackendPayment } from "../../helper/fetchApi";
 
 export default function PaymentForm({ order, loading }) {
     const locale = useLocale();
     const t = useTranslations();
     const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(paymentSchema),});
-    const { user } = useUserContext();
     const { showAlert } = useAlertContext();
     const router = useRouter();
     const submitting = isSubmitting;
@@ -28,51 +26,60 @@ export default function PaymentForm({ order, loading }) {
     const handleCardNumberInput = (e) => {
         e.target.value = formatCardNumber(e.target.value);
     };
-
+    
     const handlePayment = async (data) => {
         setErrorMessage("");
 
         try {
-            const paymentResult = await createMoyasarPayment({
-                amount: Math.round(order.totalPrice * 100),
-                currency: "SAR",
-                description: `Nexmart Order #${order._id.slice(0, 8)}`,
-                callback_url: `${window.location.origin}/${locale}/checkout?mode=pay&order_id=${order._id}`,
-                "source[type]": "creditcard",
-                "source[name]": data.name,
-                "source[number]": data.number.replace(/\s/g, ""),
-                "source[month]": data.month,
-                "source[year]": data.year,
-                "source[cvc]": data.cvc,
-            });
+            if (!order?._id) {
+                throw new Error("Order not found.");
+            }
 
-            if (!paymentResult.success) {
-                setErrorMessage(paymentResult.message || "Payment could not be started.");
-                showAlert("Payment failed. Please review the details below.", "danger");
-                // await updateOrderPaymentStatus(order.id, user.id, "failed", null);
+            const token = localStorage.getItem("nexmart-token");
+
+            if (!token) {
+                throw new Error("Authentication token not found.");
+            }
+
+            // const intent = await createBackendPaymentIntent(order._id, token, locale);
+            // const payment = await fulfillMoyasarPayment(intent, data);
+            const payment = await createMoyasarPayment(order, data);
+
+            if (payment.status === "initiated" && payment.source?.transaction_url) {
+                window.location.assign(payment.source.transaction_url);
                 return;
             }
 
-            const paymentData = paymentResult.payment;
+            if (payment.id) {
+                const verification = await verifyBackendPayment(payment.id, order._id, token);
 
-            if (paymentData.status === "initiated" && paymentData.source?.transaction_url) {
-                window.location.href = paymentData.source.transaction_url;
-                return; 
+                if (verification.verified === true) {
+                    showAlert("Payment successful! Your order is confirmed.", "success");
+
+                    router.push("/user");
+                    return;
+                }
+
+                if (verification.paymentStatus === "failed") {
+                    setErrorMessage("The card was declined. You can try another card.");
+
+                    showAlert("Payment failed. You can try again.", "danger");
+                    return;
+                }
+
+                setErrorMessage("Payment has not been confirmed yet. Please check again.");
+
+                showAlert("Payment is not confirmed yet.", "danger");
+                return;
             }
 
-            if (paymentData.status === "paid") {
-                // await updateOrderPaymentStatus(order.id, user.id, "paid", paymentData.id);
-                showAlert("Payment successful! Your order is confirmed.", "success");
-                router.push("/user");
-            } else {
-                // await updateOrderPaymentStatus(order.id, user.id, "failed", paymentData.id);
-                setErrorMessage(paymentData.source?.message || "Payment was declined.");
-                showAlert("Payment failed. Please try another card.", "danger");
-            }
+            setErrorMessage(payment.message || payment.source?.message ||"Moyasar could not complete the payment. Please try again.");
+            showAlert("Payment was not completed. Please try again.", "danger");
         } catch (error) {
             console.error("Payment Process Error:", error);
-            setErrorMessage("An unexpected error occurred during processing. Please try again.");
-            showAlert("An unexpected error occurred. Please try again.", "danger");
+
+            setErrorMessage(error.message || "An unexpected error occurred during processing.");
+            showAlert("The payment could not be completed. Please try again.", "danger");
         }
     };
 

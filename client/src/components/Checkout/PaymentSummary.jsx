@@ -61,7 +61,7 @@ export default function PaymentSummary({order, loading}) {
         },
         {
             text: t("checkout.payPage.data.itemsLabel"),
-            value: order.totalItems.length,
+            value: order.totalItems,
         },
         {
             text: t("checkout.payPage.data.shippingTo"),

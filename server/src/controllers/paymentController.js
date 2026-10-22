@@ -1,15 +1,15 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import { SUCCESS } from "../utils/httpStatusText.js";
-import { createPaymentIntentService, verifyPaymentService } from "../service/paymentService.js";
+import { verifyPaymentService } from "../service/paymentService.js";
 
-const createPaymentIntentController = asyncHandler(async (req, res) => {
-    const result = await createPaymentIntentService(req.currentUser, req.body.orderId);
+// const createPaymentIntentController = asyncHandler(async (req, res) => {
+//     const result = await createPaymentIntentService(req.currentUser, req.body.orderId);
 
-    res.status(201).json({
-        status: SUCCESS,
-        data: result,
-    });
-});
+//     res.status(201).json({
+//         status: SUCCESS,
+//         data: result,
+//     });
+// });
 
 const verifyPaymentController = asyncHandler(async (req, res) => {
     const result = await verifyPaymentService(req.currentUser, req.body.paymentId, req.body.orderId);
@@ -21,6 +21,6 @@ const verifyPaymentController = asyncHandler(async (req, res) => {
 });
 
 export {
-    createPaymentIntentController,
+    // createPaymentIntentController,
     verifyPaymentController,
 };

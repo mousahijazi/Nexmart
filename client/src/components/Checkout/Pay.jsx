@@ -6,20 +6,24 @@ import { useCheckoutContext } from "../../Context/CheckoutProvider";
 import { useUserContext } from "../../Context/UserProvider";
 import { useAlertContext } from "../../Context/AlertProvider";
 import { PaymentForm, PaymentSummary, PaymentTestNotice } from "../../index"; 
-import { getBackendOrderById, getBackendOrderItems } from "../../helper/fetchApi";
+import { getBackendOrderById, getBackendOrderItems, verifyBackendPayment } from "../../helper/fetchApi";
 
 export default function Pay() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { currentOrderId, clearCheckout, setOrders } = useCheckoutContext();
+
     const { user, loading } = useUserContext();
     const { showAlert } = useAlertContext();
-    const [order, setOrder] = useState(null);
+
+    const [order, setOrder] = useState(null);    
     const [loadingPay, setLoadingPay] = useState(true);
     const hasFinishedRef = useRef(false);
 
     const paymentId = searchParams.get("id");
     const orderIdFromUrl = searchParams.get("order_id");
+
+    const callbackProcessedRef = useRef(false);
 
     useEffect(() => {
         if (hasFinishedRef.current) return;
@@ -41,6 +45,8 @@ export default function Pay() {
             return;
         }
 
+        let cancelled = false;
+
         const processPayPage = async () => {
             setLoadingPay(true);
 
@@ -58,52 +64,80 @@ export default function Pay() {
                     items: itemsData.items || itemsData || []
                 };
 
-                setOrder(fullOrder);
-
                 if (!fullOrder) {
                     showAlert("Order not found.", "danger");
-                    router.push("/user");
+                    router.push("/cart");
                     return;
                 }
 
-                if (paymentId) {
-                    const verifyResponse = await fetch("/api/initiate-payment", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ paymentId, orderId: targetOrderId }),
-                    });
-                    const verifyResult = await verifyResponse.json();
+                if (cancelled) return;
+                setOrder(fullOrder);
+                
+                if (paymentId && !callbackProcessedRef.current) {
+                    callbackProcessedRef.current = true;
 
-                    if (verifyResult.success && verifyResult.payment?.status === "paid") {
-                        hasFinishedRef.current = true;
-                        
-                        setOrders((prevOrders) =>
-                            (prevOrders || []).map((ord) =>
-                                (ord._id === targetOrderId || ord.id === targetOrderId)
-                                    ? { ...ord, paymentStatus: "paid", paymentId: paymentId }
-                                    : ord
+                    const verification = await verifyBackendPayment(paymentId, targetOrderId, token);
+
+                    if (cancelled) return;
+
+                    if (verification.verified === true) {
+                        setOrder(verification.order || {
+                            ...fullOrder,
+                            paymentStatus: "paid",
+                            orderStatus: "confirmed",
+                            paymentId,
+                        });
+
+                        setOrders((previousOrders) =>
+                            (previousOrders || []).map((item) =>
+                                String(item._id || item.id) === String(targetOrderId)
+                                    ? {
+                                        ...item,
+                                        paymentStatus: "paid",
+                                        orderStatus: "confirmed",
+                                        paymentId,
+                                      }
+                                    : item
                             )
                         );
 
                         clearCheckout();
+
                         showAlert("Payment successful! Your order is confirmed.", "success");
+
                         router.push("/user");
                         return;
-                    } else {
-                        hasFinishedRef.current = true;
-                        showAlert("Payment verification failed or declined.", "danger");
+                    }
+
+                    const refreshedOrder = {
+                        ...(orderData.order || orderData),
+                        items: itemsData.items || itemsData || []
+                    };
+
+                    if (!cancelled) {
+                        setOrder(refreshedOrder);
+                        showAlert("Payment was not completed. You can try again.", "danger");
                     }
                 }
-            } catch (err) {
-                console.error("Pay page error:", err);
-                showAlert("Could not load order details.", "danger");
+            } catch (error) {
+                console.error("Pay page error:", error);
+
+                if (!cancelled) {
+                    showAlert("Could not load or verify the order.", "danger");
+                }
             } finally {
-                setLoadingPay(false);
+                if (!cancelled) {
+                    setLoadingPay(false);
+                }
             }
         };
 
         processPayPage();
-    }, [loading, user, currentOrderId, paymentId, orderIdFromUrl, setOrders]);
+
+        return () => {
+            cancelled = true;
+        };
+    }, [loading, user, currentOrderId, paymentId, orderIdFromUrl, setOrders, loading, clearCheckout, showAlert, router]);
 
   return (
     <>

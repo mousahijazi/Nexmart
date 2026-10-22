@@ -7,13 +7,13 @@ import getAuthenticatedUserId from "../utils/getAuthenticatedUserId.js";
 const MOYASAR_API = "https://api.moyasar.com/v1";
 
 const getMoyasarAuth = (key) => {
-    return `Basic ${Buffer.from(`${secretKey}:`).toString("base64")}`;
+    return `Basic ${Buffer.from(`${key}:`).toString("base64")}`;
 };
 
 const moyasarRequest = async (path, options = {}) => {
-    const key = usePublishableKey ? process.env.MOYASAR_PUBLISHABLE_KEY : process.env.MOYASAR_SECRET_KEY;
+    const key = process.env.MOYASAR_SECRET_KEY;
     if (!key) {
-        throw AppError.create(usePublishableKey ? "MOYASAR_PUBLISHABLE_KEY is not configured" : "MOYASAR_SECRET_KEY is not configured", 500, ERROR);
+        throw AppError.create("MOYASAR_SECRET_KEY is not configured", 500, ERROR);
     }
 
     const response = await fetch(`${MOYASAR_API}${path}`, {
@@ -71,78 +71,78 @@ const ensureOrderCanBePaid = (order) => {
     }
 };
 
-const createPaymentIntentService = async (currentUser, orderId) => {
-    const userId = getAuthenticatedUserId(currentUser);
+// const createPaymentIntentService = async (currentUser, orderId) => {
+//     const userId = getAuthenticatedUserId(currentUser);
 
-    if (!mongoose.isValidObjectId(orderId)) {
-        throw AppError.create("Invalid order ID", 400, FAIL);
-    }
+//     if (!mongoose.isValidObjectId(orderId)) {
+//         throw AppError.create("Invalid order ID", 400, FAIL);
+//     }
 
-    const order = await Order.findOne({ _id: orderId, user: userId });
-    if (!order) {
-        throw AppError.create("Order not found", 404, ERROR);
-    }
+//     const order = await Order.findOne({ _id: orderId, user: userId });
+//     if (!order) {
+//         throw AppError.create("Order not found", 404, ERROR);
+//     }
 
-    ensureOrderCanBePaid(order);
+//     ensureOrderCanBePaid(order);
     
-    const { amount, currency, description } = getExpectedPaymentDetails(order);
+//     const { amount, currency, description } = getExpectedPaymentDetails(order);
 
-    const frontendUrl = process.env.FRONTEND_URL;
-    if (!frontendUrl) {
-        throw AppError.create("FRONTEND_URL is not configured", 500, ERROR);
-    }
+//     const frontendUrl = process.env.FRONTEND_URL;
+//     if (!frontendUrl) {
+//         throw AppError.create("FRONTEND_URL is not configured", 500, ERROR);
+//     }
 
-    if (order.paymentStatus === "pending" && order.paymentIntentId && order.paymentIntentExpiresAt && order.paymentIntentExpiresAt.getTime() > Date.now()) {
-        try {
-            const existingIntent = await moyasarRequest(`/payment_intents/${encodeURIComponent(order.paymentIntentId)}`, { method: "GET" });
+//     if (order.paymentStatus === "pending" && order.paymentIntentId && order.paymentIntentExpiresAt && order.paymentIntentExpiresAt.getTime() > Date.now()) {
+//         try {
+//             const existingIntent = await moyasarRequest(`/payment_intents/${encodeURIComponent(order.paymentIntentId)}`, { method: "GET" });
 
-            if (existingIntent.status === "created" && existingIntent.amount === amount && existingIntent.currency === currency && existingIntent.description === description && existingIntent.client_secret) {
-                return {
-                    orderId: String(order._id),
-                    amount: existingIntent.amount,
-                    currency: existingIntent.currency,
-                    intentId: existingIntent.id,
-                    clientSecret: existingIntent.client_secret,
-                    publishableKey: process.env.MOYASAR_PUBLISHABLE_KEY,
-                    expiresAt: existingIntent.expires_at,
-                };
-            }
-        } catch (error) {
-            throw error;
-        }
-    }
+//             if (existingIntent.status === "created" && existingIntent.amount === amount && existingIntent.currency === currency && existingIntent.description === description && existingIntent.client_secret) {
+//                 return {
+//                     orderId: String(order._id),
+//                     amount: existingIntent.amount,
+//                     currency: existingIntent.currency,
+//                     intentId: existingIntent.id,
+//                     clientSecret: existingIntent.client_secret,
+//                     publishableKey: process.env.MOYASAR_PUBLISHABLE_KEY,
+//                     expiresAt: existingIntent.expires_at,
+//                 };
+//             }
+//         } catch (error) {
+//             throw error;
+//         }
+//     }
 
-    const intent = await moyasarRequest("/payment_intents", {
-        method: "POST",
-        body: JSON.stringify({
-            amount,
-            currency,
-            description,
-            callback_url: `${frontendUrl.replace(/\/$/, "")}/checkout?mode=pay&order_id=${order._id}`,
-        }),
-    });
+//     const intent = await moyasarRequest("/payment_intents", {
+//         method: "POST",
+//         body: JSON.stringify({
+//             amount,
+//             currency,
+//             description,
+//             callback_url: `${frontendUrl.replace(/\/$/, "")}/checkout?mode=pay&order_id=${order._id}`,
+//         }),
+//     });
 
-    if (!intent?.id || !intent?.client_secret || !intent?.expires_at || intent.amount !== amount || intent.currency !== currency || intent.description !== description) {
-        throw AppError.create("Moyasar did not return a valid payment intent", 502, ERROR);
-    }
+//     if (!intent?.id || !intent?.client_secret || !intent?.expires_at || intent.amount !== amount || intent.currency !== currency || intent.description !== description) {
+//         throw AppError.create("Moyasar did not return a valid payment intent", 502, ERROR);
+//     }
 
-    order.paymentIntentId = intent.id;
-    order.paymentIntentExpiresAt = new Date(intent.expires_at);
-    order.paymentStatus = "pending";
-    order.paymentId = null;
+//     order.paymentIntentId = intent.id;
+//     order.paymentIntentExpiresAt = new Date(intent.expires_at);
+//     order.paymentStatus = "pending";
+//     order.paymentId = null;
 
-    await order.save();
+//     await order.save();
 
-    return {
-        orderId: String(order._id),
-        amount: intent.amount,
-        currency: intent.currency,
-        intentId: intent.id,
-        clientSecret: intent.client_secret,
-        publishableKey: process.env.MOYASAR_PUBLISHABLE_KEY,
-        expiresAt: intent.expires_at,
-    };
-};
+//     return {
+//         orderId: String(order._id),
+//         amount: intent.amount,
+//         currency: intent.currency,
+//         intentId: intent.id,
+//         clientSecret: intent.client_secret,
+//         publishableKey: process.env.MOYASAR_PUBLISHABLE_KEY,
+//         expiresAt: intent.expires_at,
+//     };
+// };
 
 const verifyPaymentService = async (currentUser, paymentId, orderId) => {
     const userId = getAuthenticatedUserId(currentUser);
@@ -168,9 +168,9 @@ const verifyPaymentService = async (currentUser, paymentId, orderId) => {
         throw AppError.create("Payment does not match this order", 409, FAIL);
     }
 
-    if (!order.paymentIntentId || payment.payment_intent_id !== order.paymentIntentId) {
-        throw AppError.create("Payment does not match this order's payment intent", 409, FAIL);
-    }
+    // if (!order.paymentIntentId || payment.payment_intent_id !== order.paymentIntentId) {
+    //     throw AppError.create("Payment does not match this order's payment intent", 409, FAIL);
+    // }
 
     if (order.paymentStatus === "paid") {
         if (order.paymentId && order.paymentId !== payment.id) {
@@ -227,6 +227,6 @@ const verifyPaymentService = async (currentUser, paymentId, orderId) => {
 };
 
 export {
-    createPaymentIntentService,
+    // createPaymentIntentService,
     verifyPaymentService,
 };

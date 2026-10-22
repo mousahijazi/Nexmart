@@ -1405,30 +1405,72 @@ export async function cancelBackendOrder(orderId, token) {
   return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}`, { method: "DELETE", token });
 }
 
+// payment 
+async function readApiResponse(response) {
+  const result = await response.json().catch(() => null);
 
+  if (!response.ok) {
+    throw new Error(result?.message || result?.data?.message || "The request failed.");
+  }
 
-// create pay
-export async function createMoyasarPayment(paymentData) {
-    try {
-        const body = new URLSearchParams({
-            ...paymentData,
-            publishable_api_key: process.env.NEXT_PUBLIC_MOYASAR_PUBLISHABLE_KEY,
-        });
+  return result?.data ?? result;
+}
 
-        const response = await fetch("https://api.moyasar.com/v1/payments", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: body.toString(),
-        });
+export async function createBackendPaymentIntent(orderId, token, locale) {
+  const response = await fetch(`${API_URL}/api/v1/payments/intent`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ orderId, locale }),
+    cache: "no-store",
+  });
 
-        const data = await response.json();
+  return readApiResponse(response);
+}
 
-        if (!response.ok) {
-            return { success: false, message: data.message || "Payment could not be started" };
-        }
-
-        return { success: true, payment: data };
-    } catch (error) {
-        return { success: false, message: "Network error, please try again" };
+export async function fulfillMoyasarPayment(intent, cardData) {
+  const response = await fetch(`https://api.moyasar.com/v1/payment_intents/${encodeURIComponent(intent.intentId)}/fulfill`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${btoa(`${intent.publishableKey}:`)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        client_secret: intent.clientSecret,
+        source: {
+          type: "creditcard",
+          name: cardData.name.trim(),
+          number: cardData.number.replace(/\s/g, ""),
+          month: cardData.month,
+          year: cardData.year,
+          cvc: cardData.cvc,
+        },
+      }),
     }
+  );
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(result?.message || "Moyasar could not process this card.");
+  }
+
+  return result;
+}
+
+export async function verifyBackendPayment(paymentId, orderId, token) {
+  const response = await fetch(`${API_URL}/api/v1/payments/verify`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ paymentId, orderId }),
+    cache: "no-store",
+  });
+
+  return readApiResponse(response);
 }

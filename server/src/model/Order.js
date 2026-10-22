@@ -114,6 +114,16 @@ const orderSchema = new mongoose.Schema(
             required: true,
         },
 
+        paymentIntentId: {
+            type: String,
+            default: null,
+        },
+
+        paymentIntentExpiresAt: {
+            type: Date,
+            default: null,
+        },
+
         paymentId: {
             type: String,
             default: null,

@@ -9,6 +9,7 @@ import seasonRoutes from "./seasonRoutes.js";
 import cartRoutes from "./cartRoutes.js";
 import orderRoutes from "./orderRoutes.js";
 import orderItemRoutes from "./orderItemRoutes.js";
+import paymentRoutes from "./paymentRoutes.js";
 
 const router = express.Router();
 
@@ -26,5 +27,7 @@ router.use("/offers", offerRoutes);
 router.use("/cart", cartRoutes);
 router.use("/orders", orderRoutes);
 router.use("/orders", orderItemRoutes);
+
+router.use("/payments", paymentRoutes)
 
 export default router;

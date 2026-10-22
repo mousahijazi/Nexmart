@@ -1,13 +1,17 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { getAllUsers } from "@/helper/fetchApi";
+import { useUserContext } from "../UserProvider";
 
 export default function useAdminUsers() {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
+  const { user, loading } = useUserContext();
 
   useEffect(() => {
+    if (loading) return;
+    if (!user) return;
+
     async function fetchAllAppUsers() {
       const token = localStorage.getItem("nexmart-token");
 
@@ -25,7 +29,9 @@ export default function useAdminUsers() {
       setUsersLoading(false);
     }
 
-    fetchAllAppUsers();
+    if (user.role === "ADMIN") {
+      fetchAllAppUsers();
+    }
   }, []);
 
   return {

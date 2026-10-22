@@ -6,9 +6,7 @@ import { useLocale } from "next-intl";
 export default function UserProfileInfo() {
   const locale = useLocale();
   const { user, loading } = useUserContext();
-  const userName = user?.firstName
-    ? `${user?.firstName} ${user?.lastName}`
-    : "guest";
+  const userName = user?.firstName ? `${user?.firstName} ${user?.lastName}` : "guest";
 
   const formatDate = (dateString) => {
     if (!dateString) return "";

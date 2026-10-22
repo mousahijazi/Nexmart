@@ -58,8 +58,8 @@ export default function SettingsDashboard({ role = "user" }) {
         subtitle: tSettings("subtitle"),
 
         personalInfoTitle: tSettings("personalInfoTitle"),
-        personalInfoSubtitle:
-          tSettings("personalInfoSubtitle"),
+        // personalInfoSubtitle: tSettings("personalInfoSubtitle"),
+        personalInfoSubtitle: "settings",
 
         securityTitle: tSettings("securityTitle"),
         securitySubtitle: tSettings("securitySubtitle"),

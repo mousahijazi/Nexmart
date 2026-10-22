@@ -2,7 +2,7 @@
 import {createContext, useContext, useState, useEffect} from 'react';
 import { useAlertContext } from './AlertProvider';
 import { useRouter } from "../lib/i18n/routing";
-import { loginUser, registerUser, getCurrentUser, logoutApi, updateUser } from "../helper/fetchApi";
+import { loginUser, registerUser, getCurrentUser, updateUser } from "../helper/fetchApi";
 
 const UserContext = createContext();
 
@@ -172,26 +172,23 @@ export default function UserProvider({children}) {
   };
 
   const logout = async () => {
-    try {
-      const token = localStorage.getItem("nexmart-token");
-      
-      if (token) {
-        await logoutApi(token);
-      }
-    } catch (error) {
-      console.error("Logout failed on server", error);
-    } finally {
-      localStorage.removeItem("nexmart-token");
-      setUser(null);
-      setRole(null);
-      setRedirectTo(null);
-      
-      showAlert("You have successfully logged out", "success");
-      
-      setTimeout(() => {
-        router.replace("/");
-      }, 1000);
+    const token = localStorage.getItem("nexmart-token");
+
+    if (!token) {
+      showAlert("You are already logged out", "success");
     }
+
+    localStorage.removeItem("nexmart-token");
+    
+    setUser(null);
+    setRole(null);
+    setRedirectTo(null);
+    
+    showAlert("You have successfully logged out", "success");
+    
+    setTimeout(() => {
+      router.replace("/");
+    }, 1000);
   };
 
   const handleAccountClick = (path) => {

@@ -139,15 +139,38 @@ const getAllOffers = async ({ page = 1, limit = 10, season, isActive }, userRole
     filter.season = season;
   }
 
-  // todo
   if (userRole === userRoles.ADMIN) {
     if (isActive !== undefined) {
       filter.isActive = isActive;
     }
   } else {
     filter.isActive = true;
-    // todo
     filter.archivedBySeason = { $ne: true };
+
+    const allActiveOffers = await Offer.find(filter).populate("product").populate("category");
+
+    const validOfferIds = [];
+
+    for (const offer of allActiveOffers) {
+      if (offer.targetType === "product") {
+        if (offer.product && offer.product.isActive) {
+          validOfferIds.push(offer._id);
+        }
+      } else if (offer.targetType === "category" && offer.category) {
+        const productsCount = await Product.countDocuments({
+          category: offer.category._id,
+          isActive: true,
+          archivedByCategory: { $ne: true },
+          archivedByBrand: { $ne: true },
+        });
+
+        if (productsCount > 0) {
+          validOfferIds.push(offer._id);
+        }
+      }
+    }
+
+    filter._id = { $in: validOfferIds };
   }
 
   const result = await getAllOffersRepository({ skip, limit, filter });
@@ -165,8 +188,34 @@ const getAllOffers = async ({ page = 1, limit = 10, season, isActive }, userRole
 const getOfferById = async (offerId, userRole) => {
   const offer = await getOfferByIdRepository(offerId);
 
-  if (!offer || (userRole !== userRoles.ADMIN && (!offer.isActive || offer.archivedBySeason))) {
+  if (!offer) {
     return null;
+  }
+
+  if (userRole !== userRoles.ADMIN) {
+    if (!offer.isActive || offer.archivedBySeason) {
+      return null;
+    }
+
+    if (offer.targetType === "product") {
+      const product = await Product.findById(offer.product);
+      if (!product || !product.isActive) {
+        return null;
+      }
+    } else if (offer.targetType === "category") {
+      const categoryId = offer.category?._id || offer.category;
+
+      const productsCount = await Product.countDocuments({
+        category: categoryId,
+        isActive: true,
+        archivedByCategory: { $ne: true },
+        archivedByBrand: { $ne: true },
+      });
+
+      if (productsCount === 0) {
+        return null;
+      }
+    }
   }
 
   return offer;

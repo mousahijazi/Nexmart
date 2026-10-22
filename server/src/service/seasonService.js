@@ -1,6 +1,7 @@
 import { createSeason as createSeasonRepository, getAllSeasons as getAllSeasonsRepository, getSeasonById as getSeasonByIdRepository, updateSeason as updateSeasonRepository, deleteSeason as deleteSeasonRepository } from "../repositories/seasonRepository.js";
 import Season from "../model/Season.js";
 import Offer from "../model/Offer.js";
+import Product from "../model/Product.js";
 import { userRoles } from "../utils/userRoles.js";
 import { isCurrentPeriod } from "../utils/periodUtils.js";
 import AppError from "../utils/AppError.js";
@@ -24,6 +25,35 @@ const getAllSeasons = async ({ page = 1, limit = 10 }, userRole) => {
 
   if (userRole !== userRoles.ADMIN) {
     filter.isActive = true;
+
+    const activeOffers = await Offer.find({
+      isActive: true,
+      archivedBySeason: { $ne: true },
+      season: { $ne: null },
+    }).populate("product category");
+
+    const validSeasonIds = new Set();
+
+    for (const offer of activeOffers) {
+      if (!offer.season) continue;
+
+      if (offer.targetType === "product" && offer.product && offer.product.isActive) {
+        validSeasonIds.add(offer.season.toString());
+      } else if (offer.targetType === "category" && offer.category) {
+        const productsCount = await Product.countDocuments({
+          category: offer.category._id,
+          isActive: true,
+          archivedByCategory: { $ne: true },
+          archivedByBrand: { $ne: true },
+        });
+
+        if (productsCount > 0) {
+          validSeasonIds.add(offer.season.toString());
+        }
+      }
+    }
+
+    filter._id = { $in: Array.from(validSeasonIds) };
   }
 
   const result = await getAllSeasonsRepository({ skip, limit, filter });
@@ -41,8 +71,47 @@ const getAllSeasons = async ({ page = 1, limit = 10 }, userRole) => {
 const getSeasonById = async (seasonId, userRole) => {
   const season = await getSeasonByIdRepository(seasonId);
 
-  if (!season || (userRole !== userRoles.ADMIN && !season.isActive)) {
+  if (!season) {
     return null;
+  }
+
+  if (userRole !== userRoles.ADMIN) {
+    if (!season.isActive) {
+      return null;
+    }
+
+    const activeOffers = await Offer.find({
+      season: seasonId,
+      isActive: true,
+      archivedBySeason: { $ne: true },
+    }).populate("product category");
+
+    let hasValidOffersWithProducts = false;
+
+    for (const offer of activeOffers) {
+      if (offer.targetType === "product" && offer.product && offer.product.isActive) {
+        hasValidOffersWithProducts = true;
+        break;
+      } else if (offer.targetType === "category" && offer.category) {
+        const categoryId = offer.category?._id || offer.category;
+
+        const productsCount = await Product.countDocuments({
+          category: categoryId,
+          isActive: true,
+          archivedByCategory: { $ne: true },
+          archivedByBrand: { $ne: true },
+        });
+
+        if (productsCount > 0) {
+          hasValidOffersWithProducts = true;
+          break;
+        }
+      }
+    }
+
+    if (!hasValidOffersWithProducts) {
+      return null;
+    }
   }
 
   return season;

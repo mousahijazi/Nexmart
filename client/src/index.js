@@ -201,11 +201,11 @@ export {default as CartAmount} from "./components/Dashboard/CartAmount";
 export {default as WishlistDashboard} from "./components/Dashboard/WishlistDashboard";
 export {default as WishlistDashboardData} from "./components/Dashboard/WishlistDashboardData";
 
-export {default as OrderDashboard} from "./components/Dashboard/UserDashboard/OrderDashboard";
-export {default as OrderSummaryRow} from "./components/Dashboard/UserDashboard/OrderSummaryRow";
+export {default as OrderDashboard} from "./components/Dashboard/orderDashboard/OrderDashboard";
+export {default as OrderSummaryRow} from "./components/Dashboard/orderDashboard/OrderSummaryRow";
 export {default as LatestOrderTracking} from "./components/Dashboard/UserDashboard/LatestOrderTracking";
 export {default as StatsSection} from "./components/Dashboard/UserDashboard/StatsSection";
-export {default as OrderDashboardButton} from "./components/Dashboard/UserDashboard/OrderDashboardButton";
+export {default as OrderDashboardButton} from "./components/Dashboard/orderDashboard/OrderDashboardButton";
 
 // checkout
 export {default as CheckoutForm} from "./components/Checkout/CheckoutForm";

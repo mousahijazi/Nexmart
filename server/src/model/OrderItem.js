@@ -16,10 +16,20 @@ const orderItemSchema = new mongoose.Schema(
         },
 
         productTitle: {
-            type: String,
-            required: true,
-            trim: true,
-            maxlength: 200,
+            ar: {
+                type: String,
+                required: true,
+                trim: true,
+                minlength: 2,
+                maxlength: 200,
+            },
+            en: {
+                type: String,
+                required: true,
+                trim: true,
+                minlength: 2,
+                maxlength: 200,
+            },
         },
 
         mainImage: {

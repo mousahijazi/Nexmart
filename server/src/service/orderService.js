@@ -231,7 +231,10 @@ const createOrderService = async (currentUser, body) => {
             const orderItems = pricing.pricedCart.items.map((item) => ({
                 order: order._id,
                 product: item.productId,
-                productTitle: item.title,
+                productTitle: {
+                    ar: item.title.ar,
+                    en: item.title.en
+                },
                 mainImage: item.mainImage || null,
                 price: item.pricing.finalPrice,
                 quantity: item.quantity,

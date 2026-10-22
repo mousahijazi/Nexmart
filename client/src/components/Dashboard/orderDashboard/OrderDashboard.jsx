@@ -3,9 +3,10 @@ import { useState } from "react";
 import { useUserContext } from "../../../Context/UserProvider";
 import { useCheckoutContext } from "../../../Context/CheckoutProvider";
 import { useRouter } from "../../../lib/i18n/routing";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { OrderDashboardButton, OrderSummaryRow } from "../../../index";
 import { useTranslations, useLocale } from "next-intl";
+import { getBackendOrderItems } from "../../../helper/fetchApi";
 
 const ORDERS_PER_PAGE = 5;
 const orderGridCols = "grid-cols-[1.2fr_1fr_1fr_1fr_1fr]";
@@ -17,15 +18,39 @@ export default function OrderDashboardData() {
     const router = useRouter();
     const { user, loading } = useUserContext();
     const { orders, setCurrentOrderId, ordersLoading } = useCheckoutContext();
+
+    const [orderItemsMap, setOrderItemsMap] = useState({});
+    const [itemsLoadingMap, setItemsLoadingMap] = useState({});
+
     const [expandedOrders, setExpandedOrders] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState("all");
 
-    const toggleOrder = (orderId) => {
+    const toggleOrder = async (orderId) => {
+        const isCurrentlyExpanded = !!expandedOrders[orderId];
+
         setExpandedOrders((prev) => ({
             ...prev,
-            [orderId]: !prev[orderId],
+            [orderId]: !isCurrentlyExpanded,
         }));
+
+        if (!isCurrentlyExpanded && !orderItemsMap[orderId]) {
+            try {
+                setItemsLoadingMap((prev) => ({ ...prev, [orderId]: true }));
+
+                const token = localStorage.getItem("nexmart-token");
+                const response = await getBackendOrderItems(orderId, token);
+                
+                setOrderItemsMap((prev) => ({
+                    ...prev,
+                    [orderId]: response.items || [],
+                }));
+            } catch (error) {
+                console.error("Failed to fetch order items:", error);
+            } finally {
+                setItemsLoadingMap((prev) => ({ ...prev, [orderId]: false }));
+            }
+        }
     };
 
     const goToPayment = (orderId) => {
@@ -86,7 +111,6 @@ export default function OrderDashboardData() {
 
     return (
         <section className="grid w-full grid-cols-[minmax(0,1fr)] overflow-hidden rounded-2xl border border-[var(--color-border)] dark:border-[#22332e] bg-white dark:bg-[#18221f]">
-            {/* رأس التبويبات */}
             <div className="px-6 py-[22px] flex items-center justify-between border-b border-[var(--color-divider)] dark:border-[#22332e] flex-wrap gap-[10px]">
                 <div className="font-bold text-lg dark:text-gray-100">{t("title")}</div>
                 <div className="flex gap-[7px] flex-wrap">
@@ -110,11 +134,8 @@ export default function OrderDashboardData() {
                 </div>
             </div>
 
-            {/* الحاوية التي تحتوي على overflow-x-auto لضمان عدم خروج البيانات عن الشاشة */}
             <div className="min-w-0 overflow-x-auto scrollbar-thin">
-                <div className={`${orderTableMinWidth} w-full`}>
-                    
-                    {/* هيدر الجدول */}
+                <div className={`${orderTableMinWidth} w-full`}>                    
                     <div className={`grid ${orderGridCols} px-6 py-[13px] bg-[#FAF9F4] dark:bg-[#121a17] text-[12.5px] font-bold uppercase tracking-[0.08em] text-[var(--color-muted)] dark:text-gray-400 border-b border-[var(--color-divider)] dark:border-[#22332e]`}>
                         <div>{t("table.orderNumber")}</div>
                         <div>{t("table.date")}</div>
@@ -123,13 +144,15 @@ export default function OrderDashboardData() {
                         <div className="text-start md:text-end">{t("details") || "Action"}</div>
                     </div>
 
-                    {/* صفوف الطلبات */}
                     <div className="px-5">
                         <div className="py-5 flex flex-col gap-3">
                             {paginatedOrders.map((order) => {
                                 const isPending = order.paymentStatus === "pending";
                                 const isFailed = order.paymentStatus === "failed";
                                 const isPaid = order.paymentStatus === "paid";
+                                const isExpanded = expandedOrders[order._id];
+                                const items = orderItemsMap[order._id] || [];
+                                const isLoadingItems = itemsLoadingMap[order._id];
 
                                 return (
                                     <div key={order._id} className="border-b border-[var(--color-divider)] dark:border-[#22332e] pb-3">
@@ -141,7 +164,17 @@ export default function OrderDashboardData() {
                                             <OrderSummaryRow goToPayment={goToPayment} isPaid={isPaid} isFailed={isFailed} isPending={isPending} order={order} />
                                             
                                             <div className="text-start md:text-end">
-                                                {isPaid ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleOrder(order._id)}
+                                                    className="text-[13.5px] text-[var(--color-green-dark)] dark:text-[var(--color-gold)] font-semibold cursor-pointer hover:opacity-70 transition"
+                                                >
+                                                    {t("details")}
+                                                    <span className={locale === "ar" ? "mr-1 inline-block" : "ml-1 inline-block rotate-180"}>
+                                                        ←
+                                                    </span>
+                                                </button>
+                                                {/* {isPaid ? (
                                                     <button
                                                         type="button"
                                                         onClick={() => toggleOrder(order._id)}
@@ -163,15 +196,32 @@ export default function OrderDashboardData() {
                                                             ←
                                                         </span>
                                                     </button>
-                                                )}
+                                                )} */}
                                             </div>
                                         </div>
 
-                                        {isPaid && expandedOrders[order._id] && (
-                                            <div className="bg-[#FAF9F4] dark:bg-[#121a17] rounded-2xl my-2 px-2 min-[480px]:px-6 py-5">
-                                                <div className="flex flex-col gap-5">
-                                                    <h1>لم يتم اضافة هذه الميزة بعد</h1>
-                                                </div>
+                                        {isExpanded && (
+                                            <div className="bg-[#FAF9F4] dark:bg-[#121a17] rounded-2xl mt-2 border-b border-[var(--color-divider)] dark:border-[#22332e] px-4 py-5">
+                                                {isLoadingItems ? (
+                                                    <div className="flex items-center justify-center py-4">
+                                                        <Loader2 className="animate-spin text-[var(--color-green-dark)] dark:text-[var(--color-gold)]" size={20} />
+                                                    </div>
+                                                ) : items.length === 0 ? (
+                                                    <p className="text-sm text-center text-gray-500">لا توجد منتجات في هذا الطلب.</p>
+                                                ) : (
+                                                    <div className="flex flex-col gap-3">
+                                                        {items.map((item) => (
+                                                            <div key={item._id} className="flex max-[480px]:flex-col min-[480px]:items-center justify-between gap-2 text-sm">
+                                                                <span className="text-[var(--color-muted)] dark:text-gray-300">
+                                                                    {item.productTitle?.[locale]} × {item.quantity}
+                                                                </span>
+                                                                <span className={`font-semibold text-[var(--color-green-dark)] dark:text-[var(--color-gold)] ${locale === "ar" ? "mr-2" : "ml-2"}`}>
+                                                                    {item.subtotal.toFixed(2)} {t("currency") || "ر.س"}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -182,7 +232,6 @@ export default function OrderDashboardData() {
                 </div>
             </div>
 
-            {/* أزرار التنقل بين الصفحات (Pagination) */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-4 py-4 border-t border-[var(--color-divider)] dark:border-[#22332e]">
                     <OrderDashboardButton 

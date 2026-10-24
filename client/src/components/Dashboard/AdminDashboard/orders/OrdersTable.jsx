@@ -1,36 +1,75 @@
-import { OrderTableRow } from "@/index";
-const COLUMNS = ["Order ID", "Customer & Location", "SKU Items", "Status"];
+"use client";
+import { useMemo, useState } from "react";
+import { OrderRow, TablePagination } from "@/index";
+import { ordersGridCols, ordersTableMinWidth } from "./ordersData";
 
 export default function OrdersTable({ orders }) {
-  if (orders.length === 0) {
-    return (
-      <div className="py-16 text-center text-sm text-[var(--color-muted-2)]">
-        No orders match the current filters.
-      </div>
+  const [openOrders, setOpenOrders] = useState([]);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
+
+  const totalPages = Math.max(1, Math.ceil(orders.length / rowsPerPage));
+  const safePage = Math.min(page, totalPages);
+
+  const visibleOrders = useMemo(() => {
+    const start = (safePage - 1) * rowsPerPage;
+    return orders.slice(start, start + rowsPerPage);
+  }, [orders, safePage, rowsPerPage]);
+
+  // todo 
+  const toggleOrder = (id) => {
+    setOpenOrders((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id]
     );
-  }
+  };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-[var(--color-border)] text-left">
-            {COLUMNS.map((col) => (
-              <th key={col} className="py-2.5 pr-4 text-xs font-medium uppercase tracking-wide text-[var(--color-muted-2)]">
-                {col}
-              </th>
-            ))}
-            <th className="py-2.5 pl-0 text-right text-xs font-medium uppercase tracking-wide text-[var(--color-muted-2)]">
-              Total
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <OrderTableRow key={order.id} order={order} />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <section className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)]">
+      <div className="min-w-0 overflow-x-auto scrollbar-thin">
+        <div className={`${ordersTableMinWidth} w-full`}>
+          <div className={`grid ${ordersGridCols} gap-3 bg-[var(--color-sand)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]`}>
+            <span aria-label="Expand order" />
+            <span>Order ID</span>
+            <span>Customer</span>
+            <span>Items</span>
+            <span>Order Date</span>
+            <span>Total</span>
+            <span>Payment</span>
+            <span>Order Status</span>
+            <span>Actions</span>
+          </div>
+
+          {visibleOrders.length > 0 ? (
+            visibleOrders.map((order) => (
+              <OrderRow
+                key={order._id}
+                order={order}
+                isExpanded={openOrders.includes(order._id)}
+                onToggle={() => toggleOrder(order._id)}
+              />
+            ))
+          ) : (
+            <div className="flex min-h-[180px] items-center justify-center px-4 text-center text-[12px] text-[var(--color-muted)]">
+              No orders found.
+            </div>
+          )}
+        </div>
+      </div>
+
+      <TablePagination
+        page={safePage}
+        totalPages={totalPages}
+        total={orders.length}
+        rowsPerPage={rowsPerPage}
+        onPageChange={setPage}
+        onRowsChange={(value) => {
+          setRowsPerPage(value);
+          setPage(1);
+        }}
+        noun="orders"
+      />
+    </section>
   );
 }

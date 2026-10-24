@@ -149,14 +149,14 @@ export {default as CategoryModalFooter} from "./components/Dashboard/AdminDashbo
 
 export {default as ProductModal} from "./components/Dashboard/AdminDashboard/products/productModal/ProductModal";
 
-export {default as RecentOrdersPanel} from "./components/Dashboard/AdminDashboard/orders/RecentOrdersPanel";
-export {default as OrdersPanelHeader} from "./components/Dashboard/AdminDashboard/orders/OrdersPanelHeader";
+export {default as OrdersDashboard} from "./components/Dashboard/AdminDashboard/orders/OrdersDashboard";
+export {default as OrdersHeader} from "./components/Dashboard/AdminDashboard/orders/OrdersHeader";
+export {default as OrdersStats} from "./components/Dashboard/AdminDashboard/orders/OrdersStats";
+export {default as OrdersInteractive} from "./components/Dashboard/AdminDashboard/orders/OrdersInteractive";
 export {default as OrdersFilters} from "./components/Dashboard/AdminDashboard/orders/OrdersFilters";
 export {default as OrdersTable} from "./components/Dashboard/AdminDashboard/orders/OrdersTable";
+export {default as OrderRow} from "./components/Dashboard/AdminDashboard/orders/OrderRow";
 export {default as OrdersPagination} from "./components/Dashboard/AdminDashboard/orders/OrdersPagination";
-export {default as OrderTableRow} from "./components/Dashboard/AdminDashboard/orders/OrderTableRow";
-export {default as OrderPriorityIcon} from "./components/Dashboard/AdminDashboard/orders/OrderPriorityIcon";
-export {default as StatusBadge} from "./components/Dashboard/AdminDashboard/orders/StatusBadge";
 
 export {default as OffersDashboard} from "./components/Dashboard/AdminDashboard/offers/OffersDashboard";
 export {default as OffersHeader} from "./components/Dashboard/AdminDashboard/offers/OffersHeader";
@@ -191,6 +191,7 @@ export {default as CustomersPanel} from "./components/Dashboard/AdminDashboard/c
 export {default as CustomersPanelHeader} from "./components/Dashboard/AdminDashboard/customers/CustomersPanelHeader";
 export {default as CustomersFilters} from "./components/Dashboard/AdminDashboard/customers/CustomersFilters";
 export {default as CustomerTableRow} from "./components/Dashboard/AdminDashboard/customers/CustomerTableRow";
+export {default as StatusBadge} from "./components/Dashboard/AdminDashboard/customers/StatusBadge";
 
 export {default as CartDashboard} from "./components/Dashboard/CartDashboard";
 export {default as CartDashboardData} from "./components/Dashboard/CartDashboardData";

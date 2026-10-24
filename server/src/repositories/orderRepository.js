@@ -1,5 +1,18 @@
 import Order from "../model/Order.js";
 
+const findAllOrders = async ({ filter, page, limit }) => {
+    return Order.find(filter)
+        .sort({ createdAt: -1 }).populate("totalItems").skip((page - 1) * limit).limit(limit).lean();
+};
+
+const countAllOrders = async (filter = {}) => {
+    return Order.countDocuments(filter);
+};
+
+const countOrdersByStatus = async (field, value) => {
+    return Order.countDocuments({ [field]: value });
+};
+
 const createOrder = async (data, session) => {
     const [order] = await Order.create([data], { session });
     return order;
@@ -41,4 +54,7 @@ export {
     findOrdersByUser,
     countUserOrders,
     updateOrderById,
+    findAllOrders,
+    countAllOrders,
+    countOrdersByStatus,
 };

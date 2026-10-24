@@ -1,6 +1,6 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
-import { SUCCESS } from "../utils/httpStatusText.js";
-import { createOrderService, getMyOrdersService, getMyOrderByIdService, updateMyOrderService, cancelMyOrderService, replaceMyOrderItemsService } from "../service/orderService.js";
+import asyncHandler from "../../middlewares/asyncHandler.js";
+import { SUCCESS } from "../../utils/httpStatusText.js";
+import { createOrderService, getMyOrdersService, getMyOrderByIdService, updateMyOrderService, cancelMyOrderService, replaceMyOrderItemsService } from "../../service/orders/orderService.js";
 
 const createOrderController = asyncHandler(async (req, res) => {
     const result = await createOrderService(req.currentUser, req.body);

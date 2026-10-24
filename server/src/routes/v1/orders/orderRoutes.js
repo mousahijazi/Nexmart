@@ -1,6 +1,6 @@
 import express from "express";
-import { authToken } from "../../middlewares/auth.js"; 
-import { createOrderController, getMyOrdersController, getMyOrderByIdController, updateMyOrderController, cancelMyOrderController, replaceMyOrderItemsController } from "../../controllers/orderController.js";
+import { authToken } from "../../../middlewares/auth.js"; 
+import { createOrderController, getMyOrdersController, getMyOrderByIdController, updateMyOrderController, cancelMyOrderController, replaceMyOrderItemsController } from "../../../controllers/orders/orderController.js";
 
 const router = express.Router();
 

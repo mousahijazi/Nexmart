@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import Product from "../model/Product.js";
-import AppError from "../utils/AppError.js";
-import { ERROR, FAIL } from "../utils/httpStatusText.js";
-import { priceCart } from "./cartService.js";
-import { toMinorUnits, fromMinorUnits } from "../utils/moneyUtils.js";
-import getAuthenticatedUserId from "../utils/getAuthenticatedUserId.js";
-import { createOrder, findUserOrderById, findOrdersByUser, countUserOrders } from "../repositories/orderRepository.js";
-import { createOrderItems, findItemsByOrderId, deleteItemsByOrderId } from "../repositories/orderItemRepository.js";
+import Product from "../../model/Product.js";
+import AppError from "../../utils/AppError.js";
+import { ERROR, FAIL } from "../../utils/httpStatusText.js";
+import { priceCart } from "../cartService.js";
+import { toMinorUnits, fromMinorUnits } from "../../utils/moneyUtils.js";
+import getAuthenticatedUserId from "../../utils/getAuthenticatedUserId.js";
+import { createOrder, findUserOrderById, findOrdersByUser, countUserOrders } from "../../repositories/orderRepository.js";
+import { createOrderItems, findItemsByOrderId, deleteItemsByOrderId } from "../../repositories/orderItemRepository.js";
 
 const SHIPPING_PRICE_MINOR = 1500;
 const FREE_SHIPPING_THRESHOLD_MINOR = 20000;

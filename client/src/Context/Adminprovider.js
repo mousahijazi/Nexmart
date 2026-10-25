@@ -7,6 +7,7 @@ import useAdminBrands from "./admin/useAdminBrands";
 import useAdminUsers from "./admin/useAdminUsers";
 import useAdminOffers from "./admin/useAdminOffers";
 import useAdminSeasons from "./admin/useAdminSeasons";
+import useAdminOrders from "./admin/useAdminOrders";
 
 const AdminContext = createContext();
 
@@ -23,6 +24,8 @@ export default function AdminProvider({ children }) {
   const offersAdmin = useAdminOffers({ showAlert });
   const seasonsAdmin = useAdminSeasons({ showAlert });
 
+  const ordersAdmin = useAdminOrders({ showAlert });
+
   const value = {
     activeSection,
     setActiveSection,
@@ -35,6 +38,8 @@ export default function AdminProvider({ children }) {
 
     ...offersAdmin,
     ...seasonsAdmin,
+
+    ...ordersAdmin,
   };
 
   return (

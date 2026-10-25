@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import AppError from "../../utils/AppError.js";
-import { findAllOrders, countAllOrders, countOrdersByStatus } from "../../repositories/orderRepository.js";
+import { findAllOrders, findOrderById, countAllOrders, countOrdersByStatus } from "../../repositories/orderRepository.js";
+import { ERROR, FAIL } from "../../utils/httpStatusText.js";
+import { findOrderItemsPage, countOrderItemsByOrderId } from "../../repositories/orderItemRepository.js";
 
 const ORDER_STATUSES = [
     "pending",
@@ -101,7 +103,43 @@ const getAdminOrderStats = async () => {
     };
 };
 
+const getAdminOrderItemsService = async (orderId, query = {}) => {
+    if (!mongoose.isValidObjectId(orderId)) {
+        throw AppError.create("Invalid order ID", 400, FAIL);
+    }
+
+    const order = await findOrderById(orderId);
+
+    if (!order) {
+        throw AppError.create("Order not found", 404, ERROR);
+    }
+
+    const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 10));
+
+    const [items, total] = await Promise.all([
+        findOrderItemsPage(order._id, { page, limit }),
+        countOrderItemsByOrderId(order._id),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+        orderId: order._id,
+        items,
+        pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+        },
+    };
+};
+
 export {
     getAdminOrdersService,
     getAdminOrderStats,
+    getAdminOrderItemsService,
 };

@@ -19,16 +19,19 @@ const paymentStatusStyles = {
 
 // todo
 function formatStatus(status) {
-  return status
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+    if (!status) return "Unknown";
+
+    return status
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function StatusBadge({ status, styles }) {
   return (
     <span
       className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[9px] font-bold ${
-        styles[status] || "bg-[var(--color-sand)] text-[var(--color-muted)]"
+          styles[status] ||
+          "bg-[var(--color-sand)] text-[var(--color-muted)]"
       }`}
     >
       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
@@ -50,21 +53,20 @@ function InfoBlock({ label, children }) {
   );
 }
 
-// todo
 function formatDate(value) {
   if (!value) return "—";
 
   const date = new Date(value);
+
   if (Number.isNaN(date.getTime())) return "—";
 
   return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
   });
 }
 
-// todo
 function formatMoney(amount, currency = "SAR") {
   return `${currency} ${Number(amount || 0).toLocaleString("en-US", {
     minimumFractionDigits: 2,
@@ -72,7 +74,28 @@ function formatMoney(amount, currency = "SAR") {
   })}`;
 }
 
-export default function OrderRow({ order, isExpanded, onToggle }) {
+function getProductTitle(productTitle) {
+  if (typeof productTitle === "string") {
+    return productTitle;
+  }
+
+  if (productTitle && typeof productTitle === "object") {
+    return productTitle.en || productTitle.ar || "Unnamed product";
+  }
+
+  return "Unnamed product";
+}
+
+export default function OrderRow({ order, isExpanded, onToggle, productsData, onLoadMore }) {
+  const shippingInfo = order.shippingInfo || {};
+  const customerName = [shippingInfo.firstName, shippingInfo.lastName].filter(Boolean).join(" ") || "—";
+
+  const items = productsData?.items || [];
+  const pagination = productsData?.pagination;
+  const loading = productsData?.loading || false;
+
+  const itemsCount = pagination?.total;
+
   return (
     <>
       <div className={`grid ${ordersGridCols} items-center gap-3 border-b border-[var(--color-divider)] px-4 py-3 transition-colors hover:bg-[var(--color-cream)]`}>
@@ -94,7 +117,7 @@ export default function OrderRow({ order, isExpanded, onToggle }) {
 
         <div className="min-w-0">
           <p className="truncate text-[12px] font-semibold text-[var(--color-ink)]">
-            #{order.orderNumber}
+            #{String(order._id || "").slice(-8) || "—"}
           </p>
           <p className="mt-1 truncate text-[9px] text-[var(--color-muted)]">
             {order.paymentId || "No payment ID"}
@@ -103,20 +126,20 @@ export default function OrderRow({ order, isExpanded, onToggle }) {
 
         <div className="min-w-0">
           <p className="truncate text-[12px] font-semibold text-[var(--color-ink)]">
-            {order.customer}
+            {customerName}
           </p>
           <p className="mt-1 truncate text-[10px] text-[var(--color-muted)]">
-            {order.phone}
+            {shippingInfo.phone || "—"}
           </p>
           <p className="truncate text-[10px] text-[var(--color-muted)]">
-            {order.city}
+            {shippingInfo.city || "—"}
           </p>
         </div>
 
         <div>
           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-sand)] px-2 py-1 text-[9px] font-bold text-[var(--color-green-dark)]">
             <Package size={10} />
-            {order.itemsCount}
+            {itemsCount ?? "—"}
           </span>
         </div>
 
@@ -129,11 +152,11 @@ export default function OrderRow({ order, isExpanded, onToggle }) {
         </div>
 
         <div>
-          <StatusBadge status={order.paymentStatus} styles={paymentStatusStyles} />
+            <StatusBadge status={order.paymentStatus} styles={paymentStatusStyles} />
         </div>
 
         <div>
-          <StatusBadge status={order.orderStatus} styles={orderStatusStyles} />
+            <StatusBadge status={order.orderStatus} styles={orderStatusStyles} />
         </div>
 
         <div className="flex justify-center">
@@ -144,8 +167,8 @@ export default function OrderRow({ order, isExpanded, onToggle }) {
       {isExpanded && (
         <div className="border-b border-[var(--color-divider)] bg-[var(--color-cream)] px-4 py-4 sm:px-5">
           <div className="grid min-w-0 grid-cols-1 gap-3 rounded-[12px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:grid-cols-2 xl:grid-cols-3">
-            <InfoBlock label="Order Number">
-              #{order.orderNumber}
+            <InfoBlock label="Order ID">
+              {order._id || "—"}
             </InfoBlock>
 
             <InfoBlock label="Created At">
@@ -156,98 +179,123 @@ export default function OrderRow({ order, isExpanded, onToggle }) {
               {order.paymentId || "Not available"}
             </InfoBlock>
 
-            <InfoBlock label="Customer & Contact">
-              <div className="flex items-start gap-2">
-                <UserRound size={14} className="mt-0.5 shrink-0" />
-                <div>
-                  <p>{order.customer}</p>
-                  <p className="mt-1 text-[11px] text-[var(--color-muted)]">
-                    {order.phone}
-                  </p>
-                </div>
-              </div>
-            </InfoBlock>
-
-            <InfoBlock label="Shipping Address">
-              <div className="flex items-start gap-2">
-                <MapPin size={14} className="mt-0.5 shrink-0" />
-                <span>{order.shippingAddress || order.city || "—"}</span>
-              </div>
-            </InfoBlock>
-
-            <InfoBlock label="Payment & Order Status">
-              <div className="flex flex-wrap gap-2">
-                <StatusBadge status={order.paymentStatus} styles={paymentStatusStyles} />
-                <StatusBadge status={order.orderStatus} styles={orderStatusStyles} />
-              </div>
-            </InfoBlock>
-          </div>
-
-          <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,1fr)]">
-            <div className="min-w-0 rounded-[12px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-              <h3 className="mb-3 flex items-center gap-2 text-[12px] font-semibold text-[var(--color-ink)]">
-                <ShoppingBag size={15} />
-                Order Items ({order.items?.length || 0})
-              </h3>
-
-              <div className="space-y-2">
-                {(order.items || []).map((item) => (
-                  <div key={item._id} className="flex min-w-0 items-center justify-between gap-3 rounded-[10px] border border-[var(--color-divider)] bg-[var(--color-cream)] px-3 py-2.5">
-                    <div className="flex min-w-0 items-start gap-2">
-                      <Package size={15} className="mt-0.5 shrink-0 text-[var(--color-muted)]" />
-                      <div className="min-w-0">
-                        <p className="break-words text-[11px] font-semibold text-[var(--color-ink)]">
-                          {item.name}
-                        </p>
-                        <p className="mt-1 text-[10px] text-[var(--color-muted)]">
-                          Qty: {item.quantity}
-                        </p>
-                      </div>
-                    </div>
-
-                    <p className="shrink-0 text-[11px] font-semibold text-[var(--color-ink)]">
-                      {formatMoney(item.price, order.currency)}
+              <InfoBlock label="Customer & Contact">
+                <div className="flex items-start gap-2">
+                  <UserRound size={14} className="mt-0.5 shrink-0" />
+                  <div>
+                    <p>{customerName}</p>
+                    <p className="mt-1 text-[11px] text-[var(--color-muted)]">
+                      {shippingInfo.phone || "—"}
                     </p>
                   </div>
-                ))}
-              </div>
+                </div>
+              </InfoBlock>
+
+              <InfoBlock label="Shipping Address">
+                <div className="flex items-start gap-2">
+                  <MapPin size={14} className="mt-0.5 shrink-0" />
+                  <span>
+                    {[shippingInfo.address, shippingInfo.city].filter(Boolean).join(", ") || "—"}
+                  </span>
+                </div>
+              </InfoBlock>
+
+              <InfoBlock label="Payment & Order Status">
+                <div className="flex flex-wrap gap-2">
+                    <StatusBadge status={order.paymentStatus} styles={paymentStatusStyles} />
+                    <StatusBadge status={order.orderStatus} styles={orderStatusStyles} />
+                </div>
+              </InfoBlock>
             </div>
 
-            <div className="min-w-0 rounded-[12px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-              <h3 className="mb-3 flex items-center gap-2 text-[12px] font-semibold text-[var(--color-ink)]">
-                <CreditCard size={15} />
-                Price Breakdown
-              </h3>
+            <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,1fr)]">
+              
+              <div className="min-w-0 rounded-[12px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+                <h3 className="mb-3 flex items-center gap-2 text-[12px] font-semibold text-[var(--color-ink)]">
+                  <ShoppingBag size={15} />
+                  Order Items ({itemsCount ?? items.length})
+                </h3>
 
-              <div className="space-y-2 text-[11px]">
-                <div className="flex justify-between gap-3">
-                  <span className="text-[var(--color-muted)]">Subtotal</span>
-                  <span>{formatMoney(order.subtotal, order.currency)}</span>
-                </div>
+                {loading && items.length === 0 ? (
+                  <p className="py-4 text-[11px] text-[var(--color-muted)]">
+                    Loading order items...
+                  </p>
+                ) : items.length === 0 ? (
+                  <p className="py-4 text-[11px] text-[var(--color-muted)]">
+                    No order items found.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {items.map((item) => (
+                      <div key={item._id} className="flex min-w-0 items-center justify-between gap-3 rounded-[10px] border border-[var(--color-divider)] bg-[var(--color-cream)] px-3 py-2.5">
+                        
+                        <div className="flex min-w-0 items-start gap-2">
+                          <Package size={15} className="mt-0.5 shrink-0 text-[var(--color-muted)]" />
+                          <div className="min-w-0">
+                              <p className="break-words text-[11px] font-semibold text-[var(--color-ink)]">
+                                {getProductTitle(item.productTitle)}
+                              </p>
+                              <p className="mt-1 text-[10px] text-[var(--color-muted)]">
+                                Qty: {item.quantity}
+                              </p>
+                          </div>
+                        </div>
 
-                <div className="flex justify-between gap-3">
-                  <span className="text-[var(--color-muted)]">Tax</span>
-                  <span>{formatMoney(order.tax, order.currency)}</span>
-                </div>
+                        <p className="shrink-0 text-[11px] font-semibold text-[var(--color-ink)]">
+                          {formatMoney(item.subtotal, order.currency)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-                <div className="flex justify-between gap-3">
-                  <span className="text-[var(--color-muted)]">Shipping</span>
-                  <span>{formatMoney(order.shipping, order.currency)}</span>
-                </div>
+                {pagination?.hasNextPage && (
+                  <button
+                    type="button"
+                    onClick={onLoadMore}
+                    disabled={loading}
+                    className="mt-3 w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-[11px] font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-sand)] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {loading ? "Loading..." : "Load more items"}
+                  </button>
+                )}
+              </div>
 
-                <div className="flex justify-between gap-3">
-                  <span className="text-[var(--color-muted)]">Discount</span>
-                  <span>{formatMoney(order.discount, order.currency)}</span>
-                </div>
+              <div className="min-w-0 rounded-[12px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+                <h3 className="mb-3 flex items-center gap-2 text-[12px] font-semibold text-[var(--color-ink)]">
+                  <CreditCard size={15} />
+                  Price Breakdown
+                </h3>
 
-                <div className="flex justify-between gap-3 border-t border-[var(--color-divider)] pt-3 text-[13px] font-bold text-[var(--color-green-dark)]">
-                  <span>Total</span>
-                  <span>{formatMoney(order.totalPrice, order.currency)}</span>
+                <div className="space-y-2 text-[11px]">
+                  <div className="flex justify-between gap-3">
+                    <span className="text-[var(--color-muted)]">Subtotal</span>
+                    <span>{formatMoney(order.subtotal, order.currency)}</span>
+                  </div>
+
+                  <div className="flex justify-between gap-3">
+                    <span className="text-[var(--color-muted)]">Tax</span>
+                    <span>{formatMoney(order.tax, order.currency)}</span>
+                  </div>
+
+                  <div className="flex justify-between gap-3">
+                    <span className="text-[var(--color-muted)]">Shipping</span>
+                    <span>{formatMoney(order.shipping, order.currency)}</span>
+                  </div>
+
+                  <div className="flex justify-between gap-3">
+                    <span className="text-[var(--color-muted)]">Discount</span>
+                    <span>{formatMoney(order.discount, order.currency)}</span>
+                  </div>
+
+                  <div className="flex justify-between gap-3 border-t border-[var(--color-divider)] pt-3 text-[13px] font-bold text-[var(--color-green-dark)]">
+                    <span>Total</span>
+                    <span>{formatMoney(order.totalPrice, order.currency)}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
       )}
     </>
   );

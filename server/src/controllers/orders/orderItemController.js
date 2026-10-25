@@ -11,6 +11,7 @@ const getMyOrderItemsController = asyncHandler(
             data: {
                 orderId: result.order._id,
                 items: result.items,
+                pagination: result.pagination,
             },
         });
     }

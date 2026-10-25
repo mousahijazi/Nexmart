@@ -47,14 +47,14 @@ export default function OrdersFilters({ search, setSearch, status, setStatus, pa
           <FilterSelect
             label="Order Status"
             value={formatOption(status)}
-            onChange={(value) => setStatus(statusLabelMap[value])}
+            onChange={(value) => setStatus(statusLabelMap[value] ?? "")}
             options={orderOptions}
           />
 
           <FilterSelect
             label="Payment Status"
             value={formatOption(paymentStatus)}
-            onChange={(value) => setPaymentStatus(paymentLabelMap[value])}
+            onChange={(value) => setPaymentStatus(paymentLabelMap[value] ?? "")}
             options={paymentOptions}
           />
 

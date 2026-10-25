@@ -28,7 +28,7 @@ router.use("/offers", offerRoutes);
 router.use("/cart", cartRoutes);
 router.use("/orders", orderRoutes);
 router.use("/orders", orderItemRoutes);
-router.use("/orders", adminOrderRoutes);
+router.use("/admin/orders", adminOrderRoutes);
 
 router.use("/payments", paymentRoutes)
 

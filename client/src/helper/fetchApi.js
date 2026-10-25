@@ -1323,8 +1323,8 @@ async function orderApiRequest(path, { method = "GET", token, body, signal } = {
     {
       method,
       headers: {
-          Authorization: `Bearer ${token}`,
-          ...(body ? { "Content-Type": "application/json" } : {}),
+        Authorization: `Bearer ${token}`,
+        ...(body ? { "Content-Type": "application/json" } : {}),
       },
       ...(body ? { body: JSON.stringify(body) } : {}),
       signal,
@@ -1344,6 +1344,36 @@ async function orderApiRequest(path, { method = "GET", token, body, signal } = {
   }
 
   return payload?.data ?? payload;
+}
+
+export const getAdminOrders = ({ token, page = 1, limit = 10, search = "", orderStatus = "", paymentStatus = "" } = {}) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (search.trim()) {
+    params.set("search", search.trim());
+  }
+
+  if (orderStatus) {
+    params.set("orderStatus", orderStatus);
+  }
+
+  if (paymentStatus) {
+    params.set("paymentStatus", paymentStatus);
+  }
+
+  return orderApiRequest(`/api/v1/admin/orders?${params.toString()}`, { token, method: "GET" });
+};
+
+export async function getBackendAdminOrderItems(orderId, token, { page = 1, limit = 10 } = {}) {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/items?${params.toString()}`, { token });
 }
 
 export async function createBackendOrder({ token, shippingInfo, items, coupon }) {

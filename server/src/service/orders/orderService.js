@@ -6,7 +6,7 @@ import { priceCart } from "../cartService.js";
 import { toMinorUnits, fromMinorUnits } from "../../utils/moneyUtils.js";
 import getAuthenticatedUserId from "../../utils/getAuthenticatedUserId.js";
 import { createOrder, findUserOrderById, findOrdersByUser, countUserOrders } from "../../repositories/orderRepository.js";
-import { createOrderItems, findItemsByOrderId, deleteItemsByOrderId } from "../../repositories/orderItemRepository.js";
+import { findOrderItemsPage, countOrderItemsByOrderId, createOrderItems, findItemsByOrderId, deleteItemsByOrderId } from "../../repositories/orderItemRepository.js";
 
 const SHIPPING_PRICE_MINOR = 1500;
 const FREE_SHIPPING_THRESHOLD_MINOR = 20000;
@@ -240,6 +240,8 @@ const createOrderService = async (currentUser, body) => {
                 quantity: item.quantity,
                 subtotal: item.lineTotal,
             }));
+            console.log("orderItems", orderItems);
+            console.log("orderId", order._id);
 
             await createOrderItems(orderItems, session);
 
@@ -277,7 +279,7 @@ const getMyOrdersService = async (currentUser, query = {}) => {
     };
 };
 
-const getMyOrderByIdService = async (currentUser, orderId) => {
+const getMyOrderByIdService = async (currentUser, orderId, query = {}) => {
     const userId = getAuthenticatedUserId(currentUser);
 
     if (!mongoose.isValidObjectId(orderId)) {
@@ -285,13 +287,31 @@ const getMyOrderByIdService = async (currentUser, orderId) => {
     }
 
     const order = await findUserOrderById(orderId, userId);
+
     if (!order) {
         throw AppError.create("Order not found", 404, ERROR);
     }
 
-    const items = await findItemsByOrderId(order._id);
+    const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 10));
 
-    return { order, items };
+    const items = await findOrderItemsPage(order._id, { page, limit });
+
+    const total = await countOrderItemsByOrderId(order._id);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+        order,
+        items,
+        pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+        },
+    };
 };
 
 const updateMyOrderService = async (currentUser, orderId, body) => {

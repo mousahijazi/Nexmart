@@ -21,11 +21,13 @@ const mergeDuplicateItems = (items) => {
 
 const isProductAvailable = (product) => product.isActive && !product.archivedByCategory && !product.archivedByBrand;
 
-const priceCart = async (items, couponCode = "") => {
+const priceCart = async (items, couponCode = "", options = {}) => {
+  const { session } = options;
   const requested = mergeDuplicateItems(items);
 
   const products = await Product.find({ _id: { $in: [...requested.keys()] } })
-    .select("title slug mainImage price stock category isActive archivedByCategory archivedByBrand");
+    .select("title slug mainImage price stock category isActive archivedByCategory archivedByBrand")
+    .session(session || null);
 
   const productsById = new Map(products.map((product) => [String(product._id), product]));
 

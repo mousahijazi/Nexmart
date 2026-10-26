@@ -44,10 +44,12 @@ const normalizeShippingInfo = (shippingInfo) => {
     };
 };
 
-const calculatePricing = async (items, couponInput = "") => {
+const calculatePricing = async (items, couponInput = "", session = null) => {
     if (!Array.isArray(items) || items.length === 0 || items.length > 50) {
         throw AppError.create("Order must contain between 1 and 50 items", 400, FAIL);
     }
+
+    const seenProductIds = new Set();
 
     const requestedItems = items.map((item) => {
         if (!item || typeof item.productId !== "string" || !mongoose.isValidObjectId(item.productId)) {
@@ -58,10 +60,18 @@ const calculatePricing = async (items, couponInput = "") => {
             throw AppError.create("Quantity must be an integer between 1 and 100", 400, FAIL);
         }
 
-        return { productId: item.productId, quantity: item.quantity };
+        const productId = item.productId.toLowerCase();
+
+        if (seenProductIds.has(productId)) {
+            throw AppError.create("Each product must appear only once in the order", 400, FAIL);
+        }
+
+        seenProductIds.add(productId);
+
+        return { productId, quantity: item.quantity };
     });
 
-    const pricedCart = await priceCart(requestedItems);
+    const pricedCart = await priceCart(requestedItems, "", { session });
 
     if (!pricedCart.canCheckout) {
         throw AppError.create("Some products are unavailable or quantities are invalid", 409, FAIL);
@@ -91,92 +101,61 @@ const calculatePricing = async (items, couponInput = "") => {
     };
 };
 
-const replaceMyOrderItemsService = async (currentUser, orderId, body) => {
+const OrderCreateInTransaction = async (data, session) => {
+    return createOrder(data, session);
+};
+
+const getMyOrdersService = async (currentUser, query = {}) => {
+    const userId = getAuthenticatedUserId(currentUser);
+
+    const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
+    const limit = Math.min(50, Math.max(1, Number.parseInt(query.limit, 10) || 10));
+
+    const [orders, total] = await Promise.all([findOrdersByUser(userId, { page, limit }), countUserOrders(userId)]);
+
+    return {
+        orders,
+        pagination: {
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit),
+        },
+    };
+};
+
+const getMyOrderByIdService = async (currentUser, orderId, query = {}) => {
     const userId = getAuthenticatedUserId(currentUser);
 
     if (!mongoose.isValidObjectId(orderId)) {
         throw AppError.create("Invalid order ID", 400, FAIL);
     }
 
-    const pricing = await calculatePricing(body.items, body.coupon);
+    const order = await findUserOrderById(orderId, userId);
 
-    const session = await mongoose.startSession();
-    let updatedOrder;
-
-    try {
-        await session.withTransaction(async () => {
-            const order = await findUserOrderById(orderId, userId, session);
-
-            if (!order) {
-                throw AppError.create("Order not found", 404, ERROR);
-            }
-
-            if (order.orderStatus !== "pending" || order.paymentStatus !== "pending") {
-                throw AppError.create("Only pending unpaid orders can be edited", 409, FAIL);
-            }
-
-            const oldItems = await findItemsByOrderId(order._id, session);
-
-            for (const item of oldItems) {
-                await Product.updateOne(
-                    { _id: item.product },
-                    { $inc: { stock: item.quantity } },
-                    { session }
-                );
-            }
-
-            for (const item of pricing.pricedCart.items) {
-                const stockResult = await Product.updateOne(
-                    {
-                        _id: item.productId,
-                        stock: { $gte: item.quantity },
-                        isActive: true,
-                        archivedByCategory: { $ne: true },
-                        archivedByBrand: { $ne: true },
-                    },
-                    { $inc: { stock: -item.quantity } },
-                    { session }
-                );
-
-                if (stockResult.modifiedCount !== 1) {
-                    throw AppError.create(`Insufficient stock for product ${item.productId}`, 409, FAIL);
-                }
-            }
-
-            await deleteItemsByOrderId(order._id, session);
-
-            const newItems = pricing.pricedCart.items.map((item) => ({
-                order: order._id,
-                product: item.productId,
-                productTitle: item.title,
-                thumbnail: item.mainImage || null,
-                price: item.pricing.finalPrice,
-                quantity: item.quantity,
-                subtotal: item.lineTotal,
-            }));
-
-            await createOrderItems(newItems, session);
-
-            order.subtotal = pricing.subtotal;
-            order.tax = pricing.tax;
-            order.shipping = pricing.shipping;
-            order.couponCode = pricing.couponCode;
-            order.discount = pricing.discount;
-            order.totalPrice = pricing.totalPrice;
-
-            await order.save({ session });
-
-            updatedOrder = order;
-        });
-    } finally {
-        await session.endSession();
+    if (!order) {
+        throw AppError.create("Order not found", 404, ERROR);
     }
 
-    const items = await findItemsByOrderId(updatedOrder._id);
+    const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 10));
+
+    const items = await findOrderItemsPage(order._id, { page, limit });
+
+    const total = await countOrderItemsByOrderId(order._id);
+    const totalPages = Math.ceil(total / limit);
 
     return {
-        order: updatedOrder,
+        order,
         items,
+        pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+        },
     };
 };
 
@@ -240,8 +219,6 @@ const createOrderService = async (currentUser, body) => {
                 quantity: item.quantity,
                 subtotal: item.lineTotal,
             }));
-            console.log("orderItems", orderItems);
-            console.log("orderId", order._id);
 
             await createOrderItems(orderItems, session);
 
@@ -254,64 +231,6 @@ const createOrderService = async (currentUser, body) => {
     const items = await findItemsByOrderId(createdOrder._id);
 
     return { order: createdOrder, items };
-};
-
-const OrderCreateInTransaction = async (data, session) => {
-    return createOrder(data, session);
-};
-
-const getMyOrdersService = async (currentUser, query = {}) => {
-    const userId = getAuthenticatedUserId(currentUser);
-
-    const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
-    const limit = Math.min(50, Math.max(1, Number.parseInt(query.limit, 10) || 10));
-
-    const [orders, total] = await Promise.all([findOrdersByUser(userId, { page, limit }), countUserOrders(userId)]);
-
-    return {
-        orders,
-        pagination: {
-            page,
-            limit,
-            total,
-            pages: Math.ceil(total / limit),
-        },
-    };
-};
-
-const getMyOrderByIdService = async (currentUser, orderId, query = {}) => {
-    const userId = getAuthenticatedUserId(currentUser);
-
-    if (!mongoose.isValidObjectId(orderId)) {
-        throw AppError.create("Invalid order ID", 400, FAIL);
-    }
-
-    const order = await findUserOrderById(orderId, userId);
-
-    if (!order) {
-        throw AppError.create("Order not found", 404, ERROR);
-    }
-
-    const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
-    const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 10));
-
-    const items = await findOrderItemsPage(order._id, { page, limit });
-
-    const total = await countOrderItemsByOrderId(order._id);
-    const totalPages = Math.ceil(total / limit);
-
-    return {
-        order,
-        items,
-        pagination: {
-            page,
-            limit,
-            total,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1,
-        },
-    };
 };
 
 const updateMyOrderService = async (currentUser, orderId, body) => {
@@ -339,6 +258,102 @@ const updateMyOrderService = async (currentUser, orderId, body) => {
     return order;
 };
 
+const replaceMyOrderItemsService = async (currentUser, orderId, body) => {
+  const userId = getAuthenticatedUserId(currentUser);
+
+  if (!mongoose.isValidObjectId(orderId)) {
+    throw AppError.create("Invalid order ID", 400, FAIL);
+  }
+
+  const session = await mongoose.startSession();
+  let updatedOrder;
+
+  try {
+    await session.withTransaction(async () => {
+      const order = await findUserOrderById(orderId, userId, session);
+
+      if (!order) {
+        throw AppError.create("Order not found", 404, ERROR);
+      }
+
+      if (order.orderStatus !== "pending" || order.paymentStatus !== "pending") {
+        throw AppError.create("Only pending unpaid orders can be edited", 409, FAIL);
+      }
+
+      const oldItems = await findItemsByOrderId(order._id, session);
+
+      for (const item of oldItems) {
+        const restoreResult = await Product.updateOne(
+          { _id: item.product },
+          { $inc: { stock: item.quantity } },
+          { session }
+        );
+
+        if (restoreResult.matchedCount !== 1) {
+          throw AppError.create("A product from the current order no longer exists", 409, FAIL);
+        }
+      }
+
+      const pricing = await calculatePricing(body.items, body.coupon, session);
+
+      for (const item of pricing.pricedCart.items) {
+        const stockResult = await Product.updateOne(
+          {
+            _id: item.productId,
+            stock: { $gte: item.quantity },
+            isActive: true,
+            archivedByCategory: { $ne: true },
+            archivedByBrand: { $ne: true },
+          },
+          { $inc: { stock: -item.quantity } },
+          { session }
+        );
+
+        if (stockResult.modifiedCount !== 1) {
+            throw AppError.create(`Insufficient stock for product ${item.productId}`, 409, FAIL);
+        }
+      }
+
+      await deleteItemsByOrderId(order._id, session);
+
+      const newItems = pricing.pricedCart.items.map((item) => ({
+        order: order._id,
+        product: item.productId,
+        productTitle: {
+          ar: item.title.ar,
+          en: item.title.en,
+        },
+        mainImage: item.mainImage || null,
+        price: item.pricing.finalPrice,
+        quantity: item.quantity,
+        subtotal: item.lineTotal,
+      }));
+
+      await createOrderItems(newItems, session);
+
+      order.subtotal = pricing.subtotal;
+      order.tax = pricing.tax;
+      order.shipping = pricing.shipping;
+      order.couponCode = pricing.couponCode;
+      order.discount = pricing.discount;
+      order.totalPrice = pricing.totalPrice;
+
+      await order.save({ session });
+
+      updatedOrder = order;
+    });
+  } finally {
+    await session.endSession();
+  }
+
+  const items = await findItemsByOrderId(updatedOrder._id);
+
+  return {
+    order: updatedOrder,
+    items,
+  };
+};
+
 const cancelMyOrderService = async (currentUser, orderId) => {
     const userId = getAuthenticatedUserId(currentUser);
 
@@ -364,7 +379,15 @@ const cancelMyOrderService = async (currentUser, orderId) => {
             const items = await findItemsByOrderId(order._id, session);
 
             for (const item of items) {
-                await Product.updateOne({ _id: item.product }, { $inc: { stock: item.quantity } }, { session });
+                const restoreResult = await Product.updateOne(
+                    { _id: item.product },
+                    { $inc: { stock: item.quantity } },
+                    { session }
+                );
+
+                if (restoreResult.matchedCount !== 1) {
+                    throw AppError.create("A product from the order no longer exists", 409, FAIL);
+                }
             }
 
             order.orderStatus = "cancelled";

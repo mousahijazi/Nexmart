@@ -1415,16 +1415,19 @@ export async function updateBackendOrder(orderId, shippingInfo, token) {
 }
 
 export async function replaceBackendOrderItems(orderId, items, coupon, token) {
-  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}/items`,
+  return orderApiRequest(
+    `/api/v1/orders/${encodeURIComponent(orderId)}/items`,
     {
       method: "PATCH",
       token,
       body: {
         items: items.map((item) => ({
-          productId: item.productId ?? item._id,
-          quantity: item.quantity || 1,
+          productId:
+            typeof item.product === "object"
+              ? item.product._id
+              : item.productId ?? item.product ?? item._id,
+          quantity: item.quantity,
         })),
-
         coupon: coupon?.trim().toLowerCase() || "",
       },
     }

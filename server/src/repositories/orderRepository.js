@@ -47,6 +47,10 @@ const updateOrderById = async (orderId, update, session) => {
     ).populate("totalItems");
 };
 
+const deleteOrderById = async (orderId, session) => {
+    return Order.findByIdAndDelete(orderId).session(session || null);
+};
+
 export {
     createOrder,
     findOrderById,
@@ -57,4 +61,5 @@ export {
     findAllOrders,
     countAllOrders,
     countOrdersByStatus,
+    deleteOrderById,
 };

@@ -1,4 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
+import { OrderActionButtons } from "@/index";
 
 export default function OrderSummaryRow({isPaid, isPending, isFailed, order, goToPayment}) {
     const t = useTranslations("profile.orders");
@@ -67,6 +68,9 @@ export default function OrderSummaryRow({isPaid, isPending, isFailed, order, goT
         <div className="font-bold text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">
             {order.totalPrice.toFixed(2)} 
             <span className={`text-xs ${locale === "ar" ? "mr-2" : "ml-2"}`}>ر.س</span>
+        </div>
+        <div>
+            <OrderActionButtons order={order} />
         </div>
     </>
   )

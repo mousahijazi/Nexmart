@@ -6,6 +6,7 @@ import WishlistProvider from "./WishlistProvider";
 import CheckoutProvider from "./CheckoutProvider";
 import AdminProvider from "./Adminprovider";
 import ReviewProvider from "./ReviewProvider";
+import OrdersProvider from "./OrdersContext";
 
 export default function ContextProviders({children}) {
   return (
@@ -15,11 +16,13 @@ export default function ContextProviders({children}) {
           <AdminProvider>
             <ReviewProvider>
               <CheckoutProvider>
-                <ProductProvider>
-                  <WishlistProvider>
-                    {children}
-                  </WishlistProvider>
-                </ProductProvider>
+                <OrdersProvider>
+                  <ProductProvider>
+                    <WishlistProvider>
+                      {children}
+                    </WishlistProvider>
+                  </ProductProvider>
+                </OrdersProvider>
               </CheckoutProvider>
             </ReviewProvider>
           </AdminProvider>

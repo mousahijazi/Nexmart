@@ -5,7 +5,7 @@ import { ERROR, FAIL } from "../../utils/httpStatusText.js";
 import { priceCart } from "../cartService.js";
 import { toMinorUnits, fromMinorUnits } from "../../utils/moneyUtils.js";
 import getAuthenticatedUserId from "../../utils/getAuthenticatedUserId.js";
-import { createOrder, findUserOrderById, findOrdersByUser, countUserOrders } from "../../repositories/orderRepository.js";
+import { createOrder, findUserOrderById, findOrdersByUser, countUserOrders, deleteOrderById } from "../../repositories/orderRepository.js";
 import { findOrderItemsPage, countOrderItemsByOrderId, createOrderItems, findItemsByOrderId, deleteItemsByOrderId } from "../../repositories/orderItemRepository.js";
 
 const SHIPPING_PRICE_MINOR = 1500;
@@ -362,7 +362,7 @@ const cancelMyOrderService = async (currentUser, orderId) => {
     }
 
     const session = await mongoose.startSession();
-    let cancelledOrder;
+    let deletedOrder;
 
     try {
         await session.withTransaction(async () => {
@@ -390,16 +390,15 @@ const cancelMyOrderService = async (currentUser, orderId) => {
                 }
             }
 
-            order.orderStatus = "cancelled";
-            await order.save({ session });
+            await deleteItemsByOrderId(order._id, session);
 
-            cancelledOrder = order;
+            deletedOrder = await deleteOrderById(order._id, session);
         });
     } finally {
         await session.endSession();
     }
 
-    return cancelledOrder;
+    return deletedOrder;
 };
 
 export {

@@ -207,6 +207,12 @@ export {default as OrderSummaryRow} from "./components/Dashboard/orderDashboard/
 export {default as LatestOrderTracking} from "./components/Dashboard/UserDashboard/LatestOrderTracking";
 export {default as StatsSection} from "./components/Dashboard/UserDashboard/StatsSection";
 export {default as OrderDashboardButton} from "./components/Dashboard/orderDashboard/OrderDashboardButton";
+export {default as OrderActionButtons} from "./components/Dashboard/orderDashboard/OrderActionButtons";
+
+export {default as OrderManagementModal} from "./components/Dashboard/orderDashboard/orderModal/OrderManagementModal";
+export {default as OrderShippingForm} from "./components/Dashboard/orderDashboard/orderModal/OrderShippingForm";
+export {default as OrderItemsForm} from "./components/Dashboard/orderDashboard/orderModal/OrderItemsForm";
+export {default as OrderModalFooter} from "./components/Dashboard/orderDashboard/orderModal/OrderModalFooter";
 
 // checkout
 export {default as CheckoutForm} from "./components/Checkout/CheckoutForm";

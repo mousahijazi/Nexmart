@@ -60,10 +60,6 @@ export default function OrdersHeader() {
             <h1 className="text-[25px] font-medium leading-none tracking-[-0.035em] text-[var(--color-ink)] sm:text-[29px]">
               Orders Management
             </h1>
-
-            <span className="rounded-full bg-[var(--color-green-light)] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-[var(--color-green-dark)]">
-              Demo Data
-            </span>
           </div>
 
           <p className="mt-2 max-w-[650px] text-[11px] leading-[1.45] text-[var(--color-soft-2)] sm:text-[13px]">

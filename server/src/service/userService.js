@@ -42,7 +42,7 @@ export const registerUserService = async ({firstName, lastName, email, password,
     slug,
   });
 
-  const token = await generateJWT({email: email, id: newUser._id, role: newUser.role});
+  const token = await generateJWT({email: email, id: newUser._id, role: newUser.role}, "7d");
   newUser.token = token;
 
   await newUser.save();
@@ -70,7 +70,9 @@ export const loginUserService = async (email, password) => {
     throw AppError.create("This account is inactive", 403, FAIL);
   }
 
-  const token = await generateJWT({email: user.email, id: user._id, role: user.role});
+  const tokenExpiration = user.role === "ADMIN" ? "1d" : "7d";
+
+  const token = await generateJWT({email: user.email, id: user._id, role: user.role}, tokenExpiration);
   const userResponse = user.toObject();
   delete userResponse.password;
   userResponse.token = token; 

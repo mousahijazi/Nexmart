@@ -40,7 +40,7 @@ const createDefaultAdmin = async () => {
     // const slug = await generateSlug({model: User, slugSource: (body) => `${body.firstName} ${body.lastName}`});
     // adminUser.slug = slug;
 
-    const token = await generateJWT({email: adminUser.email, id: adminUser._id, role: adminUser.role}, "30d");
+    const token = await generateJWT({email: adminUser.email, id: adminUser._id, role: adminUser.role}, "1d");
     adminUser.token = token;
 
     await adminUser.save();

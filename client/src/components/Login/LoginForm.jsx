@@ -1,6 +1,6 @@
 "use client" 
 import { useState } from "react"; 
-import {useUserContext} from "../../Context/UserProvider"; 
+import { useUserContext } from "../../Context/UserProvider"; 
 import { useForm } from "react-hook-form"; 
 import { registerSchema } from "../../lib/schemas/paymentSchema"; 
 import { zodResolver } from "@hookform/resolvers/zod"; 
@@ -8,12 +8,17 @@ import { Eye, EyeOff } from "lucide-react";
 import { RHFerrors } from "../../index"; 
 import { useTranslations, useLocale } from "next-intl"; 
  
-export default function LoginForm({isLogin}) { 
+export default function LoginForm({ isLogin }) { 
     const t = useTranslations(); 
     const locale = useLocale(); 
-    const {login} = useUserContext(); 
-    const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(registerSchema(isLogin))}); 
+    const { login } = useUserContext(); 
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+        resolver: zodResolver(registerSchema(isLogin))
+    }); 
+
     const [showPassword, setShowPassword] = useState(false); 
+    const [authError, setAuthError] = useState(""); 
+
     let submitting = isSubmitting; 
      
     const FormNameData = [ 
@@ -29,39 +34,46 @@ export default function LoginForm({isLogin}) {
         }, 
     ]; 
  
-    const onSubmit = async (data) => { 
-        await login(data, isLogin); 
-    }; 
+    
+    const onSubmit = async (data) => {
+        setAuthError("");
+        const result = await login(data, isLogin);
+
+        if (!result.success) {
+            setAuthError(result.message || "Something went wrong. Please try again.");
+        }
+    };
+
  
   return ( 
     <form onSubmit={handleSubmit(onSubmit)} className="mt-10 grid grid-cols-1 items-end gap-3"> 
         {!isLogin && ( 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> 
-                {FormNameData.map(({text, apiKey, error}, index) => { 
+                {FormNameData.map(({ text, apiKey, error }, index) => { 
                     return( 
-                            <div key={index}> 
-                                <label className="block mb-2 text-sm font-semibold text-[#3C4A44] dark:text-gray-300"> 
-                                    {text} 
-                                </label> 
-                                <input 
-                                    type="text" 
-                                    {...register(apiKey)} 
-                                    placeholder={t("auth.form.namePlaceholder", {text: text})} 
-                                    className=" 
-                                        w-full 
-                                        text-[#3C4A44] dark:text-gray-100 
-                                        bg-[#FAF9F4] dark:bg-[#121a17] 
-                                        font-semibold 
-                                        px-4 py-3 
-                                        rounded-xl 
-                                        border-2 border-[#E2E0D5] dark:border-[#22332e] 
-                                        outline-none 
-                                        focus:border-[#0E4D3A] dark:focus:border-[#A7D0BF] 
-                                        transition 
-                                    " 
-                                /> 
-                                <RHFerrors errors={error} /> 
-                            </div> 
+                        <div key={index}> 
+                            <label className="block mb-2 text-sm font-semibold text-[#3C4A44] dark:text-gray-300"> 
+                                {text} 
+                            </label> 
+                            <input 
+                                type="text" 
+                                {...register(apiKey)} 
+                                placeholder={t("auth.form.namePlaceholder", { text: text })} 
+                                className=" 
+                                    w-full 
+                                    text-[#3C4A44] dark:text-gray-100 
+                                    bg-[#FAF9F4] dark:bg-[#121a17] 
+                                    font-semibold 
+                                    px-4 py-3 
+                                    rounded-xl 
+                                    border-2 border-[#E2E0D5] dark:border-[#22332e] 
+                                    outline-none 
+                                    focus:border-[#0E4D3A] dark:focus:border-[#A7D0BF] 
+                                    transition 
+                                " 
+                            /> 
+                            <RHFerrors errors={error} /> 
+                        </div> 
                     ) 
                 })} 
             </div> 
@@ -133,10 +145,16 @@ export default function LoginForm({isLogin}) {
             </button> 
         </div> 
         <RHFerrors errors={errors.password} /> 
- 
+
         <button className="cursor-pointer px-7 py-3 text-center bg-[var(--color-green-dark)] dark:bg-[#16382e] text-white rounded-full font-medium hover:opacity-90 transition"> 
-            {submitting ? "Processing..." : isLogin ? "Sign In" : "Sign Up" } 
+            {submitting ? "Processing..." : isLogin ? "Sign In" : "Sign Up"} 
         </button> 
+
+        {authError && (
+            <div className="mt-2 text-center text-sm font-semibold text-red-500 bg-red-100 dark:bg-red-950/40 p-3 rounded-xl border border-red-300 dark:border-red-800">
+                {authError}
+            </div>
+        )}
     </form> 
   ) 
 }

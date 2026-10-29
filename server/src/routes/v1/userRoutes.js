@@ -8,6 +8,7 @@ import {authorizeRoles} from "../../middlewares/role.js";
 import { authToken } from "../../middlewares/auth.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
 import { uploadUserImage } from "../../middlewares/uploadmiddleware/uploadUserMiddleware.js";
+import { registerRateLimit, loginRateLimit } from "../../middlewares/authRateLimit.js";
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.route("/me")
 
 router.route("/register")
         .post(
+                registerRateLimit,
                 registerValidator, 
                 validate, 
                 generateSlug({
@@ -30,7 +32,7 @@ router.route("/register")
         );
 
 router.route("/login")
-        .post(validate, loginUser);
+        .post(loginRateLimit, validate, loginUser);
 
 router.route("/logout")
         .post(authToken, logoutUser);

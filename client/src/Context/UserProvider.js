@@ -65,7 +65,10 @@ export default function UserProvider({children}) {
 
     if (!result.success) {
       showAlert(result.message, "danger");
-      return { success: false };
+      return { 
+        success: false, 
+        message: result.message || "Something went wrong. Please try again." 
+      };
     }
 
     if (!result.token) {

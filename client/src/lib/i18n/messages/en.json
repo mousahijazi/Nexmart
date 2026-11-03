@@ -533,5 +533,187 @@
                 "placeholder": "Write your message here..."
             }
         }
+    },
+    "Admin": {
+        "navigation": {
+            "quickNavigation": "Quick Navigation",
+            "dashboard": "Dashboard",
+            "allOrders": "All Orders",
+            "inventory": "Inventory",
+            "brands": "Brands",
+            "categories": "Categories",
+            "products": "Products",
+            "offers": "Offers",
+            "seasons": "Seasons",
+            "customers": "Customers",
+            "settlements": "Settlements",
+            "deals": "Deals & Promotions",
+            "reports": "Reports & SLA",
+            "settings": "Settings"
+        },
+        "fulfillment": {
+            "title": "Fulfillment Hub",
+            "defaultLocation": "Riyadh Central Cluster"
+        },
+        "dashboard": {
+            "consoleTitle": "Platform Administration Console",
+            "greeting": "Welcome, {name}",
+            "description": "Manage the Nexmart marketplace from one place. Monitor order fulfillment, payments, inventory, and merchant operations across the platform.",
+            "exportAudit": "Export Financial Audit CSV",
+            "addProduct": "Add New Product",
+            "heroStats": {
+                "dailyGmv": "Daily GMV",
+                "fulfillmentSla": "Fulfillment SLA",
+                "activeCartSessions": "Active Cart Sessions"
+            },
+            "stats": {
+                "totalRevenue": "Total Platform Revenue",
+                "activeOrders": "Total Active Orders",
+                "registeredAccounts": "Registered Users & Sellers",
+                "catalogSkus": "Catalog & Active SKUs",
+                "pending": "Pending",
+                "activeDatabase": "Active Database",
+                "products": "Products",
+                "lowStock": "Low Stock",
+                "vsLastMonth": "vs. last month"
+            },
+            "fallbackTitle": "Dashboard Home"
+        },
+        "products": {
+            "title": "Products & Inventory",
+            "catalogBadge": "GCC CATALOG",
+            "description": "Manage your multi-vendor catalog, bilingual product descriptions, stock levels, and regional pricing across Saudi Arabia.",
+            "exportCatalog": "Export Catalog CSV",
+            "addProduct": "Add New Product",
+            "search": "Search SKU, product title (EN/AR), or brand...",
+            "searchLabel": "Search products",
+            "allCategories": "All Categories",
+            "allBrands": "All Brands",
+            "allStockLevels": "All Stock Levels",
+            "stock": {
+                "inStock": "In Stock",
+                "lowStock": "Low Stock",
+                "outOfStock": "Out of Stock",
+                "units": "{count} units"
+            },
+            "catalogStatus": {
+                "active": "Active",
+                "draft": "Draft"
+            },
+            "table": {
+                "productDetail": "Product Detail",
+                "category": "Category",
+                "brand": "Brand",
+                "unitPrice": "Unit Price",
+                "stockLevel": "Stock Level",
+                "catalogStatus": "Catalog Status",
+                "empty": "No products found."
+            },
+            "pagination": {
+                "showing": "Showing",
+                "of": "of",
+                "products": "products",
+                "rowsPerPage": "Rows per page",
+                "perPage": "{count} / page",
+                "page": "Page {current} of {total}"
+            },
+            "mobile": {
+                "catalog": "Product Catalog",
+                "clearSelection": "Clear selection",
+                "selectAll": "Select all"
+            },
+            "actions": {
+                "restore": "Restore Product",
+                "archive": "Archive Product",
+                "restoreNamed": "Restore {name}",
+                "archiveNamed": "Archive {name}",
+                "bulk": "Bulk Actions",
+                "updateStock": "Update Stock",
+                "changeCategory": "Change Category",
+                "changeStatus": "Change Status"
+            },
+            "stats": {
+                "totalSkus": "TOTAL SKUS",
+                "addedThisMonth": "added this month",
+                "activeInStock": "ACTIVE IN STOCK",
+                "fulfillmentReady": "fulfillment SLA ready",
+                "lowStockAlerts": "LOW STOCK ALERTS",
+                "orderedForSkus": "ordered for {count} SKUs",
+                "outOfStock": "OUT OF STOCK",
+                "restockPending": "restock pending",
+                "replenishment": "Replenishment",
+                "criticalAction": "Critical Action"
+            },
+            "categories": {
+                "uncategorized": "Uncategorized",
+                "oudPerfumes": "Oud & Perfumes",
+                "gourmetFood": "Gourmet Food",
+                "artisanCrafts": "Artisan Crafts",
+                "modestWear": "Modest Wear"
+            },
+            "brands": {
+                "noBrand": "No Brand"
+            },
+            "sku": "SKU",
+            "unknownProduct": "Untitled product",
+            "currency": "SAR",
+            "notAvailable": "N/A"
+        },
+        "categories": {
+            "title": "Categories",
+            "description": "Manage product taxonomy, bilingual hierarchy, and assigned catalog listings.",
+            "addCategory": "Add New Category",
+            "loading": "Loading categories...",
+            "stats": {
+                "total": "Total Categories",
+                "totalDescription": "Total registered categories",
+                "withProducts": "Categories With Products",
+                "coverageDescription": "Catalog coverage",
+                "empty": "Empty Categories",
+                "emptyDescription": "Products need to be assigned",
+                "uncategorized": "Uncategorized Products",
+                "uncategorizedDescription": "Classification required"
+            },
+            "filters": {
+                "statusLabel": "Filter by status",
+                "searchLabel": "Search categories",
+                "searchPlaceholder": "Search category name (EN/AR)...",
+                "allStatuses": "All Statuses",
+                "active": "Active",
+                "archived": "Archived"
+            },
+            "table": {
+                "category": "Category",
+                "parentCategory": "Parent Category",
+                "products": "Products",
+                "status": "Status",
+                "actions": "Actions",
+                "empty": "No matching categories found.",
+                "showing": "Showing {start} - {end} of {total} categories",
+                "previousPage": "Previous page",
+                "nextPage": "Next page",
+                "goToPage": "Go to page {page}",
+                "rowsPerPage": "Rows per page:"
+            },
+            "row": {
+                "active": "Active",
+                "archived": "Archived",
+                "unnamed": "Unnamed",
+                "root": "Root Category",
+                "expand": "Expand category",
+                "collapse": "Collapse category",
+                "archive": "Archive",
+                "restore": "Restore",
+                "archiveCategory": "Archive {name}",
+                "restoreCategory": "Restore {name}",
+                "loading": "Loading...",
+                "loadingProducts": "Loading products...",
+                "featuredProducts": "Products in this category",
+                "productsCount": "{count} products",
+                "loadMore": "Load More",
+                "noProducts": "No products in this category",
+                "noProductsDescription": "This category currently has no assigned products."
+            }
+        }
     }
 }

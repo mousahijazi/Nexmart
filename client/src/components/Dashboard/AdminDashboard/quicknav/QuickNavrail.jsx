@@ -1,10 +1,12 @@
 "use client";
 import { PanelLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { QuickNavItems } from "./QuickNavItems";
 import { FulfillmentHubCard } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function QuickNavRail() {
+  const t = useTranslations("Admin.navigation");
   const { activeSection, setActiveSection } = useAdminContext();
 
   return (
@@ -12,27 +14,30 @@ export default function QuickNavRail() {
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
         <div className="flex items-center justify-between px-1.5 pb-2">
           <span className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted-2)]">
-            Quick Navigation
+            {t("quickNavigation")}
           </span>
-          <PanelLeft size={14} className="text-[var(--color-muted-3)]" />
+
+          <PanelLeft size={14} aria-hidden="true" className="text-[var(--color-muted-3)]" />
         </div>
 
-        <nav className="flex flex-col gap-0.5">
-          {QuickNavItems.map(({ key, label, icon: Icon }) => {
+        <nav aria-label={t("quickNavigation")} className="flex flex-col gap-0.5">
+          {QuickNavItems.map(({ key, translationKey, icon: Icon }) => {
             const isActive = key === activeSection;
+
             return (
               <button
                 key={key}
                 type="button"
                 onClick={() => setActiveSection(key)}
+                aria-current={isActive ? "page" : undefined}
                 className={
                   isActive
                     ? "flex items-center gap-2.5 rounded-lg bg-[var(--color-green)] px-2.5 py-2 text-sm font-medium text-white"
                     : "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-[var(--color-soft-2)] hover:bg-[var(--color-sand)]"
                 }
               >
-                <Icon size={16} strokeWidth={2} className="shrink-0" />
-                <span className="truncate">{label}</span>
+                <Icon size={16} strokeWidth={2} aria-hidden="true" className="shrink-0" />
+                <span className="truncate">{t(translationKey)}</span>
               </button>
             );
           })}

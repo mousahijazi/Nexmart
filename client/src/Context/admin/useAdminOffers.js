@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getOffers, createOffer, updateOffer, updateOfferStatus } from "@/helper/fetchApi";
 
-export default function useAdminOffers({ showAlert }) {
+export default function useAdminOffers({ showAlert, enabled }) {
   const [offers, setOffers] = useState([]);
   const [offersLoading, setOffersLoading] = useState(true);
 
@@ -52,8 +52,10 @@ export default function useAdminOffers({ showAlert }) {
   }, [showAlert]);
 
   useEffect(() => {
+    if (!enabled) return;
+
     fetchOffers(offersPage, offersLimit);
-  }, [offersPage, offersLimit, fetchOffers]);
+  }, [offersPage, offersLimit, fetchOffers, enabled]);
 
   const openOfferModal = () => {
     setOfferModalMode("create");

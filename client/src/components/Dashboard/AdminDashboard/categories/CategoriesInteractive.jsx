@@ -2,23 +2,31 @@
 import { useMemo, useState } from "react";
 import { CategoriesFilters, CategoriesTable } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
+import { useTranslations } from "next-intl";
 
 export default function CategoriesInteractive() {
+  const t = useTranslations("Admin.categories");
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("All Statuses");
-  const { categories, categoriesLoading } = useAdminContext();
+  const [status, setStatus] = useState("all");
+
+  const { categories = [], categoriesLoading } = useAdminContext();
 
   const filteredCategories = useMemo(() => {
-    const value = search.trim().toLowerCase();
+    const value = search.trim().toLocaleLowerCase();
 
-    return (categories || []).filter((category) => {
+    return categories.filter((category) => {
+      const englishName = category.name?.en || "";
+      const arabicName = category.name?.ar || "";
+
       const matchesSearch =
         !value ||
-        category.name.en.toLowerCase().includes(value) ||
-        category.name.ar.toLowerCase().includes(value);
+        englishName.toLocaleLowerCase().includes(value) ||
+        arabicName.includes(value);
 
-      const categoryStatus = category.isActive ? "Active" : "Archived";
-      const matchesStatus = status === "All Statuses" || categoryStatus === status;
+      const categoryStatus = category.isActive ? "active" : "archived";
+
+      const matchesStatus =
+        status === "all" || categoryStatus === status;
 
       return matchesSearch && matchesStatus;
     });
@@ -36,7 +44,7 @@ export default function CategoriesInteractive() {
       {categoriesLoading ? (
         <div className="flex items-center justify-center py-16">
           <p className="text-[12px] text-[var(--color-soft)]">
-            جاري تحميل الفئات...
+            {t("loading")}
           </p>
         </div>
       ) : (

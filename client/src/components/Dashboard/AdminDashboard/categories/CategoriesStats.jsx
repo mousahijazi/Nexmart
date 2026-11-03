@@ -1,4 +1,5 @@
 import { FolderOpen, CheckCircle2, ShoppingCart, AlertCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 function StatCard({ title, value, icon: Icon, variant = "default", description }) {
   const variants = {
@@ -7,13 +8,11 @@ function StatCard({ title, value, icon: Icon, variant = "default", description }
       value: "text-[var(--color-green-dark)]",
       description: "bg-[var(--color-mint)] text-[var(--color-green-dark)]",
     },
-
     warning: {
       icon: "text-[var(--color-gold-dark)]",
       value: "text-[var(--color-green-dark)]",
       description: "bg-[var(--color-gold-light)] text-[var(--color-gold-dark)]",
     },
-
     danger: {
       icon: "text-red-500",
       value: "text-[var(--color-green-dark)]",
@@ -32,8 +31,9 @@ function StatCard({ title, value, icon: Icon, variant = "default", description }
 
         <Icon size={20} className={style.icon} />
       </div>
+
       <p className={`text-[30px] font-medium leading-none tracking-[-0.04em] ${style.value}`}>
-        {value}
+        {Number(value || 0).toLocaleString()}
       </p>
 
       {description && (
@@ -46,36 +46,38 @@ function StatCard({ title, value, icon: Icon, variant = "default", description }
 }
 
 export default function CategoriesStats({ stats }) {
+  const t = useTranslations("Admin.categories.stats");
+
   return (
     <section className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <StatCard
-        title="Total Categories"
+        title={t("total")}
         value={stats.total}
         icon={FolderOpen}
-        description="+3 added this month"
+        description={t("totalDescription")}
       />
 
       <StatCard
-        title="Categories With Products"
+        title={t("withProducts")}
         value={stats.withProducts}
         icon={CheckCircle2}
-        description="87.5% catalog coverage"
+        description={t("coverageDescription")}
       />
 
       <StatCard
-        title="Empty Categories"
+        title={t("empty")}
         value={stats.empty}
         icon={ShoppingCart}
         variant="warning"
-        description="Action required: assign SKUs"
+        description={t("emptyDescription")}
       />
 
       <StatCard
-        title="Uncategorized Products"
+        title={t("uncategorized")}
         value={stats.uncategorized}
         icon={AlertCircle}
         variant="danger"
-        description="Requires classification"
+        description={t("uncategorizedDescription")}
       />
     </section>
   );

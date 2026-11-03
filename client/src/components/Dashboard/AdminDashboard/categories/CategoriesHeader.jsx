@@ -1,9 +1,11 @@
-"use client"
-import { Download, FolderTree } from "lucide-react";
+"use client";
+import { FolderTree } from "lucide-react";
 import { AdminAddButton } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
+import { useTranslations } from "next-intl";
 
 export default function CategoriesHeader() {
+  const t = useTranslations("Admin.categories");
   const { openCategoryModal } = useAdminContext();
 
   return (
@@ -15,25 +17,20 @@ export default function CategoriesHeader() {
 
         <div className="min-w-0">
           <h1 className="text-[25px] font-medium leading-none tracking-[-0.035em] text-[var(--color-ink)] sm:text-[29px]">
-            Categories
+            {t("title")}
           </h1>
+
           <p className="mt-2 max-w-[650px] text-[11px] leading-[1.45] text-[var(--color-soft-2)] sm:text-[13px]">
-            Manage platform product taxonomy, bilingual hierarchy,
-            and assigned catalog listings.
+            {t("description")}
           </p>
         </div>
       </div>
 
       <div className="flex w-full flex-wrap items-center gap-2 xl:w-auto">
-        <button
-          type="button"
-          className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[11px] font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-sand)]"
-        >
-          <Download size={16} />
-          <span>Export Categories<span className="sm:ml-1">CSV</span></span>
-        </button>
-
-        <AdminAddButton label="Add New Category" onClick={openCategoryModal} />
+        <AdminAddButton
+          label={t("addCategory")}
+          onClick={openCategoryModal}
+        />
       </div>
     </section>
   );

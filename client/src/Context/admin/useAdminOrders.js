@@ -6,7 +6,7 @@ import { useUserContext } from "../UserProvider";
 const ORDERS_LIMIT = 10;
 const ORDER_ITEMS_LIMIT = 10;
 
-export default function useAdminOrders({ showAlert }) {
+export default function useAdminOrders({ showAlert, enabled }) {
   const { user, loading } = useUserContext();
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
@@ -57,12 +57,13 @@ export default function useAdminOrders({ showAlert }) {
   );
 
   useEffect(() => {
+    if (!enabled) return;
     if (loading) return;
 
     if (user.role === "ADMIN") {
       fetchOrders({ page: 1 });
     }
-  }, [fetchOrders]);
+  }, [fetchOrders, loading, user?.role, enabled]);
 
   const fetchOrderItems = useCallback(async (orderId, page = 1) => {
     const alreadyLoaded = Object.prototype.hasOwnProperty.call(orderItems, orderId);

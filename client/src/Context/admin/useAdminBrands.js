@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getBrand, getBrandProducts, createBrand, updateBrand, updateBrandStatus } from "@/helper/fetchApi";
 
-export default function useAdminBrands({ showAlert }) {
+export default function useAdminBrands({ showAlert, enabled }) {
   const [brandProducts, setBrandProducts] = useState({});
 
   const [brands, setBrands] = useState([]);
@@ -51,8 +51,10 @@ export default function useAdminBrands({ showAlert }) {
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
+
     fetchBrands(brandsPage, brandsLimit);
-  }, [brandsPage, brandsLimit, fetchBrands]);
+  }, [brandsPage, brandsLimit, fetchBrands, enabled]);
 
   const addBrand = async (formData) => {
     const token = localStorage.getItem("nexmart-token");
@@ -166,51 +168,50 @@ export default function useAdminBrands({ showAlert }) {
       }));
   }, []);
 
-  const loadMoreBrandProducts = useCallback(
-    async (brandId, categorySlug) => {
-      const currentBrand = brandProducts[brandId];
+  const loadMoreBrandProducts = useCallback(async (brandId, categorySlug) => {
+    const currentBrand = brandProducts[brandId];
 
-      if (!currentBrand) return;
-      if (currentBrand.loading) return;
+    if (!currentBrand) return;
+    if (currentBrand.loading) return;
 
-      if (currentBrand.page >= currentBrand.totalPages) {
-        return;
-      }
+    if (currentBrand.page >= currentBrand.totalPages) {
+      return;
+    }
 
-      const token = localStorage.getItem("nexmart-token");
+    const token = localStorage.getItem("nexmart-token");
 
-      if (!token) {
-        showAlert("You are not authenticated", "danger");
-        return { success: false };
-      }
+    if (!token) {
+      showAlert("You are not authenticated", "danger");
+      return { success: false };
+    }
 
-      const nextPage = currentBrand.page + 1;
+    const nextPage = currentBrand.page + 1;
 
-      setBrandProducts((current) => ({
-        ...current,
-        [brandId]: {
-          ...current[brandId],
-          loading: true,
-        },
-      }));
+    setBrandProducts((current) => ({
+      ...current,
+      [brandId]: {
+        ...current[brandId],
+        loading: true,
+      },
+    }));
 
-      const result = await getBrandProducts(categorySlug, 10, nextPage, token);
+    const result = await getBrandProducts(categorySlug, 10, nextPage, token);
 
-      setBrandProducts((current) => ({
-        ...current,
-        [brandId]: {
-          ...current[brandId],
-          products: [
-            ...(current[brandId]?.products || []),
-            ...result.products,
-          ],
-          loading: false,
-          page: result.page,
-          total: result.total,
-          totalPages: result.totalPages,
-        },
-      }));
-    }, [brandProducts, showAlert]);
+    setBrandProducts((current) => ({
+      ...current,
+      [brandId]: {
+        ...current[brandId],
+        products: [
+          ...(current[brandId]?.products || []),
+          ...result.products,
+        ],
+        loading: false,
+        page: result.page,
+        total: result.total,
+        totalPages: result.totalPages,
+      },
+    }));
+  }, [brandProducts, showAlert]);
 
   return {
     brands,

@@ -5,9 +5,7 @@ import { formatCategoryData, formatCategoryUpdateData } from "../utils/categoryD
 import asyncHandler from "../middlewares/asyncHandler.js";
 
 const getAllCategoriesController = async (req, res) => {
-    const {page = 1, limit = 10} = req.query;
-
-    const result = await getAllCategories({page: Number(page), limit: Number(limit)}, req?.userRole);
+    const result = await getAllCategories(req.query, req?.userRole);
 
     res.status(200).json({
         status: SUCCESS,

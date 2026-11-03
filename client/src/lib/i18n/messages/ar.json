@@ -533,5 +533,187 @@
                 "placeholder": "اكتب رسالتك هنا..."
             }
         }
+    },
+    "Admin": {
+        "navigation": {
+            "quickNavigation": "Quick Navigation",
+            "dashboard": "لوحة الحساب",
+            "allOrders": "كل الطلبات",
+            "inventory": "المخزن",
+            "brands": "العلامات التجارية",
+            "categories": "الاصناف",
+            "products": "المنتجات",
+            "offers": "العروض",
+            "seasons": "المواسم",
+            "customers": "المستخدمين",
+            "settlements": "Settlements",
+            "deals": "Deals & Promotions",
+            "reports": "Reports & SLA",
+            "settings": "الإعدادات"
+        },
+        "fulfillment": {
+            "title": "مركز تنفيذ الطلبات",
+            "defaultLocation": "المركز الرئيسي - الرياض"
+        },
+        "dashboard": {
+            "consoleTitle": "لوحة الإدارة والتحكم بالمنصة",
+            "greeting": "مرحبًا، {name}",
+            "description": "أدر سوق نكسمارت من مكان واحد. تابع تنفيذ الطلبات والمدفوعات والمخزون وعمليات التجار في جميع أنحاء المنصة.",
+            "exportAudit": "تصدير سجل التدقيق المالي CSV",
+            "addProduct": "إضافة منتج جديد",
+            "heroStats": {
+                "dailyGmv": "إجمالي قيمة البضائع اليومي",
+                "fulfillmentSla": "مستوى الالتزام بتنفيذ الطلبات",
+                "activeCartSessions": "جلسات سلة التسوق النشطة"
+            },
+            "stats": {
+                "totalRevenue": "إجمالي إيرادات المنصة",
+                "activeOrders": "إجمالي الطلبات النشطة",
+                "registeredAccounts": "المستخدمون والتجار المسجلون",
+                "catalogSkus": "المنتجات والوحدات النشطة",
+                "pending": "قيد الانتظار",
+                "activeDatabase": "قاعدة البيانات نشطة",
+                "products": "منتجات",
+                "lowStock": "مخزون منخفض",
+                "vsLastMonth": "مقارنة بالشهر الماضي"
+            },
+            "fallbackTitle": "الصفحة الرئيسية للوحة التحكم"
+        },
+        "products": {
+            "title": "المنتجات والمخزون",
+            "catalogBadge": "كتالوج دول مجلس التعاون",
+            "description": "أدر كتالوج المنتجات متعدد التجار، والأوصاف باللغتين، ومستويات المخزون، والأسعار الإقليمية في جميع أنحاء المملكة العربية السعودية.",
+            "exportCatalog": "تصدير كتالوج المنتجات CSV",
+            "addProduct": "إضافة منتج جديد",
+            "search": "ابحث برقم SKU أو اسم المنتج أو العلامة التجارية...",
+            "searchLabel": "البحث عن المنتجات",
+            "allCategories": "جميع التصنيفات",
+            "allBrands": "جميع العلامات التجارية",
+            "allStockLevels": "جميع مستويات المخزون",
+            "stock": {
+                "inStock": "متوفر",
+                "lowStock": "مخزون منخفض",
+                "outOfStock": "نفد المخزون",
+                "units": "{count} وحدة"
+            },
+            "catalogStatus": {
+                "active": "نشط",
+                "draft": "مسودة"
+            },
+            "table": {
+                "productDetail": "تفاصيل المنتج",
+                "category": "التصنيف",
+                "brand": "العلامة التجارية",
+                "unitPrice": "سعر الوحدة",
+                "stockLevel": "مستوى المخزون",
+                "catalogStatus": "حالة الكتالوج",
+                "empty": "لم يتم العثور على منتجات."
+            },
+            "pagination": {
+                "showing": "عرض",
+                "of": "من",
+                "products": "منتجًا",
+                "rowsPerPage": "عدد الصفوف في الصفحة",
+                "perPage": "{count} / صفحة",
+                "page": "الصفحة {current} من {total}"
+            },
+            "mobile": {
+                "catalog": "كتالوج المنتجات",
+                "clearSelection": "إلغاء التحديد",
+                "selectAll": "تحديد الكل"
+            },
+            "actions": {
+                "restore": "استعادة المنتج",
+                "archive": "أرشفة المنتج",
+                "restoreNamed": "استعادة {name}",
+                "archiveNamed": "أرشفة {name}",
+                "bulk": "إجراءات جماعية",
+                "updateStock": "تحديث المخزون",
+                "changeCategory": "تغيير التصنيف",
+                "changeStatus": "تغيير الحالة"
+            },
+            "stats": {
+                "totalSkus": "إجمالي وحدات SKU",
+                "addedThisMonth": "تمت إضافتها هذا الشهر",
+                "activeInStock": "منتجات نشطة ومتوفرة",
+                "fulfillmentReady": "جاهزية تنفيذ الطلبات",
+                "lowStockAlerts": "تنبيهات انخفاض المخزون",
+                "orderedForSkus": "تم طلبها لـ {count} من وحدات SKU",
+                "outOfStock": "منتجات نفد مخزونها",
+                "restockPending": "إعادة التوريد قيد الانتظار",
+                "replenishment": "إعادة التوريد",
+                "criticalAction": "إجراء عاجل"
+            },
+            "categories": {
+                "uncategorized": "غير مصنف",
+                "oudPerfumes": "العود والعطور",
+                "gourmetFood": "الأطعمة الفاخرة",
+                "artisanCrafts": "الحرف اليدوية",
+                "modestWear": "الأزياء المحتشمة"
+            },
+            "brands": {
+                "noBrand": "بدون علامة تجارية"
+            },
+            "sku": "رمز SKU",
+            "unknownProduct": "منتج بدون اسم",
+            "currency": "ريال",
+            "notAvailable": "غير متاح"
+        },
+        "categories": {
+            "title": "الأصناف",
+            "description": "إدارة تصنيفات منتجات المنصة، والتسلسل الهرمي ثنائي اللغة، والمنتجات المرتبطة بكل صنف.",
+            "addCategory": "إضافة صنف جديد",
+            "loading": "جارٍ تحميل الأصناف...",
+            "stats": {
+                "total": "إجمالي الأصناف",
+                "totalDescription": "إجمالي الأصناف المسجلة",
+                "withProducts": "أصناف تحتوي على منتجات",
+                "coverageDescription": "نسبة تغطية الكتالوج",
+                "empty": "الأصناف الفارغة",
+                "emptyDescription": "تحتاج إلى إضافة منتجات",
+                "uncategorized": "منتجات غير مصنفة",
+                "uncategorizedDescription": "تحتاج إلى تصنيف"
+            },
+            "filters": {
+                "statusLabel": "تصفية حسب الحالة",
+                "searchLabel": "البحث عن صنف",
+                "searchPlaceholder": "ابحث عن اسم الصنف بالعربية أو الإنجليزية...",
+                "allStatuses": "جميع الحالات",
+                "active": "نشط",
+                "archived": "مؤرشف"
+            },
+            "table": {
+                "category": "الصنف",
+                "parentCategory": "الصنف الرئيسي",
+                "products": "المنتجات",
+                "status": "الحالة",
+                "actions": "الإجراءات",
+                "empty": "لا توجد أصناف مطابقة.",
+                "showing": "عرض {start} - {end} من أصل {total} صنف",
+                "previousPage": "الصفحة السابقة",
+                "nextPage": "الصفحة التالية",
+                "goToPage": "الانتقال إلى الصفحة {page}",
+                "rowsPerPage": "عدد الصفوف:"
+            },
+            "row": {
+                "active": "نشط",
+                "archived": "مؤرشف",
+                "unnamed": "بدون اسم",
+                "root": "صنف رئيسي",
+                "expand": "توسيع الصنف",
+                "collapse": "طي الصنف",
+                "archive": "أرشفة",
+                "restore": "استعادة",
+                "archiveCategory": "أرشفة الصنف {name}",
+                "restoreCategory": "استعادة الصنف {name}",
+                "loading": "جارٍ التحميل...",
+                "loadingProducts": "جارٍ تحميل المنتجات...",
+                "featuredProducts": "المنتجات في هذا الصنف",
+                "productsCount": "{count} منتج",
+                "loadMore": "تحميل المزيد",
+                "noProducts": "لا توجد منتجات في هذا الصنف",
+                "noProductsDescription": "هذا الصنف لا يحتوي حالياً على منتجات مرتبطة به."
+            }
+        }
     }
 }

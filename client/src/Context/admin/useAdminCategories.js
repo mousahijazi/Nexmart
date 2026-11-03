@@ -1,8 +1,8 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { getCategories, getCategoryProducts, createCategory, updateCategory, updateCategoryStatus } from "@/helper/fetchApi";
 
-export default function useAdminCategories({ showAlert }) {
+export default function useAdminCategories({ showAlert, enabled }) {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesPage, setCategoriesPage] = useState(1);
@@ -33,23 +33,56 @@ export default function useAdminCategories({ showAlert }) {
     setCategoryModalMode("create");
   };
 
+  const categoriesRequestId = useRef(0);
+
   const fetchCategories = useCallback(async (page, limit) => {
+    const requestId = ++categoriesRequestId.current;
+
     setCategoriesLoading(true);
 
-    const token = localStorage.getItem("nexmart-token");
+    try {
+      const token = localStorage.getItem("nexmart-token");
 
-    const result = await getCategories(limit, page, token);
+      if (!token) {
+        setCategories([]);
+        setCategoriesTotal(0);
+        setCategoriesTotalPages(0);
+        return;
+      }
 
-    setCategories(result.categories);
-    setCategoriesTotal(result.total);
-    setCategoriesTotalPages(result.totalPages);
+      const result = await getCategories(limit, page, token);
 
-    setCategoriesLoading(false);
-  }, []);
+      if (requestId !== categoriesRequestId.current) return;
+
+      if (!result?.success && !Array.isArray(result?.categories)) {
+        throw new Error(result?.message || "Failed to fetch categories");
+      }
+
+      setCategories(result.categories || []);
+      setCategoriesTotal(result.total || 0);
+      setCategoriesTotalPages(result.totalPages || 0);
+    } catch (error) {
+      if (requestId === categoriesRequestId.current) {
+        console.error("Admin categories fetch error:", error);
+
+        showAlert?.(error.message || "Failed to load categories", "danger");
+      }
+    } finally {
+      if (requestId === categoriesRequestId.current) {
+        setCategoriesLoading(false);
+      }
+    }
+  }, [showAlert]);
 
   useEffect(() => {
+    if (!enabled) return;
+
     fetchCategories(categoriesPage, categoriesLimit);
-  }, [categoriesPage, categoriesLimit, fetchCategories]);
+
+    return () => {
+      categoriesRequestId.current += 1;
+    };
+  }, [enabled, categoriesPage, categoriesLimit, fetchCategories]);
 
   const addCategory = async (formData) => {
     const token = localStorage.getItem("nexmart-token");

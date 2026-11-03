@@ -4,7 +4,7 @@ import { getSeasons, createSeason, updateSeason, updateSeasonStatus, getAdminSea
 
 const SEASON_OFFERS_LIMIT = 10;
 
-export default function useAdminSeasons({ showAlert }) {
+export default function useAdminSeasons({ showAlert, enabled }) {
   const [seasons, setSeasons] = useState([]);
   const [seasonsLoading, setSeasonsLoading] = useState(true);
   const [seasonOffers, setSeasonOffers] = useState({});
@@ -57,8 +57,10 @@ export default function useAdminSeasons({ showAlert }) {
   }, [showAlert]);
 
   useEffect(() => {
+    if (!enabled) return;
+
     fetchSeasons(seasonsPage, seasonsLimit);
-  }, [seasonsPage, seasonsLimit, fetchSeasons]);
+  }, [seasonsPage, seasonsLimit, fetchSeasons, enabled]);
 
   const openSeasonModal = () => {
     setSeasonModalMode("create");

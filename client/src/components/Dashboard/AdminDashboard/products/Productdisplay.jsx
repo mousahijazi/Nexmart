@@ -1,19 +1,27 @@
 export function getStockStatus(stock) {
-  if (!stock || stock <= 0) return "Out of Stock";
-  if (stock <= 10) return "Low Stock";
-  return "In Stock";
+  if (!stock || stock <= 0) return "outOfStock";
+  if (stock <= 10) return "lowStock";
+  return "inStock";
 }
 
 export function getCatalogStatus(isActive) {
-  return isActive ? "Active" : "Draft";
+  return isActive ? "active" : "draft";
 }
 
-export function getCategoryName(product) {
-  return product.category?.name?.en || "Uncategorized";
+export function getCategoryName(product, locale = "en") {
+  const name = product.category?.name;
+
+  if (typeof name === "string") return name;
+
+  return (name?.[locale] || name?.en || name?.ar || "");
 }
 
-export function getBrandName(product) {
-  return product.brand?.name?.en || "No Brand";
+export function getBrandName(product, locale = "en") {
+  const name = product.brand?.name;
+
+  if (typeof name === "string") return name;
+
+  return (name?.[locale] || name?.en || name?.ar || "");
 }
 
 export function getDisplaySku(product) {

@@ -15,16 +15,16 @@ export default function AdminProvider({ children }) {
   const [activeSection, setActiveSection] = useState("dashboard");
   const { showAlert } = useAlertContext();
 
-  const productsAdmin = useAdminProducts({ showAlert });
-  const categoriesAdmin = useAdminCategories({ showAlert });
-  const brandsAdmin = useAdminBrands({ showAlert });
+  const productsAdmin = useAdminProducts({ showAlert, enabled: activeSection === "products" });
+  const categoriesAdmin = useAdminCategories({ showAlert, enabled: activeSection === "categories" });
+  const brandsAdmin = useAdminBrands({ showAlert, enabled: activeSection === "brand" });
+
+  const offersAdmin = useAdminOffers({ showAlert, enabled: activeSection === "offers" });
+  const seasonsAdmin = useAdminSeasons({ showAlert, enabled: activeSection === "seasons" });
+
+  const ordersAdmin = useAdminOrders({ showAlert, enabled: activeSection === "all-orders" });
   
   const usersAdmin = useAdminUsers();
-
-  const offersAdmin = useAdminOffers({ showAlert });
-  const seasonsAdmin = useAdminSeasons({ showAlert });
-
-  const ordersAdmin = useAdminOrders({ showAlert });
 
   const value = {
     activeSection,

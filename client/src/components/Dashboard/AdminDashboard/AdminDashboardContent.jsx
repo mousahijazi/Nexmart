@@ -1,5 +1,6 @@
 "use client";
 import { useAdminContext } from "@/Context/Adminprovider";
+import { useTranslations } from "next-intl";
 // import AllOrdersPage from "./pages/AllOrdersPage";
 // import InventoryPage from "./pages/InventoryPage";
 // import CategoriesPage from "./pages/CategoriesPage";
@@ -27,10 +28,22 @@ const PAGES = {
 
 export default function AdminDashboardContent() {
   const { activeSection } = useAdminContext();
-  const ActivePage = PAGES[activeSection] ||(() => <h1>Dashboard Home</h1>);
+  const t = useTranslations("Admin.dashboard");
+
+  const ActivePage = PAGES[activeSection] || null;
+
+  if (!ActivePage) {
+    return (
+      <div className="flex flex-1 flex-col gap-6">
+        <h1 className="text-xl font-semibold text-[var(--color-ink)]">
+          {t("fallbackTitle")}
+        </h1>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-1 flex-col gap-6">
+    <div className="flex min-w-0 flex-1 flex-col gap-6">
       <ActivePage />
     </div>
   );

@@ -1,54 +1,55 @@
 "use client";
-import { useMemo, useState } from "react";
-import { CategoriesFilters, CategoriesTable } from "@/index";
+import { useEffect, useState } from "react";
+import { CategoriesFilters, CategoriesTable, CategoriesTableSkeleton } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
-import { useTranslations } from "next-intl";
 
 export default function CategoriesInteractive() {
-  const t = useTranslations("Admin.categories");
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("all");
+  const { categories, categoriesLoading, categoriesSearch, searchCategories, categoriesStatusFilter, filterCategoriesByStatus, resetCategoriesFilters, categoriesPage, categoriesLimit, categoriesTotal, categoriesTotalPages, changeCategoriesPage, setCategoriesLimit } = useAdminContext();
+  const [searchInput, setSearchInput] = useState(categoriesSearch);
 
-  const { categories = [], categoriesLoading } = useAdminContext();
+  useEffect(() => {
+    setSearchInput(categoriesSearch);
+  }, [categoriesSearch]);
 
-  const filteredCategories = useMemo(() => {
-    const value = search.trim().toLocaleLowerCase();
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchInput !== categoriesSearch) {
+        searchCategories(searchInput);
+      }
+    }, 350);
 
-    return categories.filter((category) => {
-      const englishName = category.name?.en || "";
-      const arabicName = category.name?.ar || "";
+    return () => clearTimeout(timeoutId);
+  }, [searchInput, categoriesSearch, searchCategories]);
 
-      const matchesSearch =
-        !value ||
-        englishName.toLocaleLowerCase().includes(value) ||
-        arabicName.includes(value);
-
-      const categoryStatus = category.isActive ? "active" : "archived";
-
-      const matchesStatus =
-        status === "all" || categoryStatus === status;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [categories, search, status]);
+  const handleReset = () => {
+    setSearchInput("");
+    resetCategoriesFilters();
+  };
 
   return (
     <>
       <CategoriesFilters
-        search={search}
-        setSearch={setSearch}
-        status={status}
-        setStatus={setStatus}
+        search={searchInput}
+        setSearch={setSearchInput}
+        status={categoriesStatusFilter || "All Statuses"}
+        setStatus={(value) =>
+          filterCategoriesByStatus(value === "All Statuses" ? "" : value.toLowerCase())
+        }
+        onReset={handleReset}
       />
 
       {categoriesLoading ? (
-        <div className="flex items-center justify-center py-16">
-          <p className="text-[12px] text-[var(--color-soft)]">
-            {t("loading")}
-          </p>
-        </div>
+        <CategoriesTableSkeleton rows={categoriesLimit} />
       ) : (
-        <CategoriesTable categories={filteredCategories} />
+        <CategoriesTable
+          categories={categories}
+          page={categoriesPage}
+          limit={categoriesLimit}
+          total={categoriesTotal}
+          totalPages={categoriesTotalPages}
+          onPageChange={changeCategoriesPage}
+          onLimitChange={setCategoriesLimit}
+        />
       )}
     </>
   );

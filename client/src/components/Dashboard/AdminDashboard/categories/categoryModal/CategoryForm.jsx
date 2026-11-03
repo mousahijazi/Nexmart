@@ -1,12 +1,33 @@
 "use client";
 import { RHFerrors } from "@/index";
+import { useTranslations } from "next-intl";
 
 export default function CategoryForm({ register, errors, inputClass, labelClass, sectionClass }) {
+  const t = useTranslations("Admin.categories.modal.form");
+
   const textFields = [
-    { label: "Name (English)", name: "nameEn", placeholder: "Category name" },
-    { label: "الاسم (عربي)", name: "nameAr", placeholder: "اسم الصنف" },
-    { label: "Description (English)", name: "descriptionEn", placeholder: "Category description", textarea: true },
-    { label: "الوصف (عربي)", name: "descriptionAr", placeholder: "وصف الصنف", textarea: true },
+    {
+      label: t("nameEn.label"),
+      name: "nameEn",
+      placeholder: t("nameEn.placeholder"),
+    },
+    {
+      label: t("nameAr.label"),
+      name: "nameAr",
+      placeholder: t("nameAr.placeholder"),
+    },
+    {
+      label: t("descriptionEn.label"),
+      name: "descriptionEn",
+      placeholder: t("descriptionEn.placeholder"),
+      textarea: true,
+    },
+    {
+      label: t("descriptionAr.label"),
+      name: "descriptionAr",
+      placeholder: t("descriptionAr.placeholder"),
+      textarea: true,
+    },
   ];
 
   return (
@@ -43,15 +64,21 @@ export default function CategoryForm({ register, errors, inputClass, labelClass,
         <div className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-field)] px-3.5 py-3">
           <div>
             <p className="text-sm font-medium text-[var(--color-ink)]">
-              Active Category
+              {t("status.title")}
             </p>
+
             <p className="mt-0.5 text-xs text-[var(--color-muted-3)]">
-              Inactive categories are hidden from customers.
+              {t("status.description")}
             </p>
           </div>
 
           <label className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center">
-            <input type="checkbox" {...register("isActive")} className="peer sr-only" />
+            <input
+              type="checkbox"
+              {...register("isActive")}
+              className="peer sr-only"
+            />
+
             <span className="absolute inset-0 rounded-full border border-[var(--color-border)] bg-[var(--color-field)] transition-colors peer-checked:border-[var(--color-green)] peer-checked:bg-[var(--color-green)]" />
             <span className="absolute left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5" />
           </label>

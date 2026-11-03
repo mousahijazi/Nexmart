@@ -1,41 +1,59 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function getCategories(limit = 10, page = 1, token = null) {
+export async function getCategories(limit = 10, page = 1, token, { search = "", status = "" } = {}) {
   try {
-    const url = `${API_URL}/api/v1/categories?page=${page}&limit=${limit}`;
-    const headers = {};
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await fetch(url, {
-      headers,
-      cache: "no-store" 
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (search.trim()) {
+      params.set("search", search.trim());
     }
+
+    if (status) {
+      params.set("status", status);
+    }
+
+    const response = await fetch(`${API_URL}/api/v1/categories?${params.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        cache: "no-store",
+      }
+    );
 
     const json = await response.json();
 
-    return {
-      categories: json.data?.categories || [],
-      total: json.data?.total || 0,
-      page: json.data?.page || page,
-      limit: json.data?.limit || limit,
-      totalPages: json.data?.totalPages || 0,
-    };
-  } catch (error) {
-    console.error("getCategories:", error);
+    if (!response.ok || json.status !== "success") {
+      throw new Error(json.message || "Failed to fetch categories");
+    }
+
+    const data = json.data || {};
 
     return {
+      success: true,
+      categories: data.categories || [],
+      total: data.total ?? 0,
+      page: data.page ?? page,
+      limit: data.limit ?? limit,
+      totalPages: data.totalPages ?? 0,
+      stats: data.stats ?? null,
+    };
+  } catch (error) {
+    console.error("Get categories error:", error);
+
+    return {
+      success: false,
       categories: [],
       total: 0,
       page,
       limit,
       totalPages: 0,
+      stats: null,
+      message: error.message || "Failed to fetch categories",
     };
   }
 }

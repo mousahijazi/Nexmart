@@ -1,5 +1,7 @@
+"use client"
 import { FolderOpen, CheckCircle2, ShoppingCart, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 function StatCard({ title, value, icon: Icon, variant = "default", description }) {
   const variants = {
@@ -47,12 +49,13 @@ function StatCard({ title, value, icon: Icon, variant = "default", description }
 
 export default function CategoriesStats({ stats }) {
   const t = useTranslations("Admin.categories.stats");
+  const { categoriesTotal } = useAdminContext();
 
   return (
     <section className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <StatCard
         title={t("total")}
-        value={stats.total}
+        value={categoriesTotal}
         icon={FolderOpen}
         description={t("totalDescription")}
       />

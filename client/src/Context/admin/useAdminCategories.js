@@ -2,249 +2,364 @@
 import { useCallback, useRef, useState, useEffect } from "react";
 import { getCategories, getCategoryProducts, createCategory, updateCategory, updateCategoryStatus } from "@/helper/fetchApi";
 
+const CATEGORIES_DEFAULT_LIMIT = 10;
+const CATEGORY_PRODUCTS_LIMIT = 10;
+
 export default function useAdminCategories({ showAlert, enabled }) {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [categoriesPage, setCategoriesPage] = useState(1);
-  const [categoriesLimit, setCategoriesLimit] = useState(10);
+
+  const [categoriesPage, setCategoriesPageState] = useState(1);
+  const [categoriesLimit, setCategoriesLimitState] = useState(CATEGORIES_DEFAULT_LIMIT);
+
   const [categoriesTotal, setCategoriesTotal] = useState(0);
   const [categoriesTotalPages, setCategoriesTotalPages] = useState(0);
 
+  const [categoriesSearch, setCategoriesSearch] = useState("");
+  const [categoriesStatusFilter, setCategoriesStatusFilter] = useState("");
+
+  const [categoryStats, setCategoryStats] = useState(null);
+
   const [categoryProducts, setCategoryProducts] = useState({});
+
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categoryModalMode, setCategoryModalMode] = useState("create");
   const [editingCategory, setEditingCategory] = useState(null);
 
-  const openCategoryModal = () => {
+  const categoriesRequestId = useRef(0);
+
+  const openCategoryModal = useCallback(() => {
     setCategoryModalMode("create");
     setEditingCategory(null);
     setIsCategoryModalOpen(true);
-  };
+  }, []);
 
-  const openEditCategory = (category) => {
+  const openEditCategory = useCallback((category) => {
     setCategoryModalMode("edit");
     setEditingCategory(category);
     setIsCategoryModalOpen(true);
-  };
+  }, []);
 
-  const closeCategoryModal = () => {
+  const closeCategoryModal = useCallback(() => {
     setIsCategoryModalOpen(false);
     setEditingCategory(null);
     setCategoryModalMode("create");
-  };
+  }, []);
 
-  const categoriesRequestId = useRef(0);
+  const fetchCategories = useCallback(
+    async ({ page = categoriesPage, limit = categoriesLimit, search = categoriesSearch, status = categoriesStatusFilter } = {}) => {
+      // todo
+      const requestId = ++categoriesRequestId.current;
 
-  const fetchCategories = useCallback(async (page, limit) => {
-    const requestId = ++categoriesRequestId.current;
-
-    setCategoriesLoading(true);
-
-    try {
-      const token = localStorage.getItem("nexmart-token");
+      const token = typeof window !== "undefined" ? localStorage.getItem("nexmart-token") : null;
 
       if (!token) {
         setCategories([]);
         setCategoriesTotal(0);
         setCategoriesTotalPages(0);
-        return;
-      }
-
-      const result = await getCategories(limit, page, token);
-
-      if (requestId !== categoriesRequestId.current) return;
-
-      if (!result?.success && !Array.isArray(result?.categories)) {
-        throw new Error(result?.message || "Failed to fetch categories");
-      }
-
-      setCategories(result.categories || []);
-      setCategoriesTotal(result.total || 0);
-      setCategoriesTotalPages(result.totalPages || 0);
-    } catch (error) {
-      if (requestId === categoriesRequestId.current) {
-        console.error("Admin categories fetch error:", error);
-
-        showAlert?.(error.message || "Failed to load categories", "danger");
-      }
-    } finally {
-      if (requestId === categoriesRequestId.current) {
+        setCategoryStats(null);
         setCategoriesLoading(false);
+
+        showAlert?.("You are not authenticated", "danger");
+
+        return { success: false };
       }
-    }
-  }, [showAlert]);
+
+      setCategoriesLoading(true);
+
+      try {
+        const result = await getCategories(limit, page, token, { search, status });
+
+        if (requestId !== categoriesRequestId.current) {
+          return { success: false, stale: true };
+        }
+
+        if (!result.success) {
+          throw new Error(result.message || "Failed to fetch categories");
+        }
+
+        setCategories(result.categories);
+        setCategoriesTotal(result.total);
+        setCategoriesTotalPages(result.totalPages);
+
+        setCategoryStats(result.stats);
+
+        return {
+          success: true,
+          categories: result.categories,
+          total: result.total,
+          page: result.page,
+          totalPages: result.totalPages,
+          stats: result.stats,
+        };
+      } catch (error) {
+        if (requestId === categoriesRequestId.current) {
+          console.error("Admin categories fetch error:", error);
+
+          showAlert?.(error.message || "Failed to load categories", "danger");
+        }
+
+        return {
+          success: false,
+          message: error.message,
+        };
+      } finally {
+        if (requestId === categoriesRequestId.current) {
+          setCategoriesLoading(false);
+        }
+      }
+    }, [categoriesPage, categoriesLimit, categoriesSearch, categoriesStatusFilter, showAlert,]
+  );
 
   useEffect(() => {
     if (!enabled) return;
 
-    fetchCategories(categoriesPage, categoriesLimit);
+    fetchCategories();
 
     return () => {
       categoriesRequestId.current += 1;
     };
-  }, [enabled, categoriesPage, categoriesLimit, fetchCategories]);
+  }, [enabled, fetchCategories]);
 
-  const addCategory = async (formData) => {
+  const setCategoriesPage = useCallback((page) => {
+    setCategoriesPageState(page);
+  }, []);
+
+  const setCategoriesLimit = useCallback((limit) => {
+    const parsedLimit = Number(limit);
+
+    if (!Number.isFinite(parsedLimit) || parsedLimit < 1) return;
+
+    setCategoriesLimitState(parsedLimit);
+    setCategoriesPageState(1);
+  }, []);
+
+  const changeCategoriesPage = useCallback((page) => {
+    if (page < 1 || page > categoriesTotalPages || categoriesLoading) {
+      return;
+    }
+
+    setCategoriesPageState(page);
+  }, [categoriesTotalPages, categoriesLoading]);
+
+  const searchCategories = useCallback((search) => {
+    setCategoriesSearch(search);
+    setCategoriesPageState(1);
+  }, []);
+
+  const filterCategoriesByStatus = useCallback((status) => {
+    setCategoriesStatusFilter(status);
+    setCategoriesPageState(1);
+  }, []);
+
+  const resetCategoriesFilters = useCallback(() => {
+    setCategoriesSearch("");
+    setCategoriesStatusFilter("");
+    setCategoriesPageState(1);
+  }, []);
+
+  const refreshCategories = useCallback(() => {
+    return fetchCategories();
+  }, [fetchCategories]);
+
+  const addCategory = useCallback(async (formData) => {
     const token = localStorage.getItem("nexmart-token");
 
     if (!token) {
-      showAlert("You are not authenticated", "danger");
+      showAlert?.("You are not authenticated", "danger");
       return { success: false };
     }
 
-    const result = await createCategory(formData, token);
+    try {
+      const result = await createCategory(formData, token);
 
-    if (!result.success) {
+      if (!result.success) {
+        showAlert?.(result.message || "Failed to create category", "danger");
+        return result;
+      }
+
+      // todo
+      if (categoriesPage !== 1) {
+        setCategoriesPageState(1);
+      } else {
+        await fetchCategories({ page: 1 });
+      }
+
+      showAlert?.("Category created successfully", "success");
+
       return result;
+    } catch (error) {
+      showAlert?.(error.message || "Failed to create category", "danger");
+
+      return {
+        success: false,
+        message: error.message,
+      };
     }
+  }, [categoriesPage, fetchCategories, showAlert]);
 
-    if (categoriesPage === 1) {
-      fetchCategories(1, categoriesLimit);
-    } else {
-      setCategoriesPage(1);
-    }
-
-    return result;
-  };
-
-  const editCategory = async (categoryId, formData) => {
+  const editCategory = useCallback(async (categoryId, formData) => {
     const token = localStorage.getItem("nexmart-token");
 
     if (!token) {
-      showAlert("You are not authenticated", "danger");
+      showAlert?.("You are not authenticated", "danger");
       return { success: false };
     }
 
-    const result = await updateCategory(categoryId, formData, token);
+    try {
+      const result = await updateCategory(categoryId, formData, token);
 
-    if (!result.success) {
+      if (!result.success) {
+        showAlert?.(result.message || "Failed to update category", "danger");
+        return result;
+      }
+
+      await fetchCategories();
+
+      setCategories((currentCategories) =>
+        currentCategories.map((category) =>
+          category._id === categoryId
+            ? result.category
+            : category
+        )
+      );
+
+      showAlert?.("Category updated successfully", "success");
+
       return result;
+    } catch (error) {
+      showAlert?.(error.message || "Failed to update category", "danger");
+
+      return {
+        success: false,
+        message: error.message,
+      };
     }
+  }, [fetchCategories, showAlert]);
 
-    setCategories((currentCategories) =>
-      currentCategories.map((category) =>
-        category._id === categoryId
-          ? result.category
-          : category
-      )
-    );
-
-    return result;
-  };
-
-  const toggleCategoryActive = async (categoryId, isActive) => {
+  const toggleCategoryActive = useCallback(async (categoryId, isActive) => {
     const token = localStorage.getItem("nexmart-token");
 
     if (!token) {
-      showAlert("You are not authenticated", "danger");
+      showAlert?.("You are not authenticated", "danger");
       return { success: false };
     }
 
-    const result = await updateCategoryStatus(categoryId, isActive, token);
+    try {
+      const result = await updateCategoryStatus(categoryId, isActive, token);
 
-    if (!result.success) {
-      showAlert(result.message, "danger");
+      if (!result.success) {
+        showAlert?.(result.message || "Failed to update category status", "danger");
+        
+        return result;
+      }
+
+      await fetchCategories();
+
+      setCategoryProducts((current) => {
+        const updated = { ...current };
+        delete updated[categoryId];
+        return updated;
+      });
+
+      showAlert?.(isActive ? "Category restored successfully" : "Category archived successfully", "success");
+
       return result;
+    } catch (error) {
+      showAlert?.(error.message || "Failed to update category status", "danger");
+
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }, [fetchCategories, showAlert]);
+
+  const fetchCategoryProducts = useCallback(async (categoryId, categorySlug, page = 1, limit = CATEGORY_PRODUCTS_LIMIT) => {
+    const currentCategory = categoryProducts[categoryId];
+
+    if (page === 1 && currentCategory?.loaded) {
+      return {
+        success: true,
+        products: currentCategory.products,
+      };
     }
 
-    setCategories((currentCategories) =>
-      currentCategories.map((category) =>
-        category._id === categoryId
-          ? {
-              ...category,
-              ...result.category,
-            }
-          : category
-      )
-    );
+    if (currentCategory?.loading) {
+      return { success: false };
+    }
 
-    setCategoryProducts((current) => {
-      const updated = { ...current };
-      delete updated[categoryId];
-      return updated;
-    });
+    const token = localStorage.getItem("nexmart-token");
 
-    showAlert(isActive ? "Category restored successfully!" : "Category archived successfully!", "success");
+    if (!token) {
+      showAlert?.("You are not authenticated", "danger");
+      return { success: false };
+    }
 
-    return result;
-  };
+    setCategoryProducts((current) => ({
+      ...current,
+      [categoryId]: {
+        ...(current[categoryId] || {}),
+        loading: true,
+      },
+    }));
 
-  const fetchCategoryProducts = useCallback(
-    async (categoryId, categorySlug, page = 1, limit = 10) => {
-      const token = localStorage.getItem("nexmart-token");
-
-      setCategoryProducts((current) => ({
-        ...current,
-        [categoryId]: {
-          ...(current[categoryId] || {}),
-          loading: true,
-        },
-      }));
-
+    try {
       const result = await getCategoryProducts(categorySlug, limit, page, token);
 
       setCategoryProducts((current) => ({
         ...current,
         [categoryId]: {
-          products: result.products,
+          products:
+            page === 1
+              ? result.products || []
+              : [...(current[categoryId]?.products || []), ...(result.products || [])],
           loading: false,
-          page: result.page,
-          limit: result.limit,
-          total: result.total,
-          totalPages: result.totalPages,
+          loaded: true,
+          page: result.page || page,
+          limit: result.limit || limit,
+          total: result.total || 0,
+          totalPages: result.totalPages || 0,
         },
       }));
-    },
-    []
-  );
 
-  const loadMoreCategoryProducts = useCallback(
-    async (categoryId, categorySlug) => {
-      const currentCategory = categoryProducts[categoryId];
-
-      if (!currentCategory) return;
-      if (currentCategory.loading) return;
-
-      if (currentCategory.page >= currentCategory.totalPages) {
-        return;
-      }
-
-      const token = localStorage.getItem("nexmart-token");
-
-      if (!token) {
-        showAlert("You are not authenticated", "danger");
-        return { success: false };
-      }
-
-      const nextPage = currentCategory.page + 1;
+      return {
+        success: true,
+        products: result.products || [],
+      };
+    } catch (error) {
+      console.error("Category products fetch error:", error);
 
       setCategoryProducts((current) => ({
         ...current,
         [categoryId]: {
-          ...current[categoryId],
-          loading: true,
-        },
-      }));
-
-      const result = await getCategoryProducts(categorySlug, 10, nextPage, token);
-
-      setCategoryProducts((current) => ({
-        ...current,
-        [categoryId]: {
-          ...current[categoryId],
-          products: [
-            ...(current[categoryId]?.products || []),
-            ...result.products,
-          ],
+          ...(current[categoryId] || {}),
           loading: false,
-          page: result.page,
-          total: result.total,
-          totalPages: result.totalPages,
         },
       }));
-    },
-    [categoryProducts, showAlert]
-  );
+
+      showAlert?.(error.message || "Failed to load category products", "danger");
+
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }, [categoryProducts, showAlert]);
+
+  const loadMoreCategoryProducts = useCallback(async (categoryId, categorySlug) => {
+    const currentCategory = categoryProducts[categoryId];
+
+    if (!currentCategory || currentCategory.loading) {
+      return { success: false };
+    }
+
+    if (currentCategory.page >= currentCategory.totalPages) {
+      return { success: false };
+    }
+
+    return fetchCategoryProducts(categoryId, categorySlug, currentCategory.page + 1, CATEGORY_PRODUCTS_LIMIT);
+  }, [categoryProducts, fetchCategoryProducts]);
 
   return {
     categories,
@@ -256,6 +371,18 @@ export default function useAdminCategories({ showAlert, enabled }) {
     categoriesTotal,
     categoriesTotalPages,
 
+    categoriesSearch,
+    searchCategories,
+    categoriesStatusFilter,
+    filterCategoriesByStatus,
+    resetCategoriesFilters,
+
+    categoryStats,
+
+    fetchCategories,
+    refreshCategories,
+    changeCategoriesPage,
+
     categoryProducts,
     fetchCategoryProducts,
     loadMoreCategoryProducts,
@@ -263,7 +390,6 @@ export default function useAdminCategories({ showAlert, enabled }) {
     isCategoryModalOpen,
     categoryModalMode,
     editingCategory,
-
     openCategoryModal,
     openEditCategory,
     closeCategoryModal,

@@ -713,6 +713,58 @@
                 "loadMore": "Load More",
                 "noProducts": "No products in this category",
                 "noProductsDescription": "This category currently has no assigned products."
+            },
+            "modal": {
+                "createTitle": "Add New Category",
+                "editTitle": "Edit Category",
+                "close": "Close",
+
+                "alerts": {
+                    "created": "Category added successfully",
+                    "updated": "Category updated successfully",
+                    "error": "Something went wrong"
+                },
+
+                "form": {
+                    "nameEn": {
+                        "label": "Name (English)",
+                        "placeholder": "Enter category name in English"
+                    },
+                    "nameAr": {
+                        "label": "Name (Arabic)",
+                        "placeholder": "Enter category name in Arabic"
+                    },
+                    "descriptionEn": {
+                        "label": "Description (English)",
+                        "placeholder": "Enter category description in English"
+                    },
+                    "descriptionAr": {
+                        "label": "Description (Arabic)",
+                        "placeholder": "Enter category description in Arabic"
+                    },
+                    "status": {
+                        "title": "Active Category",
+                        "description": "Inactive categories are hidden from customers."
+                    }
+                },
+
+                "image": {
+                    "label": "Category Image",
+                    "previewAlt": "Category image preview",
+                    "replace": "Click to replace image",
+                    "uploadOptional": "Click to upload image (optional)",
+                    "keepCurrent": "Leave unchanged to keep the current image.",
+                    "recommendedFormats": "PNG or JPG recommended.",
+                    "remove": "Remove image"
+                },
+
+                "footer": {
+                    "cancel": "Cancel",
+                    "adding": "Adding...",
+                    "updating": "Updating...",
+                    "add": "Add Category",
+                    "update": "Update Category"
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { CategoryForm, CategoryImage, CategoryModalFooter } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
 import { useAlertContext } from "@/Context/AlertProvider";
+import { useTranslations } from "next-intl";
 
 const inputClass = "w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-field)] px-3 py-2.5 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-green-light)] placeholder:text-[var(--color-muted-2)]";
 const labelClass = "mb-1.5 block text-xs font-medium text-[var(--color-soft-2)]";
@@ -21,8 +22,9 @@ const emptyValues = {
 };
 
 export default function CategoryModal() {
-  const { isCategoryModalOpen, categoryModalMode, editingCategory, closeCategoryModal, addCategory, editCategory } = useAdminContext();
+  const t = useTranslations("Admin.categories.modal");
 
+  const { isCategoryModalOpen, categoryModalMode, editingCategory, closeCategoryModal, addCategory, editCategory } = useAdminContext();
   const { showAlert } = useAlertContext();
 
   const isEdit = categoryModalMode === "edit";
@@ -31,7 +33,10 @@ export default function CategoryModal() {
   const [imagePreview, setImagePreview] = useState(null);
   const [existingImage, setExistingImage] = useState(null);
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(categorySchema), defaultValues: emptyValues });
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
+    resolver: zodResolver(categorySchema),
+    defaultValues: emptyValues,
+  });
 
   useEffect(() => {
     if (!isCategoryModalOpen) return;
@@ -44,6 +49,7 @@ export default function CategoryModal() {
         descriptionAr: editingCategory.description?.ar || "",
         isActive: editingCategory.isActive ?? true,
       });
+
       setExistingImage(editingCategory.image || null);
     } else {
       reset(emptyValues);
@@ -58,6 +64,7 @@ export default function CategoryModal() {
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
 
     setImage(file);
@@ -95,10 +102,11 @@ export default function CategoryModal() {
     const result = isEdit ? await editCategory(editingCategory._id, formData) : await addCategory(formData);
 
     if (result?.success) {
-      showAlert("تمت إضافة الصنف بنجاح", "success");
+      showAlert(isEdit ? t("alerts.updated") : t("alerts.created"), "success");
+
       closeCategoryModal();
     } else {
-      showAlert(result?.message || "حدث خطأ ما", "danger");
+      showAlert(result?.message || t("alerts.error"), "danger");
     }
   };
 
@@ -107,7 +115,7 @@ export default function CategoryModal() {
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-[var(--color-cream)] shadow-xl">
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-divider)] px-5 py-4 sm:px-6">
           <h2 className="text-base font-semibold text-[var(--color-ink)]">
-            {isEdit ? "تعديل الصنف" : "إضافة صنف جديد"}
+            {isEdit ? t("editTitle") : t("createTitle")}
           </h2>
 
           <button
@@ -115,7 +123,7 @@ export default function CategoryModal() {
             onClick={closeCategoryModal}
             disabled={isSubmitting}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-muted)] transition hover:bg-[var(--color-sand)] disabled:cursor-not-allowed"
-            aria-label="Close"
+            aria-label={t("close")}
           >
             <X size={16} />
           </button>

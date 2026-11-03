@@ -140,6 +140,7 @@ export {default as CategoriesStats} from "./components/Dashboard/AdminDashboard/
 export {default as CategoriesInteractive} from "./components/Dashboard/AdminDashboard/categories/CategoriesInteractive";
 export {default as CategoriesFilters} from "./components/Dashboard/AdminDashboard/categories/CategoriesFilters";
 export {default as CategoriesTable} from "./components/Dashboard/AdminDashboard/categories/CategoriesTable";
+export {default as CategoriesTableSkeleton} from "./components/Dashboard/AdminDashboard/categories/CategoriesTableSkeleton";
 export {default as CategoryRow} from "./components/Dashboard/AdminDashboard/categories/CategoryRow";
 
 export {default as CategoryModal} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryModal";

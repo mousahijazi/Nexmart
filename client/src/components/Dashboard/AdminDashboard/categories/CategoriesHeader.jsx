@@ -27,10 +27,7 @@ export default function CategoriesHeader() {
       </div>
 
       <div className="flex w-full flex-wrap items-center gap-2 xl:w-auto">
-        <AdminAddButton
-          label={t("addCategory")}
-          onClick={openCategoryModal}
-        />
+        <AdminAddButton label={t("addCategory")} onClick={openCategoryModal} />
       </div>
     </section>
   );

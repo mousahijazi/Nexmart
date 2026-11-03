@@ -1,63 +1,56 @@
 "use client";
-import { Search, ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Search, RotateCcw } from "lucide-react";
+import { FilterSelect } from "@/index";
 
-function SelectBox({ value, options, onChange }) {
-  const t = useTranslations("Admin.categories.filters");
+const STATUS_OPTIONS = [
+  "All Statuses",
+  "Active",
+  "Archived",
+];
 
-  return (
-    <div className="relative flex h-[40px] min-w-0 items-center rounded-[9px] bg-[var(--color-surface)]">
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        aria-label={t("statusLabel")}
-        className="h-full w-full cursor-pointer appearance-none bg-transparent px-3 pr-9 text-[11px] font-medium text-[var(--color-soft)] outline-none"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+const STATUS_VALUE_MAP = {
+  "All Statuses": "",
+  Active: "active",
+  Archived: "archived",
+};
 
-      <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-soft)]" />
-    </div>
-  );
-}
-
-export default function CategoriesFilters({ search, setSearch, status, setStatus }) {
-  const t = useTranslations("Admin.categories.filters");
-
-  const options = [
-    { value: "all", label: t("allStatuses") },
-    { value: "active", label: t("active") },
-    { value: "archived", label: t("archived") },
-  ];
+export default function CategoriesFilters({ search, setSearch, status, setStatus, onReset }) {
+  const statusLabel = status === "active" ? "Active" : status === "archived" ? "Archived" : "All Statuses";
 
   return (
-    <section className="mb-4 rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)] p-3.5 sm:p-4">
-      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-[minmax(0,1fr)_180px]">
-        <label className="relative block min-w-0">
-          <span className="sr-only">{t("searchLabel")}</span>
-
-          <Search
-            size={16}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]"
-          />
+    <section className="mb-5 min-w-0 rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="relative min-w-0 flex-1">
+          <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
 
           <input
+            type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder={t("searchPlaceholder")}
-            className="h-[40px] w-full rounded-[9px] bg-[var(--color-cream)] pl-9 pr-3 text-[11px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus:ring-1 focus:ring-[var(--color-gold)]"
+            placeholder="Search categories..."
+            className="w-full min-w-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-field)] py-2.5 pl-9 pr-3 text-[12px] text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-muted-2)] focus:border-[var(--color-green-light)]"
           />
-        </label>
+        </div>
 
-        <SelectBox
-          value={status}
-          onChange={setStatus}
-          options={options}
-        />
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <FilterSelect
+            label="Category Status"
+            value={statusLabel}
+            onChange={(value) =>
+              setStatus(STATUS_VALUE_MAP[value] ?? "")
+            }
+            options={STATUS_OPTIONS}
+          />
+
+          <button
+            type="button"
+            onClick={onReset}
+            aria-label="Reset filters"
+            className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-soft)] transition hover:bg-[var(--color-sand)]"
+          >
+            <RotateCcw size={15} />
+          </button>
+        </div>
       </div>
     </section>
   );

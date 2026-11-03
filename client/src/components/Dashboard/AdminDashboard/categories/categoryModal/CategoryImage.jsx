@@ -2,24 +2,31 @@
 import { UploadCloud, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { getImageUrl } from "@/helper/getImage";
+import { useTranslations } from "next-intl";
 
 export default function CategoryImage({ mode, image, existingImage, imagePreview, submitting, handleImageChange, handleRemoveImage, handleRemoveExistingImage, labelClass, sectionClass }) {
+  const t = useTranslations("Admin.categories.modal.image");
   const isEdit = mode === "edit";
   const previewSrc = imagePreview || (existingImage ? getImageUrl(existingImage) : null);
 
   return (
     <div className={sectionClass}>
       <label className={labelClass}>
-        Category Image
+        {t("label")}
       </label>
 
       <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-field)] p-3 transition hover:bg-[var(--color-sand)]">
-        <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="hidden"
+        />
 
         {previewSrc ? (
           <Image
             src={previewSrc}
-            alt="Category preview"
+            alt={t("previewAlt")}
             width={72}
             height={72}
             unoptimized
@@ -33,11 +40,11 @@ export default function CategoryImage({ mode, image, existingImage, imagePreview
 
         <div className="min-w-0">
           <p className="text-sm font-medium text-[var(--color-ink)]">
-            {image ? image.name : isEdit ? "Click to replace image" : "Click to upload image (optional)"}
+            {image ? image.name : isEdit ? t("replace") : t("uploadOptional")}
           </p>
 
           <p className="mt-1 text-xs text-[var(--color-muted-3)]">
-            {isEdit ? "Leave unchanged to keep the current image." : "PNG or JPG recommended."}
+            {isEdit ? t("keepCurrent") : t("recommendedFormats")}
           </p>
         </div>
       </label>
@@ -50,7 +57,7 @@ export default function CategoryImage({ mode, image, existingImage, imagePreview
           className="mt-2 flex items-center gap-1.5 text-xs font-medium text-[var(--color-red)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Trash2 size={12} />
-          Remove image
+          {t("remove")}
         </button>
       )}
     </div>

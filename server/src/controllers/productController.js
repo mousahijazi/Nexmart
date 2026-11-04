@@ -4,15 +4,17 @@ import { formatProductData, formatProductUpdateData } from "../utils/productData
 import AppError from "../utils/AppError.js";
 import { FAIL, SUCCESS } from "../utils/httpStatusText.js";
 
-const getAllProductsController = async (req, res) => {
-  const result = await getAllProducts(req.query, req?.userRole);
+const getAllProductsController = asyncHandler(
+  async (req, res) => {
+    const result = await getAllProducts(req.query, req?.userRole);
 
-  res.status(200).json({
-    status: SUCCESS,
-    results: result.products.length,
-    data: result,
-  });
-};
+    res.status(200).json({
+      status: SUCCESS,
+      results: result.products.length,
+      data: result,
+    });
+  }
+);
 
 const getProductByIdController = asyncHandler(
   async (req, res, next) => {
@@ -64,19 +66,20 @@ const updateProductController = asyncHandler(
   }
 );
 
-export const updateProductStatusController = asyncHandler(
+const updateProductStatusController = asyncHandler(
   async (req, res, next) => {
     const { isActive } = req.body;
-
     const product = await updateProductStatus(req.params.productId, isActive);
 
     if (!product) {
-      next(AppError.create("Product not found", 404, FAIL))
+      return next(AppError.create("Product not found", 404, FAIL));
     }
 
-    res.json({
+    res.status(200).json({
       status: SUCCESS,
-      message: isActive ? "Product restored successfully" : "Product archived successfully",
+      message: isActive
+        ? "Product restored successfully"
+        : "Product archived successfully",
       data: {
         product,
       },
@@ -108,5 +111,6 @@ export {
   getAllProductsController,
   getProductByIdController,
   updateProductController,
+  updateProductStatusController,
   deleteProductController,
 };

@@ -1,30 +1,83 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function getProducts(limit = 20, skip = 0, token = null) {
+export async function getProducts(limit = 20, skip = 0, token = null, filters = {}) {
   try {
     const page = Math.floor(skip / limit) + 1;
+
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+
+    if (filters.search?.trim()) {
+      params.set("search", filters.search.trim());
+    }
+
+    if (filters.category) {
+      params.set("category", filters.category);
+    }
+
+    if (filters.brand) {
+      params.set("brand", filters.brand);
+    }
+
+    if (filters.status && filters.status !== "all") {
+      params.set("status", filters.status);
+    }
+
+    if (filters.stockStatus && filters.stockStatus !== "all") {
+      params.set("stockStatus", filters.stockStatus);
+    }
+
+    // todo
+    if (filters.categories) {
+      params.set("categories", filters.categories);
+    }
+
+    // todo
+    if (filters.brands) {
+      params.set("brands", filters.brands);
+    }
+
     const headers = {};
 
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
- 
-    const res = await fetch(`${API_URL}/api/v1/products?page=${page}&limit=${limit}`, {
-      headers,
-      cache: "no-store",
-    });
- 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
- 
-    const json = await res.json();
-    const { products, total, totalPages } = json.data;
 
-    return {products, total, totalPages};
+    const res = await fetch(
+      `${API_URL}/api/v1/products?${params.toString()}`,
+      {
+        headers,
+        cache: "no-store",
+      }
+    );
+
+    const json = await res.json();
+
+    if (!res.ok || json.status !== "success") {
+      throw new Error(json.message || `HTTP error! status: ${res.status}`);
+    }
+
+    const { products, total, totalPages, page: currentPage, limit: currentLimit } = json.data;
+
+    return {
+      products: products || [],
+      total: total || 0,
+      totalPages: totalPages || 0,
+      page: currentPage || page,
+      limit: currentLimit || limit,
+    };
   } catch (error) {
-    console.log(error);
-    return { products: [], total: 0, totalPages: 0 };
+    console.error("Error fetching products:", error);
+
+    return {
+      products: [],
+      total: 0,
+      totalPages: 0,
+      page: Math.floor(skip / limit) + 1,
+      limit,
+    };
   }
 }
 

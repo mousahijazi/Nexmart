@@ -1,79 +1,173 @@
-import Product from "../model/Product.js";
-import Category from "../model/Category.js";
-import Brand from "../model/Brand.js";
+import mongoose from "mongoose";
+import productRepository from "../repositories/productRepository.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
 import { userRoles } from "../utils/userRoles.js";
 import { deleteFile, deleteFiles } from "../middlewares/fileService.js";
 import { addPricingToProduct } from "./offer/pricingService.js";
 
-const getAllProducts = async ({categories, brands, page = 1, limit = 10}, userRole) => {
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
+const MAX_LIMIT = 100;
+const LOW_STOCK_THRESHOLD = 5;
+
+const parsePagination = (page, limit) => {
+  const parsedPage = Math.max(DEFAULT_PAGE, Number.parseInt(page, 10) || DEFAULT_PAGE);
+  const parsedLimit = Math.min(MAX_LIMIT, Math.max(1, Number.parseInt(limit, 10) || DEFAULT_LIMIT));
+
+  return {
+    page: parsedPage,
+    limit: parsedLimit,
+    skip: (parsedPage - 1) * parsedLimit,
+  };
+};
+
+const escapeRegex = (value) => {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
+const isValidObjectId = (value) => {
+  return mongoose.Types.ObjectId.isValid(value);
+};
+
+const resolveCategory = async (value) => {
+  if (!value) return null;
+
+  if (isValidObjectId(value)) {
+    return value;
+  }
+
+  const category = await productRepository.findCategoryBySlug(value);
+
+  return category?._id || null;
+};
+
+const resolveBrand = async (value) => {
+  if (!value) return null;
+
+  if (isValidObjectId(value)) {
+    return value;
+  }
+
+  const brand = await productRepository.findBrandBySlug(value);
+
+  return brand?._id || null;
+};
+
+const buildProductsFilter = async (query, userRole) => {
+  const { categories, brands, search, category, brand, status, stockStatus } = query;
+
   const filter = {};
+  const andConditions = [];
 
-  if (categories) {
-    const category = await Category.findOne({slug: categories}).select("_id");
+  const categoryValue = category || categories;
 
-    if (!category) {
-      return {
-        products: [],
-        total: 0,
-        page: page,
-        limit: limit,
-        totalPages: 0,
-      };
-    }
+  if (categoryValue) {
+    const categoryId = await resolveCategory(categoryValue);
 
-    if (category) {
-      filter.category = category._id;
-    }
+    if (!categoryId) return null;
+
+    filter.category = categoryId;
   }
 
-  if (brands) {
-    const brand = await Brand.findOne({slug: brands}).select("_id");
+  const brandValue = brand || brands;
 
-    if (!brand) {
-      return {
-        products: [],
-        total: 0,
-        page: page,
-        limit: limit,
-        totalPages: 0,
-      };
-    }
+  if (brandValue) {
+    const brandId = await resolveBrand(brandValue);
 
-    if (brand) {
-      filter.brand = brand._id;
-    }
+    if (!brandId) return null;
+
+    filter.brand = brandId;
   }
-
-  const skip = (page - 1) * limit;
 
   if (userRole !== userRoles.ADMIN) {
     filter.isActive = true;
     filter.archivedByCategory = false;
     filter.archivedByBrand = false;
+
+    return filter;
   }
 
-  const products = await Product.find(filter, {"__v": false})
-    .populate("category", "name slug image").populate("brand").sort({ createdAt: -1 }).skip(skip).limit(limit);
-  
-  const productsWithPricing = await Promise.all(products.map((product) => addPricingToProduct(product)));
-  const totalProducts = await Product.countDocuments(filter);
+  if (typeof search === "string" && search.trim()) {
+    const searchRegex = new RegExp(escapeRegex(search.trim()), "i");
+
+    andConditions.push({
+      $or: [
+        { "title.ar": searchRegex },
+        { "title.en": searchRegex },
+        { slug: searchRegex },
+      ],
+    });
+  }
+
+  if (status === "active") {
+    filter.isActive = true;
+    filter.archivedByCategory = false;
+    filter.archivedByBrand = false;
+  } else if (status === "archived") {
+    andConditions.push({
+      $or: [
+        { isActive: false },
+        { archivedByCategory: true },
+        { archivedByBrand: true },
+      ],
+    });
+  }
+
+  if (stockStatus === "inStock") {
+    filter.stock = { $gt: 0 };
+  } else if (stockStatus === "outOfStock") {
+    filter.stock = 0;
+  } else if (stockStatus === "lowStock") {
+    filter.stock = {
+      $gt: 0,
+      $lte: LOW_STOCK_THRESHOLD,
+    };
+  }
+
+  if (andConditions.length > 0) {
+    filter.$and = andConditions;
+  }
+
+  return filter;
+};
+
+const getAllProducts = async (query = {}, userRole) => {
+  const { page, limit, skip } = parsePagination( query.page, query.limit);
+  const filter = await buildProductsFilter(query, userRole);
+
+  if (!filter) {
+    return {
+      products: [],
+      total: 0,
+      page,
+      limit,
+      skip,
+      totalPages: 0,
+    };
+  }
+
+  const [products, totalProducts] = await Promise.all([
+    productRepository.findProducts(filter, { skip, limit }),
+    productRepository.countProducts(filter),
+  ]);
+
+  const productsWithPricing = await Promise.all(
+    products.map((product) => addPricingToProduct(product))
+  );
 
   return {
     products: productsWithPricing,
     total: totalProducts,
-    page: page,
-    limit: limit,
-    skip: skip,
+    page,
+    limit,
+    skip,
     totalPages: Math.ceil(totalProducts / limit),
   };
 };
 
 const getProductById = async (productId, userRole) => {
-  const filter = {
-    _id: productId,
-  };
+  const filter = { _id: productId };
 
   if (userRole !== userRoles.ADMIN) {
     filter.isActive = true;
@@ -81,22 +175,21 @@ const getProductById = async (productId, userRole) => {
     filter.archivedByBrand = false;
   }
 
-  const product = await Product.findOne(filter)
-    .populate("category").populate("brand");
+  const product = await productRepository.findProduct(filter);
 
   if (!product) {
     return null;
   }
 
-  return await addPricingToProduct(product);
+  return addPricingToProduct(product);
 };
 
 const createProduct = async (productData) => {
-  return await Product.create(productData);
+  return productRepository.createProduct(productData);
 };
 
 const updateProduct = async (productId, productData) => {
-  const product = await Product.findById(productId);
+  const product = await productRepository.findProductById(productId);
 
   if (!product) {
     throw AppError.create("Product is not found!", 404, FAIL);
@@ -129,14 +222,7 @@ const updateProduct = async (productId, productData) => {
     );
   }
 
-  const updatedProduct = await Product.findByIdAndUpdate(
-    productId,
-    updateData,
-    {
-      new: true,
-      runValidators: true,
-    }
-  ).populate("category").populate("brand");
+  const updatedProduct = await productRepository.updateProduct(productId, updateData);
 
   if (imagesToDelete.length > 0) {
     await deleteFiles(imagesToDelete);
@@ -150,36 +236,38 @@ const updateProduct = async (productId, productData) => {
 };
 
 const updateProductStatus = async (productId, isActive) => {
-  const product = await Product.findById(productId);
+  const product = await productRepository.findProductById(productId);
 
   if (!product) {
     throw AppError.create("Product not found", 404, FAIL);
   }
 
   if (isActive) {
-    const category = await Category.findById(product.category);
-    const brand = await Brand.findById(product.brand);
+    const [category, brand] = await Promise.all([
+      productRepository.findCategoryById(product.category),
+      productRepository.findBrandById(product.brand),
+    ]);
 
     if (category && !category.isActive) {
       throw AppError.create("Cannot activate a product while its category is archived", 400, FAIL);
-    } else if (brand && !brand.isActive) {
+    }
+
+    if (brand && !brand.isActive) {
       throw AppError.create("Cannot activate a product while its brand is archived", 400, FAIL);
     }
   }
 
   product.isActive = isActive;
-  await product.save();
 
-  return product;
+  return productRepository.saveProduct(product);
 };
 
 const deleteProduct = async (productId) => {
-  const product = await Product.findById(productId);
+  const product = await productRepository.deleteProduct(productId);
+
   if (!product) {
     return null;
   }
-
-  await Product.findByIdAndDelete(productId);
 
   if (product.mainImage) {
     await deleteFile(product.mainImage);

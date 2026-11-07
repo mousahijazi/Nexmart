@@ -1,62 +1,102 @@
-import Brand from "../model/Brand.js";
-import Product from "../model/Product.js";
-import { deleteFile } from "../middlewares/fileService.js";
+import mongoose from "mongoose";
 import AppError from "../utils/AppError.js";
-import { FAIL } from "../utils/httpStatusText.js";
+import { ERROR, FAIL } from "../utils/httpStatusText.js";
 import { userRoles } from "../utils/userRoles.js";
+import { deleteFile } from "../middlewares/fileService.js";
+import { findAllBrands, countAllBrands, findBrandById, createBrand as createBrandRepository, updateBrandById, deleteBrandById, updateBrandProductsArchiveStatus } from "../repositories/brandRepository.js";
 
-const getAllBrands = async ({page = 1, limit = 6}, userRole) => {
-    const skip = (page - 1) * limit;
-    const filter = {};
+const escapeRegex = (value) => {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
 
-    if (userRole !== userRoles.ADMIN) {
+const parsePositiveInteger = (value, fallback, max = Infinity) => {
+  const parsed = Number.parseInt(value, 10);
+
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return fallback;
+  }
+
+  return Math.min(parsed, max);
+};
+
+const getAllBrands = async (query = {}, userRole) => {
+  const page = parsePositiveInteger(query.page, 1);
+  const limit = parsePositiveInteger(query.limit, 10, 100);
+  const filter = {};
+
+  if (userRole !== userRoles.ADMIN) {
+    filter.isActive = true;
+  } else {
+    const status = query.status;
+
+    if (status === "active") {
       filter.isActive = true;
+    } else if (status === "archived") {
+      filter.isActive = false;
     }
+  }
 
-    const brands = await Brand.find(filter, {"__v": false}).populate("productsCount").sort({ createdAt: -1 }).skip(skip).limit(limit);
-    const totalBrands = await Brand.countDocuments(filter);
+  const search = typeof query.search === "string" ? query.search.trim().slice(0, 100) : "";
 
-    return {
-        brands,
-        total: totalBrands,
-        page: page,
-        limit: limit,
-        skip: skip,
-        totalPages: Math.ceil(totalBrands / limit),
-    };
+  if (search) {
+    const searchRegex = new RegExp(escapeRegex(search), "i");
+
+    filter.$or = [
+      { "name.en": searchRegex },
+      { "name.ar": searchRegex },
+    ];
+  }
+
+  const [brands, total] = await Promise.all([
+    findAllBrands({ filter, page, limit }),
+    countAllBrands(filter),
+  ]);
+
+  return {
+    brands,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 const getBrandById = async (brandId, userRole) => {
-  const filter = {
-    "_id": brandId
-  };
+  if (!mongoose.isValidObjectId(brandId)) {
+    throw AppError.create("Invalid brand ID", 400, FAIL);
+  }
+
+  const filter = { _id: brandId };
 
   if (userRole !== userRoles.ADMIN) {
     filter.isActive = true;
   }
 
-  return await Brand.findOne(filter).populate("productsCount");
+  const brand = await findBrandById(filter);
+
+  if (!brand) {
+    throw AppError.create("Brand not found", 404, ERROR);
+  }
+
+  return brand;
 };
 
 const createBrand = async (brandData) => {
-  return await Brand.create(brandData);
+  return createBrandRepository(brandData);
 };
 
 const updateBrand = async (brandId, brandData) => {
-  const oldBrand = await Brand.findById(brandId);
-
-  if (!oldBrand) {
-    return null;
+  if (!mongoose.isValidObjectId(brandId)) {
+    throw AppError.create("Invalid brand ID", 400, FAIL);
   }
 
-  const updatedBrand = await Brand.findByIdAndUpdate(
-    brandId,
-    { $set: brandData },
-    {
-      returnDocument: "after",
-      runValidators: true,
-    }
-  ).populate("productsCount");
+  const oldBrand = await findBrandById({ _id: brandId });
+
+  if (!oldBrand) {
+    throw AppError.create("Brand not found", 404, ERROR);
+  }
+
+  const updatedBrand = await updateBrandById(brandId, brandData);
 
   if (brandData.logo && oldBrand.logo) {
     await deleteFile(oldBrand.logo);
@@ -65,50 +105,16 @@ const updateBrand = async (brandId, brandData) => {
   return updatedBrand;
 };
 
-const updateBrandStatus = async (brandId, isActive) => {
-  const brand = await Brand.findById(brandId);
-
-  if (!brand) {
-    throw AppError.create("Brand not found", 404, FAIL);
-  }
-
-  brand.isActive = isActive;
-
-  await brand.save();
-
-  if (!isActive) {
-    await Product.updateMany(
-      { brand: brandId },
-      {
-        $set: {
-          archivedByBrand: true,
-        },
-      }
-    );
-  }
-
-  if (isActive) {
-    await Product.updateMany(
-      { brand: brandId },
-      {
-        $set: {
-          archivedByBrand: false,
-        },
-      }
-    );
-  }
-
-  return brand;
-};
-
 const deleteBrand = async (brandId) => {
-  const brand = await Brand.findById(brandId);
-
-  if (!brand) {
-    return null;
+  if (!mongoose.isValidObjectId(brandId)) {
+    throw AppError.create("Invalid brand ID", 400, FAIL);
   }
 
-  await Brand.findByIdAndDelete(brandId);
+  const brand = await deleteBrandById(brandId);
+
+  if (!brand) {
+    throw AppError.create("Brand not found", 404, ERROR);
+  }
 
   if (brand.logo) {
     await deleteFile(brand.logo);
@@ -117,11 +123,35 @@ const deleteBrand = async (brandId) => {
   return brand;
 };
 
+const updateBrandStatus = async (brandId, isActive) => {
+  if (!mongoose.isValidObjectId(brandId)) {
+    throw AppError.create("Invalid brand ID", 400, FAIL);
+  }
+
+  if (typeof isActive !== "boolean") {
+    throw AppError.create("isActive must be a boolean", 400, FAIL);
+  }
+
+  const brand = await findBrandById({ _id: brandId });
+
+  if (!brand) {
+    throw AppError.create("Brand not found", 404, ERROR);
+  }
+
+  brand.isActive = isActive;
+
+  await brand.save();
+
+  await updateBrandProductsArchiveStatus(brandId, !isActive);
+
+  return brand;
+};
+
 export {
-    createBrand,
-    getAllBrands,
-    getBrandById,
-    updateBrand,
-    updateBrandStatus,
-    deleteBrand,
+  createBrand,
+  getAllBrands,
+  getBrandById,
+  updateBrand,
+  updateBrandStatus,
+  deleteBrand,
 };

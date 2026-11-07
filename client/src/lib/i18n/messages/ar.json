@@ -655,15 +655,79 @@
                 "oudPerfumes": "العود والعطور",
                 "gourmetFood": "الأطعمة الفاخرة",
                 "artisanCrafts": "الحرف اليدوية",
-                "modestWear": "الأزياء المحتشمة"
+                "modestWear": "الأزياء المحتشمة",
+                "loading":"جارٍ تحميل الأصناف..."
             },
             "brands": {
-                "noBrand": "بدون علامة تجارية"
+                "noBrand": "بدون علامة تجارية",
+                "loading": "جار تحميل العلامات التجارية..."
             },
             "sku": "رمز SKU",
             "unknownProduct": "منتج بدون اسم",
             "currency": "ريال",
-            "notAvailable": "غير متاح"
+            "notAvailable": "غير متاح",
+            "productModal": {
+                "header": {
+                    "createTitle": "إضافة منتج جديد",
+                    "editTitle": "تعديل المنتج",
+                    "createDescription": "أدخل معلومات المنتج التالية لإضافته إلى المتجر.",
+                    "editDescription": "قم بتحديث معلومات المنتج وصوره."
+                },
+                "fields": {
+                    "titleEn": "اسم المنتج (بالإنجليزية)",
+                    "titleAr": "اسم المنتج (بالعربية)",
+                    "descriptionEn": "وصف المنتج (بالإنجليزية)",
+                    "descriptionAr": "وصف المنتج (بالعربية)",
+                    "price": "السعر",
+                    "stock": "الكمية في المخزون",
+                    "category": "التصنيف",
+                    "brand": "العلامة التجارية"
+                },
+                "placeholders": {
+                    "titleEn": "أدخل اسم المنتج بالإنجليزية",
+                    "titleAr": "أدخل اسم المنتج بالعربية",
+                    "descriptionEn": "أدخل وصف المنتج بالإنجليزية",
+                    "descriptionAr": "أدخل وصف المنتج بالعربية",
+                    "category": "اختر التصنيف",
+                    "brand": "اختر العلامة التجارية"
+                },
+                "images": {
+                    "mainImage": "الصورة الرئيسية",
+                    "mainImagePreview": "معاينة الصورة الرئيسية للمنتج",
+                    "uploadMainImage": "اضغط لرفع الصورة الرئيسية",
+                    "replaceMainImage": "اضغط لتغيير الصورة الرئيسية",
+                    "keepCurrentImage": "اتركها دون تغيير للاحتفاظ بالصورة الحالية.",
+                    "mainImageHint": "اختر الصورة الرئيسية للمنتج.",
+                    "existingImages": "الصور الحالية ({count}/4)",
+                    "existingImageAlt": "الصورة الحالية رقم {number} للمنتج",
+                    "removeExistingImage": "حذف الصورة الحالية",
+                    "additionalImages": "الصور الإضافية ({count}/4)",
+                    "uploadAdditionalImages": "اضغط لرفع صور إضافية",
+                    "maximumImagesReached": "تم الوصول إلى الحد الأقصى: 4 صور إضافية",
+                    "newImages": "الصور الجديدة",
+                    "newImageAlt": "معاينة الصورة الجديدة رقم {number}",
+                    "removeNewImage": "حذف الصورة الجديدة"
+                },
+                "actions": {
+                    "close": "إغلاق",
+                    "cancel": "إلغاء",
+                    "add": "إضافة المنتج",
+                    "adding": "جارٍ إضافة المنتج...",
+                    "update": "حفظ التعديلات",
+                    "updating": "جارٍ تحديث المنتج..."
+                },
+                "states": {
+                    "loading": "جارٍ التحميل..."
+                },
+                "messages": {
+                    "authRequired": "انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.",
+                    "mainImageRequired": "الصورة الرئيسية للمنتج مطلوبة.",
+                    "created": "تمت إضافة المنتج {name} بنجاح.",
+                    "updated": "تم تحديث المنتج {name} بنجاح.",
+                    "createFailed": "تعذرت إضافة المنتج. يرجى المحاولة مرة أخرى.",
+                    "updateFailed": "تعذر تحديث المنتج. يرجى المحاولة مرة أخرى."
+                }
+            }
         },
         "categories": {
             "title": "الأصناف",

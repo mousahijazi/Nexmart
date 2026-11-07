@@ -37,9 +37,12 @@ export default function ProductsInteractive() {
     setProductsStatus,
 
     toggleProductActive,
+    openEditProduct,
 
     categories,
     brands,
+    categoriesLoading,
+    brandsLoading,
   } = useAdminContext();
 
   const categoryOptions = useMemo(() => {
@@ -71,6 +74,8 @@ export default function ProductsInteractive() {
         setStatus={setProductsStatus}
         categories={categoryOptions}
         brands={brandOptions}
+        categoriesLoading={categoriesLoading}
+        brandsLoading={brandsLoading}
       />
 
       {productsLoading ? (
@@ -80,6 +85,7 @@ export default function ProductsInteractive() {
             <ProductTable
                 products={products}
                 onToggleActive={toggleProductActive}
+                onEdit={openEditProduct}
             />
 
             <ProductPagination

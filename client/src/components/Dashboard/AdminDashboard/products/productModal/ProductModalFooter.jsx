@@ -1,7 +1,10 @@
 "use client";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ProductModalFooter({ isEdit, submitting, loadingOptions, onClose }) {
+  const t = useTranslations("Admin.products.productModal");
+
   return (
     <div className="flex shrink-0 items-center justify-end gap-2 border-t border-[var(--color-divider)] px-5 py-4 sm:px-6">
       <button
@@ -10,22 +13,23 @@ export default function ProductModalFooter({ isEdit, submitting, loadingOptions,
         disabled={submitting}
         className="rounded-xl border border-[var(--color-border)] px-3.5 py-2 text-sm font-medium text-[var(--color-ink)] transition hover:bg-[var(--color-sand)] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Cancel
+        {t("actions.cancel")}
       </button>
 
       <button
         type="submit"
         form="product-form"
-        disabled={ submitting || loadingOptions }
+        disabled={submitting || loadingOptions}
         className="flex items-center gap-1.5 rounded-xl bg-[var(--color-gold)] px-3.5 py-2 text-sm font-semibold text-[var(--color-green-dark)] transition hover:bg-[var(--color-gold-light)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitting && (
           <Loader2 size={15} className="animate-spin" />
         )}
 
-        {submitting ? isEdit ? "Updating..." : "Adding..." : isEdit ? "Update Product" : "Add Product"}
+        {submitting
+          ? t(isEdit ? "actions.updating" : "actions.adding")
+          : t(isEdit ? "actions.update" : "actions.add")}
       </button>
-
     </div>
   );
 }

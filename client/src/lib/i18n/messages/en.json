@@ -655,15 +655,79 @@
                 "oudPerfumes": "Oud & Perfumes",
                 "gourmetFood": "Gourmet Food",
                 "artisanCrafts": "Artisan Crafts",
-                "modestWear": "Modest Wear"
+                "modestWear": "Modest Wear",
+                "loading": "Loading categories..."
             },
             "brands": {
-                "noBrand": "No Brand"
+                "noBrand": "No Brand",
+                "loading": "Loading brands..."
             },
             "sku": "SKU",
             "unknownProduct": "Untitled product",
             "currency": "SAR",
-            "notAvailable": "N/A"
+            "notAvailable": "N/A",
+            "productModal": {
+                "header": {
+                    "createTitle": "Add New Product",
+                    "editTitle": "Edit Product",
+                    "createDescription": "Enter the product information below to add it to your store.",
+                    "editDescription": "Update the product information and images."
+                },
+                "fields": {
+                    "titleEn": "Product Name (English)",
+                    "titleAr": "Product Name (Arabic)",
+                    "descriptionEn": "Product Description (English)",
+                    "descriptionAr": "Product Description (Arabic)",
+                    "price": "Price",
+                    "stock": "Stock Quantity",
+                    "category": "Category",
+                    "brand": "Brand"
+                },
+                "placeholders": {
+                    "titleEn": "Enter product name in English",
+                    "titleAr": "Enter product name in Arabic",
+                    "descriptionEn": "Enter product description in English",
+                    "descriptionAr": "Enter product description in Arabic",
+                    "category": "Select category",
+                    "brand": "Select brand"
+                },
+                "images": {
+                    "mainImage": "Main Image",
+                    "mainImagePreview": "Main product image preview",
+                    "uploadMainImage": "Click to upload main image",
+                    "replaceMainImage": "Click to replace main image",
+                    "keepCurrentImage": "Leave unchanged to keep the current image.",
+                    "mainImageHint": "Choose the main product image.",
+                    "existingImages": "Existing Images ({count}/4)",
+                    "existingImageAlt": "Existing product image {number}",
+                    "removeExistingImage": "Remove existing image",
+                    "additionalImages": "Additional Images ({count}/4)",
+                    "uploadAdditionalImages": "Click to upload additional images",
+                    "maximumImagesReached": "Maximum limit reached: 4 additional images",
+                    "newImages": "New Images",
+                    "newImageAlt": "New image preview {number}",
+                    "removeNewImage": "Remove new image"
+                },
+                "actions": {
+                    "close": "Close",
+                    "cancel": "Cancel",
+                    "add": "Add Product",
+                    "adding": "Adding...",
+                    "update": "Save Changes",
+                    "updating": "Updating..."
+                },
+                "states": {
+                    "loading": "Loading..."
+                },
+                "messages": {
+                    "authRequired": "Your session has expired. Please log in again.",
+                    "mainImageRequired": "The main product image is required.",
+                    "created": "Product {name} has been successfully added.",
+                    "updated": "Product {name} has been successfully updated.",
+                    "createFailed": "Failed to add the product. Please try again.",
+                    "updateFailed": "Failed to update the product. Please try again."
+                }
+            }
         },
         "categories": {
             "title": "Categories",

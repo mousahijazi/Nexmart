@@ -1,15 +1,16 @@
 "use client";
-import { Search, ChevronDown, Zap } from "lucide-react";
+import { Search, ChevronDown, Zap, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-function SelectBox({ value, options, onChange, ariaLabel }) {
+function SelectBox({ value, options, onChange, ariaLabel, isLoading }) {
   return (
     <div className="relative flex h-[40px] min-w-0 items-center rounded-[9px] bg-[var(--color-surface)]">
       <select
         value={value}
         aria-label={ariaLabel}
+        disabled={isLoading}
         onChange={(event) => onChange(event.target.value)}
-        className="h-full w-full cursor-pointer appearance-none bg-transparent px-3 pe-9 text-[11px] font-medium text-[var(--color-soft)] outline-none"
+        className="h-full w-full cursor-pointer appearance-none bg-transparent px-3 pe-9 text-[11px] font-medium text-[var(--color-soft)] outline-none disabled:cursor-not-allowed disabled:opacity-50"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -19,22 +20,32 @@ function SelectBox({ value, options, onChange, ariaLabel }) {
       </select>
 
       <div className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-[var(--color-soft)]">
-        <ChevronDown size={16} />
+        {isLoading ? (
+          <Loader2 size={16} className="animate-spin" />
+        ) : (
+          <ChevronDown size={16} />
+        )}
       </div>
     </div>
   );
 }
 
-export default function ProductFilters({ search, setSearch, category, setCategory, brand, setBrand, stock, setStock, status, setStatus, categories, brands }) {
+export default function ProductFilters({ search, setSearch, category, setCategory, brand, setBrand, stock, setStock, status, setStatus, categories, brands, categoriesLoading, brandsLoading }) {
   const t = useTranslations("Admin.products");
 
   const categoryOptions = [
-    { value: "all", label: t("allCategories") },
+    { 
+      value: "all", 
+      label: categoriesLoading ? t("categories.loading") : t("allCategories") 
+    },
     ...categories,
   ];
 
   const brandOptions = [
-    { value: "all", label: t("allBrands") },
+    { 
+      value: "all", 
+      label: brandsLoading ? t("brands.loading") : t("allBrands") 
+    },
     ...brands,
   ];
 
@@ -74,6 +85,7 @@ export default function ProductFilters({ search, setSearch, category, setCategor
           options={categoryOptions}
           onChange={setCategory}
           ariaLabel={t("table.category")}
+          isLoading={categoriesLoading}
         />
 
         <SelectBox
@@ -81,6 +93,7 @@ export default function ProductFilters({ search, setSearch, category, setCategor
           options={brandOptions}
           onChange={setBrand}
           ariaLabel={t("table.brand")}
+          isLoading={brandsLoading}
         />
       </div>
 

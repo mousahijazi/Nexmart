@@ -1,42 +1,45 @@
 "use client";
 import { ChevronDown } from "lucide-react";
 import { RHFerrors } from "@/index";
+import { useTranslations } from "next-intl";
 
 export default function ProductForm({ register, errors, categories, brands, locale, loadingOptions, inputClass, labelClass, sectionClass }) {
+  const t = useTranslations("Admin.products.productModal");
+
   const textFields = [
     {
-      label: "Title (English)",
+      label: "fields.titleEn",
       name: "titleEn",
-      placeholder: "Product name",
+      placeholder: "placeholders.titleEn",
     },
     {
-      label: "العنوان (عربي)",
+      label: "fields.titleAr",
       name: "titleAr",
-      placeholder: "اسم المنتج",
+      placeholder: "placeholders.titleAr",
     },
     {
-      label: "Description (English)",
+      label: "fields.descriptionEn",
       name: "descriptionEn",
-      placeholder: "Product description",
+      placeholder: "placeholders.descriptionEn",
       textarea: true,
     },
     {
-      label: "الوصف (عربي)",
+      label: "fields.descriptionAr",
       name: "descriptionAr",
-      placeholder: "وصف المنتج",
+      placeholder: "placeholders.descriptionAr",
       textarea: true,
     },
   ];
 
   const numberFields = [
     {
-      label: "Price",
+      label: "fields.price",
       name: "price",
       placeholder: "0.00",
       step: "0.01",
     },
     {
-      label: "Stock Quantity",
+      label: "fields.stock",
       name: "stock",
       placeholder: "0",
     },
@@ -44,19 +47,27 @@ export default function ProductForm({ register, errors, categories, brands, loca
 
   const selectFields = [
     {
-      label: "Category",
+      label: "fields.category",
       name: "category",
-      placeholder: "Select category",
+      placeholder: "placeholders.category",
       options: categories,
     },
     {
-      label: "Brand",
+      label: "fields.brand",
       name: "brand",
-      placeholder: "Select brand",
+      placeholder: "placeholders.brand",
       options: brands,
     },
   ];
-  
+
+  const getLocalizedName = (option) => {
+    if (typeof option.name === "string") {
+      return option.name;
+    }
+
+    return (option.name?.[locale] || option.name?.en || option.name?.ar || "");
+  };
+
   return (
     <div className={sectionClass}>
       <div className="space-y-5">
@@ -64,21 +75,23 @@ export default function ProductForm({ register, errors, categories, brands, loca
           {textFields.map((field) => (
             <div key={field.name}>
               <label className={labelClass}>
-                {field.label}
+                {t(field.label)}
               </label>
 
               {field.textarea ? (
                 <textarea
                   {...register(field.name)}
                   rows={4}
-                  placeholder={field.placeholder}
+                  dir={field.name.endsWith("Ar") ? "rtl" : "ltr"}
+                  placeholder={t(field.placeholder)}
                   className={`${inputClass} resize-none`}
                 />
               ) : (
                 <input
                   type="text"
                   {...register(field.name)}
-                  placeholder={field.placeholder}
+                  dir={field.name.endsWith("Ar") ? "rtl" : "ltr"}
+                  placeholder={t(field.placeholder)}
                   className={inputClass}
                 />
               )}
@@ -92,7 +105,7 @@ export default function ProductForm({ register, errors, categories, brands, loca
           {numberFields.map((field) => (
             <div key={field.name}>
               <label className={labelClass}>
-                {field.label}
+                {t(field.label)}
               </label>
 
               <input
@@ -115,34 +128,33 @@ export default function ProductForm({ register, errors, categories, brands, loca
           {selectFields.map((field) => (
             <div key={field.name}>
               <label className={labelClass}>
-                {field.label}
+                {t(field.label)}
               </label>
 
               <div className="relative">
                 <select
                   {...register(field.name)}
                   disabled={loadingOptions}
-                  className={`${inputClass} appearance-none pr-8 disabled:opacity-60`}
+                  className={`${inputClass} appearance-none pe-8 disabled:opacity-60`}
                 >
                   <option value="">
-                    {loadingOptions ? "Loading..." : field.placeholder}
+                    {loadingOptions ? t("states.loading") : t(field.placeholder)}
                   </option>
 
                   {field.options.map((option) => (
                     <option key={option._id} value={option._id}>
-                      {option.name?.[locale] || option.name?.en || option.nameEn || option.name?.ar || option.nameAr}
+                      {getLocalizedName(option)}
                     </option>
                   ))}
                 </select>
 
-                <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
+                <ChevronDown size={14} className="pointer-events-none absolute end-2.5 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
               </div>
 
               <RHFerrors errors={errors[field.name]} />
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );

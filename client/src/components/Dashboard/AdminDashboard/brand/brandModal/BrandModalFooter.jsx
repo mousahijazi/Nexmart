@@ -1,7 +1,10 @@
 "use client";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function BrandModalFooter({ isEdit, submitting, onClose }) {
+  const t = useTranslations("Admin.brands.modal");
+
   return (
     <div className="flex shrink-0 items-center justify-end gap-2 border-t border-[var(--color-divider)] px-5 py-4 sm:px-6">
       <button
@@ -10,7 +13,7 @@ export default function BrandModalFooter({ isEdit, submitting, onClose }) {
         disabled={submitting}
         className="rounded-xl border border-[var(--color-border)] px-3.5 py-2 text-sm font-medium text-[var(--color-ink)] transition hover:bg-[var(--color-sand)] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Cancel
+        {t("actions.cancel")}
       </button>
 
       <button
@@ -23,7 +26,9 @@ export default function BrandModalFooter({ isEdit, submitting, onClose }) {
           <Loader2 size={15} className="animate-spin" />
         )}
 
-        {submitting ? isEdit ? "Updating..." : "Adding..." : isEdit ? "Update Brand" : "Add Brand"}
+        {submitting
+          ? isEdit ? t("actions.updating") : t("actions.adding")
+          : isEdit ? t("actions.update") : t("actions.add")}
       </button>
     </div>
   );

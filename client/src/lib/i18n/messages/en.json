@@ -894,6 +894,59 @@
                 "noProducts": "No products in this brand yet.",
                 "noProductsDescription": "This brand currently has no catalog assignments. Assign SKUs or connect a merchant inventory feed.",
                 "assignCatalogSkus": "Assign Catalog SKUs"
+            },
+            "modal": {
+                "title": {
+                    "create": "Add New Brand",
+                    "edit": "Edit Brand"
+                },
+                "form": {
+                    "nameEn": {
+                        "label": "Name (English)",
+                        "placeholder": "Brand name"
+                    },
+                    "nameAr": {
+                        "label": "Name (Arabic)",
+                        "placeholder": "Brand name in Arabic"
+                    },
+                    "descriptionEn": {
+                        "label": "Description (English)",
+                        "placeholder": "Brand description"
+                    },
+                    "descriptionAr": {
+                        "label": "Description (Arabic)",
+                        "placeholder": "Brand description in Arabic"
+                    },
+                    "activeBrand": {
+                        "title": "Active Brand",
+                        "description": "Inactive brands are hidden from customers."
+                    }
+                },
+                "logo": {
+                    "title": "Brand Logo",
+                    "uploadLabel": "Upload brand logo",
+                    "previewAlt": "Brand logo preview",
+                    "replaceLogo": "Click to replace logo",
+                    "uploadOptional": "Click to upload logo (optional)",
+                    "keepCurrentLogo": "Leave unchanged to keep the current logo.",
+                    "recommendedFormats": "PNG or JPG recommended.",
+                    "removeLogo": "Remove logo"
+                },
+                "actions": {
+                    "close": "Close",
+                    "cancel": "Cancel",
+                    "add": "Add Brand",
+                    "adding": "Adding...",
+                    "update": "Update Brand",
+                    "updating": "Updating..."
+                },
+                "success": {
+                    "created": "Brand added successfully.",
+                    "updated": "Brand updated successfully."
+                },
+                "errors": {
+                    "submitFailed": "Something went wrong. Please try again."
+                }
             }
         }
     }

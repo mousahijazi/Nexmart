@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { BrandForm, BrandLogo, BrandModalFooter } from "@/index";
 import { brandSchema } from "@/lib/schemas/brandSchema";
@@ -11,13 +12,18 @@ import { useAlertContext } from "@/Context/AlertProvider";
 const inputClass = "w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-field)] px-3 py-2.5 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-green-light)] placeholder:text-[var(--color-muted-2)]";
 const labelClass = "mb-1.5 block text-xs font-medium text-[var(--color-soft-2)]";
 const sectionClass = "rounded-2xl border border-[var(--color-border)] bg-[var(--color-cream)] p-4 sm:p-5";
+
 const emptyValues = {
   nameEn: "",
   nameAr: "",
+  descriptionEn: "",
+  descriptionAr: "",
   isActive: true,
 };
 
 export default function BrandModal() {
+  const t = useTranslations("Admin.brands.modal");
+
   const { isBrandModalOpen, brandModalMode, editingBrand, closeBrandModal, addBrand, editBrand } = useAdminContext();
   const { showAlert } = useAlertContext();
 
@@ -27,20 +33,21 @@ export default function BrandModal() {
   const [imagePreview, setImagePreview] = useState(null);
   const [existingImage, setExistingImage] = useState(null);
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({resolver: zodResolver(brandSchema), defaultValues: emptyValues});
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
+    resolver: zodResolver(brandSchema),
+    defaultValues: emptyValues,
+  });
 
   useEffect(() => {
-    if (!isBrandModalOpen) {
-      return;
-    }
+    if (!isBrandModalOpen) return;
 
     if (isEdit && editingBrand) {
       reset({
         nameEn: editingBrand.name?.en || "",
         nameAr: editingBrand.name?.ar || "",
 
-        descriptionEn: editingBrand.name?.en || "",
-        descriptionAr: editingBrand.name?.ar || "",
+        descriptionEn: editingBrand.description?.en || "",
+        descriptionAr: editingBrand.description?.ar || "",
 
         isActive: editingBrand.isActive ?? true,
       });
@@ -55,15 +62,32 @@ export default function BrandModal() {
     setImagePreview(null);
   }, [isBrandModalOpen, isEdit, editingBrand, reset]);
 
+  useEffect(() => {
+    if (!isBrandModalOpen) {
+      setImage(null);
+      setImagePreview(null);
+      setExistingImage(null);
+    }
+  }, [isBrandModalOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
   if (!isBrandModalOpen) {
     return null;
   }
 
-  const handleImageChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) {
-      return;
-    }
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file) return;
 
     setImage(file);
     setImagePreview(URL.createObjectURL(file));
@@ -79,40 +103,53 @@ export default function BrandModal() {
   };
 
   const onSubmit = async (values) => {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    formData.append("nameAr", values.nameAr);
-    formData.append("nameEn", values.nameEn);
-    
-    formData.append("descriptionAr", values.descriptionAr);
-    formData.append("descriptionEn", values.descriptionEn);
+      formData.append("nameAr", values.nameAr);
+      formData.append("nameEn", values.nameEn);
 
-    formData.append("isActive", String(values.isActive));
+      formData.append("descriptionAr", values.descriptionAr);
+      formData.append("descriptionEn", values.descriptionEn);
 
-    if (isEdit && !existingImage && !image) {
-      formData.append("removeLogo", "true");
-    }
+      formData.append("isActive", String(values.isActive));
 
-    if (image) {
-      formData.append("logo", image);
-    }
+      if (isEdit && !existingImage && !image) {
+        formData.append("removeLogo", "true");
+      }
 
-    const result = isEdit ? await editBrand(editingBrand._id, formData) : await addBrand(formData);
+      if (image) {
+        formData.append("logo", image);
+      }
 
-    if (result?.success) {
-      showAlert(isEdit ? "تم تعديل البراند بنجاح" : "تمت إضافة البراند بنجاح", "success");
-      closeBrandModal();
-    } else {
-      showAlert(result?.message || "حدث خطأ ما", "danger");
+      const result = isEdit
+        ? await editBrand(editingBrand._id, formData)
+        : await addBrand(formData);
+
+      if (result?.success) {
+        showAlert(isEdit ? t("success.updated") : t("success.created"), "success");
+
+        closeBrandModal();
+      } else {
+        showAlert(result?.message || t("errors.submitFailed"), "danger");
+      }
+    } catch (error) {
+      console.error("Brand form submission error:", error);
+      showAlert(t("errors.submitFailed"), "danger");
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-[var(--color-cream)] shadow-xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="brand-modal-title"
+        className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-[var(--color-cream)] shadow-xl"
+      >
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-divider)] px-5 py-4 sm:px-6">
-          <h2 className="text-base font-semibold text-[var(--color-ink)]">
-            {isEdit ? "تعديل البراند" : "إضافة براند جديد"}
+          <h2 id="brand-modal-title" className="text-base font-semibold text-[var(--color-ink)]">
+            {isEdit ? t("title.edit") : t("title.create")}
           </h2>
 
           <button
@@ -120,7 +157,7 @@ export default function BrandModal() {
             onClick={closeBrandModal}
             disabled={isSubmitting}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-muted)] transition hover:bg-[var(--color-sand)] disabled:cursor-not-allowed"
-            aria-label="Close"
+            aria-label={t("actions.close")}
           >
             <X size={16} />
           </button>

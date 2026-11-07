@@ -1,46 +1,49 @@
 import { Store, CheckCircle2, CircleAlert, PackageX } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BrandStatCard } from "@/index";
 
 export default function BrandsStatsGrid({ brands = [] }) {
+  const t = useTranslations("Admin.brands");
+
   const totalBrands = brands.length;
   const activeBrands = brands.filter((brand) => brand.isActive).length;
   const inactiveBrands = brands.filter((brand) => !brand.isActive).length;
   const unbrandedProducts = 0;
 
+  const activePercentage = totalBrands ? Math.round((activeBrands / totalBrands) * 100) : 0;
+
   return (
     <section className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <BrandStatCard
-        title="Total Brands"
+        title={t("stats.totalBrands")}
         value={totalBrands}
         icon={Store}
-        description="+5 added this quarter"
+        description={t("stats.addedThisQuarter")}
       />
 
       <BrandStatCard
-        title="Brands With Products"
+        title={t("stats.brandsWithProducts")}
         value={activeBrands}
         icon={CheckCircle2}
-        description={
-          totalBrands
-            ? `${Math.round((activeBrands / totalBrands) * 100)}% active distribution`
-            : "0% active distribution"
-        }
+        description={t("stats.activeDistribution", {
+          percentage: activePercentage,
+        })}
       />
 
       <BrandStatCard
-        title="Inactive Brands"
+        title={t("stats.inactiveBrands")}
         value={inactiveBrands}
         icon={CircleAlert}
         variant="warning"
-        description="Action required: review credentials"
+        description={t("stats.reviewCredentials")}
       />
 
       <BrandStatCard
-        title="Unbranded Products"
+        title={t("stats.unbrandedProducts")}
         value={unbrandedProducts}
         icon={PackageX}
         variant="danger"
-        description="Requires manufacturer tag"
+        description={t("stats.manufacturerTagRequired")}
       />
     </section>
   );

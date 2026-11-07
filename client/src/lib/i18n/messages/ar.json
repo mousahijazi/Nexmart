@@ -836,6 +836,65 @@
                     "update": "تحديث الصنف"
                 }
             }
+        },
+        "brands": {
+            "header": {
+                "title": "العلامات التجارية",
+                "description": "إدارة العلامات التجارية للمنتجات، والشركاء الرسميين، وقوائم الشركات المصنّعة.",
+                "export": "تصدير العلامات التجارية",
+                "addBrand": "إضافة علامة تجارية جديدة"
+            },
+            "stats": {
+                "totalBrands": "إجمالي العلامات التجارية",
+                "addedThisQuarter": "+5 أُضيفت خلال هذا الربع",
+                "brandsWithProducts": "علامات تجارية لديها منتجات",
+                "activeDistribution": "{percentage}% نسبة العلامات التجارية النشطة",
+                "inactiveBrands": "العلامات التجارية المؤرشفة",
+                "reviewCredentials": "يتطلب الإجراء: مراجعة البيانات",
+                "unbrandedProducts": "منتجات بلا علامة تجارية",
+                "manufacturerTagRequired": "تتطلب تحديد الشركة المصنّعة"
+            },
+            "toolbar": {
+                "allStatuses": "جميع الحالات",
+                "searchLabel": "البحث عن العلامات التجارية",
+                "searchPlaceholder": "ابحث باسم العلامة التجارية (عربي/إنجليزي)..."
+            },
+            "status": {
+                "active": "نشطة",
+                "archived": "مؤرشفة"
+            },
+            "table": {
+                "brand": "العلامة التجارية",
+                "slug": "الرابط المختصر",
+                "products": "المنتجات",
+                "status": "الحالة",
+                "actions": "الإجراءات",
+                "noBrandsFound": "لم يتم العثور على علامات تجارية",
+                "changeSearchOrFilters": "حاول تغيير كلمات البحث أو عوامل التصفية."
+            },
+            "pagination": {
+                "showing": "عرض {start} - {end} من أصل {total} علامة تجارية",
+                "previousPage": "الصفحة السابقة",
+                "nextPage": "الصفحة التالية",
+                "rowsPerPage": "عدد الصفوف في الصفحة:"
+            },
+            "row": {
+                "fallbackBrandName": "علامة تجارية",
+                "collapseBrand": "طي تفاصيل العلامة التجارية",
+                "expandBrand": "عرض تفاصيل العلامة التجارية",
+                "archiveBrand": "أرشفة {name}",
+                "restoreBrand": "استعادة {name}",
+                "archiveBrandTitle": "أرشفة العلامة التجارية",
+                "restoreBrandTitle": "استعادة العلامة التجارية",
+                "loadingProducts": "جارٍ تحميل المنتجات...",
+                "featuredListings": "المنتجات المميزة ضمن هذه العلامة التجارية",
+                "manageAllProducts": "إدارة جميع المنتجات ({count})",
+                "loading": "جارٍ التحميل...",
+                "loadMoreProducts": "تحميل المزيد من المنتجات",
+                "noProducts": "لا توجد منتجات لهذه العلامة التجارية حتى الآن.",
+                "noProductsDescription": "لا توجد منتجات مرتبطة بهذه العلامة التجارية حاليًا. يمكنك إسناد رموز المنتجات أو ربط مخزون أحد التجار.",
+                "assignCatalogSkus": "إسناد رموز المنتجات"
+            }
         }
     }
 }

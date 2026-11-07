@@ -836,6 +836,65 @@
                     "update": "Update Category"
                 }
             }
+        },
+        "brands": {
+            "header": {
+                "title": "Brands",
+                "description": "Manage platform product brands, official brand partners, and manufacturer listings.",
+                "export": "Export Brands",
+                "addBrand": "Add New Brand"
+            },
+            "stats": {
+                "totalBrands": "Total Brands",
+                "addedThisQuarter": "+5 added this quarter",
+                "brandsWithProducts": "Brands With Products",
+                "activeDistribution": "{percentage}% active distribution",
+                "inactiveBrands": "Inactive Brands",
+                "reviewCredentials": "Action required: review credentials",
+                "unbrandedProducts": "Unbranded Products",
+                "manufacturerTagRequired": "Requires manufacturer tag"
+            },
+            "toolbar": {
+                "allStatuses": "All Statuses",
+                "searchLabel": "Search brands",
+                "searchPlaceholder": "Search brand name (EN/AR)..."
+            },
+            "status": {
+                "active": "Active",
+                "archived": "Archived"
+            },
+            "table": {
+                "brand": "Brand",
+                "slug": "Slug",
+                "products": "Products",
+                "status": "Status",
+                "actions": "Actions",
+                "noBrandsFound": "No brands found",
+                "changeSearchOrFilters": "Try changing your search or filters."
+            },
+            "pagination": {
+                "showing": "Showing {start} - {end} of {total} brands",
+                "previousPage": "Previous page",
+                "nextPage": "Next page",
+                "rowsPerPage": "Rows per page:"
+            },
+            "row": {
+                "fallbackBrandName": "Brand",
+                "collapseBrand": "Collapse brand",
+                "expandBrand": "Expand brand",
+                "archiveBrand": "Archive {name}",
+                "restoreBrand": "Restore {name}",
+                "archiveBrandTitle": "Archive brand",
+                "restoreBrandTitle": "Restore brand",
+                "loadingProducts": "Loading products...",
+                "featuredListings": "Featured Catalog Listings In This Brand",
+                "manageAllProducts": "Manage all {count} products",
+                "loading": "Loading...",
+                "loadMoreProducts": "Load More Products",
+                "noProducts": "No products in this brand yet.",
+                "noProductsDescription": "This brand currently has no catalog assignments. Assign SKUs or connect a merchant inventory feed.",
+                "assignCatalogSkus": "Assign Catalog SKUs"
+            }
         }
     }
 }

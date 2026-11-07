@@ -1,10 +1,12 @@
-"use client"
+"use client";
 import { Award, Download } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { AdminAddButton } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function BrandsHeader() {
-  const {openBrandModal} = useAdminContext();
+  const t = useTranslations("Admin.brands");
+  const { openBrandModal } = useAdminContext();
 
   return (
     <section className="mb-6 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
@@ -15,26 +17,29 @@ export default function BrandsHeader() {
 
         <div className="min-w-0">
           <h1 className="text-[25px] font-medium leading-none tracking-[-0.035em] text-[var(--color-ink)] sm:text-[29px]">
-            Brands
+            {t("header.title")}
           </h1>
 
           <p className="mt-2 max-w-[650px] text-[11px] leading-[1.45] text-[var(--color-soft-2)] sm:text-[13px]">
-            Manage platform product brands, official brand partners,
-            and manufacturer listings.
+            {t("header.description")}
           </p>
         </div>
       </div>
 
       <div className="flex w-full flex-wrap items-center gap-2 xl:w-auto">
-        <button type="button" className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[11px] font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-sand)]">
+        <button
+          type="button"
+          className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[11px] font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-sand)]"
+        >
           <Download size={16} />
 
           <span>
-            Export Brands<span className="sm:ml-1">CSV</span>
+            {t("header.export")}{" "}
+            <span className="sm:ml-1">CSV</span>
           </span>
         </button>
-        
-        <AdminAddButton label="Add New Brand" onClick={openBrandModal} />
+
+        <AdminAddButton label={t("header.addBrand")} onClick={openBrandModal} />
       </div>
     </section>
   );

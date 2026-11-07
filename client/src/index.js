@@ -124,7 +124,6 @@ export {default as BrandsInteractive} from "./components/Dashboard/AdminDashboar
 export {default as BrandsTable} from "./components/Dashboard/AdminDashboard/brand/BrandsTable";
 export {default as BrandRow} from "./components/Dashboard/AdminDashboard/brand/BrandRow";
 export {default as BrandsPagination} from "./components/Dashboard/AdminDashboard/brand/BrandsPagination";
-export {default as BrandExpandedPanel} from "./components/Dashboard/AdminDashboard/brand/BrandExpandedPanel";
 export {default as BrandsToolbar} from "./components/Dashboard/AdminDashboard/brand/BrandsToolbar";
 export {default as BrandsStatsGrid} from "./components/Dashboard/AdminDashboard/brand/BrandsStatsGrid";
 export {default as BrandStatCard} from "./components/Dashboard/AdminDashboard/brand/BrandStatCard";

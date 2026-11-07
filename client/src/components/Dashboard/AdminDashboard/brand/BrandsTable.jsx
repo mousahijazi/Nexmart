@@ -1,16 +1,16 @@
 "use client";
 import { useState } from "react";
-import { BrandRow } from "@/index";
+import { BrandRow, BrandsPagination } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
-import { BrandsPagination } from "@/index";
+import { useTranslations } from "next-intl";
 
 export default function BrandsTable({ brands }) {
+  const t = useTranslations("Admin.brands");
   const [openBrands, setOpenBrands] = useState([]);
-  const { brandProducts, fetchBrandProducts, loadMoreBrandProducts,  brandsPage, setBrandsPage, brandsLimit, setBrandsLimit, brandsTotal, brandsTotalPages } = useAdminContext();
+  const { brandProducts, fetchBrandProducts, loadMoreBrandProducts, brandsPage, setBrandsPage, brandsLimit, setBrandsLimit, brandsTotal, brandsTotalPages } = useAdminContext();
 
   const toggleBrand = async (brand) => {
     const brandId = brand._id;
-
     const isOpen = openBrands.includes(brandId);
 
     setOpenBrands((current) =>
@@ -39,17 +39,16 @@ export default function BrandsTable({ brands }) {
 
   const pageNumbers = getPageNumbers();
 
-
   return (
     <section className="grid w-full grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="min-w-0 overflow-x-auto scrollbar-thin">
         <div className="min-w-[780px] w-full">
           <div className="grid grid-cols-[minmax(260px,1.7fr)_minmax(150px,1fr)_100px_110px_70px] gap-3 bg-[var(--color-sand)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]">
-            <span>Brand</span>
-            <span>Slug</span>
-            <span>Products</span>
-            <span>Status</span>
-            <span>Actions</span>
+            <span>{t("table.brand")}</span>
+            <span>{t("table.slug")}</span>
+            <span>{t("table.products")}</span>
+            <span>{t("table.status")}</span>
+            <span>{t("table.actions")}</span>
           </div>
 
           <div>
@@ -67,19 +66,27 @@ export default function BrandsTable({ brands }) {
             ) : (
               <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
                 <p className="text-[13px] font-semibold text-[var(--color-ink)]">
-                  No brands found
+                  {t("table.noBrandsFound")}
                 </p>
 
                 <p className="mt-2 text-[11px] text-[var(--color-muted)]">
-                  Try changing your search or filters.
+                  {t("table.changeSearchOrFilters")}
                 </p>
               </div>
             )}
           </div>
         </div>
-      </div> 
+      </div>
 
-      <BrandsPagination pageNumbers={pageNumbers} brandsPage={brandsPage} setBrandsPage={setBrandsPage} brandsLimit={brandsLimit} setBrandsLimit={setBrandsLimit} brandsTotal={brandsTotal} brandsTotalPages={brandsTotalPages} />
+      <BrandsPagination
+        pageNumbers={pageNumbers}
+        brandsPage={brandsPage}
+        setBrandsPage={setBrandsPage}
+        brandsLimit={brandsLimit}
+        setBrandsLimit={setBrandsLimit}
+        brandsTotal={brandsTotal}
+        brandsTotalPages={brandsTotalPages}
+      />
     </section>
   );
 }

@@ -1,20 +1,30 @@
+"use client";
+import { useTranslations } from "next-intl";
+
 export default function BrandsPagination({ brandsPage, setBrandsPage, brandsLimit, setBrandsLimit, brandsTotalPages, brandsTotal, pageNumbers }) {
+  const t = useTranslations("Admin.brands");
+
   const startItem = brandsTotal === 0 ? 0 : (brandsPage - 1) * brandsLimit + 1;
   const endItem = Math.min(brandsPage * brandsLimit, brandsTotal);
 
   return (
     <div className="flex flex-col gap-3 border-t border-[var(--color-divider)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-[10px] text-[var(--color-soft)]">
-        Showing {startItem} - {endItem} of {brandsTotal} brands
+        {t("pagination.showing", {
+          start: startItem,
+          end: endItem,
+          total: brandsTotal,
+        })}
       </p>
 
       <div className="flex items-center gap-1">
-
         <button
           type="button"
           disabled={brandsPage <= 1}
-          onClick={() => setBrandsPage((current) => Math.max(1, current - 1))}
-          aria-label="Previous page"
+          onClick={() =>
+            setBrandsPage((current) => Math.max(1, current - 1))
+          }
+          aria-label={t("pagination.previousPage")}
           className="flex h-8 w-8 items-center justify-center rounded-lg text-[11px] text-[var(--color-soft)] disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[var(--color-sand)]"
         >
           ‹
@@ -25,7 +35,9 @@ export default function BrandsPagination({ brandsPage, setBrandsPage, brandsLimi
             key={number}
             type="button"
             onClick={() => setBrandsPage(number)}
-            aria-current={ brandsPage === number ? "page" : undefined }
+            aria-current={
+              brandsPage === number ? "page" : undefined
+            }
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-semibold ${
               brandsPage === number
                 ? "bg-[var(--color-green-dark)] text-white"
@@ -38,18 +50,24 @@ export default function BrandsPagination({ brandsPage, setBrandsPage, brandsLimi
 
         <button
           type="button"
-          disabled={ brandsTotalPages === 0 || brandsPage >= brandsTotalPages}
-          onClick={() => setBrandsPage((current) => Math.min(brandsTotalPages, current + 1))}
-          aria-label="Next page"
+          disabled={
+            brandsTotalPages === 0 ||
+            brandsPage >= brandsTotalPages
+          }
+          onClick={() =>
+            setBrandsPage((current) =>
+              Math.min(brandsTotalPages, current + 1)
+            )
+          }
+          aria-label={t("pagination.nextPage")}
           className="flex h-8 w-8 items-center justify-center rounded-lg text-[11px] text-[var(--color-soft)] disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[var(--color-sand)]"
         >
           ›
         </button>
-
       </div>
 
       <div className="flex items-center gap-2 text-[10px] text-[var(--color-soft)]">
-        <span>Rows per page:</span>
+        <span>{t("pagination.rowsPerPage")}</span>
 
         <select
           value={brandsLimit}

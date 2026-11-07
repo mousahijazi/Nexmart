@@ -1,12 +1,15 @@
 "use client";
 import Image from "next/image";
 import { ChevronDown, ChevronRight, Package, ArrowRight, Loader2, Archive, RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { AdminProductCard, AdminEditButton } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
 import { getImageUrl } from "@/helper/getImage";
 import { useLocale } from "next-intl";
 
 function StatusBadge({ status }) {
+  const t = useTranslations("Admin.brands");
+
   const isActive = status === "Active";
 
   return (
@@ -26,25 +29,28 @@ function StatusBadge({ status }) {
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${
-          isActive ? "bg-[var(--color-green)]" : "bg-[var(--color-muted)]"
+          isActive
+            ? "bg-[var(--color-green)]"
+            : "bg-[var(--color-muted)]"
         }`}
       />
 
-      {status}
+      {isActive ? t("status.active") : t("status.archived")}
     </span>
   );
 }
 
 export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, productsData }) {
-  const { openEditBrand, toggleBrandActive } = useAdminContext();
-
+  const t = useTranslations("Admin.brands");
   const locale = useLocale();
+
+  const { openEditBrand, toggleBrandActive } = useAdminContext();
 
   const products = productsData?.products || [];
   const isLoading = productsData?.loading || false;
   const hasMore = (productsData?.page || 1) < (productsData?.totalPages || 0);
 
-  const brandName = brand.name?.[locale] || brand.name?.en || brand.name?.ar || "Brand";
+  const brandName = brand.name?.[locale] || brand.name?.en || brand.name?.ar || t("row.fallbackBrandName");
   const secondaryName = locale === "ar" ? brand.name?.en : brand.name?.ar;
   const productsCount = typeof brand.productsCount === "number" ? brand.productsCount : 0;
 
@@ -55,7 +61,9 @@ export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, prod
           <button
             type="button"
             onClick={onToggle}
-            aria-label={ isExpanded ? "Collapse brand" : "Expand brand" }
+            aria-label={
+              isExpanded ? t("row.collapseBrand") : t("row.expandBrand")
+            }
             aria-expanded={isExpanded}
             className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[var(--color-soft)] hover:bg-[var(--color-sand)]"
           >
@@ -80,7 +88,6 @@ export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, prod
                 <Package size={18} className="text-[var(--color-muted)]" />
               </div>
             )}
-
           </div>
 
           <div className="min-w-0">
@@ -94,7 +101,6 @@ export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, prod
               </p>
             )}
           </div>
-
         </div>
 
         <div className="truncate text-[11px] text-[var(--color-soft)]">
@@ -102,7 +108,7 @@ export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, prod
         </div>
 
         <div className="text-[13px] font-medium text-[var(--color-ink)]">
-          {productsCount.toLocaleString()}
+          {productsCount.toLocaleString(locale)}
         </div>
 
         <div>
@@ -115,8 +121,16 @@ export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, prod
           <button
             type="button"
             onClick={() => toggleBrandActive(brand._id, !brand.isActive)}
-            aria-label={ brand.isActive ? `Archive ${brandName}` : `Restore ${brandName}` }
-            title={ brand.isActive ? "Archive brand" : "Restore brand" }
+            aria-label={
+              brand.isActive
+                ? t("row.archiveBrand", { name: brandName })
+                : t("row.restoreBrand", { name: brandName })
+            }
+            title={
+              brand.isActive
+                ? t("row.archiveBrandTitle")
+                : t("row.restoreBrandTitle")
+            }
             className="
               flex h-7 w-7
               items-center justify-center
@@ -145,22 +159,23 @@ export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, prod
               <Loader2 size={22} className="animate-spin text-[var(--color-soft)]" />
 
               <p className="mt-3 text-[11px] text-[var(--color-soft)]">
-                Loading products...
+                {t("row.loadingProducts")}
               </p>
             </div>
           ) : products.length > 0 ? (
             <>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]">
-                  Featured Catalog Listings In This Brand
+                  {t("row.featuredListings")}
                 </p>
 
                 <button
                   type="button"
                   className="flex items-center gap-1 text-[10px] font-semibold text-[var(--color-green-dark)]"
                 >
-                  Manage all {productsCount.toLocaleString()} products
-                  <ArrowRight size={13} />
+                  {t("row.manageAllProducts", { count: productsCount.toLocaleString(locale) })}
+
+                  <ArrowRight size={13} className="rtl:rotate-180" />
                 </button>
               </div>
 
@@ -198,7 +213,7 @@ export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, prod
                       <Loader2 size={13} className="animate-spin" />
                     )}
 
-                    {isLoading ? "Loading..." : "Load More Products"}
+                    {isLoading ? t("row.loading") : t("row.loadMoreProducts")}
                   </button>
                 </div>
               )}
@@ -210,20 +225,18 @@ export default function BrandRow({ brand, isExpanded, onToggle, onLoadMore, prod
               </div>
 
               <h3 className="mt-3 text-[13px] font-semibold text-[var(--color-ink)]">
-                No products in this brand yet.
+                {t("row.noProducts")}
               </h3>
 
               <p className="mt-1 max-w-[420px] text-[10px] leading-5 text-[var(--color-muted)]">
-                This brand currently has no catalog
-                assignments. Assign SKUs or connect a merchant
-                inventory feed.
+                {t("row.noProductsDescription")}
               </p>
 
               <button
                 type="button"
                 className="mt-4 rounded-lg bg-[var(--color-green-dark)] px-4 py-2 text-[10px] font-bold text-white"
               >
-                Assign Catalog SKUs
+                {t("row.assignCatalogSkus")}
               </button>
             </div>
           )}

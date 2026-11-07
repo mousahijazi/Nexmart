@@ -3,10 +3,14 @@ import { Search, ChevronDown } from "lucide-react";
 function StatusSelect({ value, onChange }) {
   return (
     <div className="relative flex h-[40px] min-w-0 items-center rounded-[9px] bg-[var(--color-surface)]">
-      <select value={value} onChange={(event) => onChange(event.target.value)} className="h-full w-full cursor-pointer appearance-none bg-transparent px-3 pr-9 text-[11px] font-medium text-[var(--color-soft)] outline-none">
-        <option value="All Statuses">All Statuses</option>
-        <option value="Active">Active</option>
-        <option value="Draft">Draft</option>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-full w-full cursor-pointer appearance-none bg-transparent px-3 pr-9 text-[11px] font-medium text-[var(--color-soft)] outline-none"
+      >
+        <option value="all">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="archived">Archived</option>
       </select>
 
       <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-soft)]" />
@@ -26,10 +30,9 @@ export default function BrandsToolbar({ search, setSearch, status, setStatus }) 
           <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
 
           <input
+            type="search"
             value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="Search brand name (EN/AR)..."
             className="h-[40px] w-full rounded-[9px] bg-[var(--color-cream)] pl-9 pr-3 text-[11px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus:ring-1 focus:ring-[var(--color-gold)]"
           />

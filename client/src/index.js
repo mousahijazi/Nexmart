@@ -148,7 +148,6 @@ export {default as CategoryForm} from "./components/Dashboard/AdminDashboard/cat
 export {default as CategoryImage} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryImage";
 export {default as CategoryModalFooter} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryModalFooter";
 
-
 export {default as ProductsDashboard} from "./components/Dashboard/AdminDashboard/products/ProductsDashboard";
 export {default as ProductStats} from "./components/Dashboard/AdminDashboard/products/ProductStats";
 export {default as ProductsInteractive} from "./components/Dashboard/AdminDashboard/products/ProductsInteractive";

@@ -25,7 +25,7 @@ function SelectBox({ value, options, onChange, ariaLabel }) {
   );
 }
 
-export default function ProductFilters({ search, setSearch, category, setCategory, brand, setBrand, stock, setStock, categories, brands }) {
+export default function ProductFilters({ search, setSearch, category, setCategory, brand, setBrand, stock, setStock, status, setStatus, categories, brands }) {
   const t = useTranslations("Admin.products");
 
   const categoryOptions = [
@@ -43,6 +43,12 @@ export default function ProductFilters({ search, setSearch, category, setCategor
     { value: "inStock", label: t("stock.inStock") },
     { value: "lowStock", label: t("stock.lowStock") },
     { value: "outOfStock", label: t("stock.outOfStock") },
+  ];
+
+  const statusOptions = [
+    { value: "all", label: t("allStatuses") },
+    { value: "active", label: t("status.active") },
+    { value: "archived", label: t("status.archived") },
   ];
 
   return (
@@ -86,26 +92,20 @@ export default function ProductFilters({ search, setSearch, category, setCategor
           ariaLabel={t("allStockLevels")}
         />
 
-        <div className="relative flex h-[40px] min-w-0 items-center rounded-[9px] bg-[var(--color-surface)]">
-          <div className="absolute start-3 text-[var(--color-soft)]">
-            <Zap size={16} />
-          </div>
+        <SelectBox
+          value={status}
+          options={statusOptions}
+          onChange={setStatus}
+          ariaLabel={t("allStatuses")}
+        />
+      </div>
 
-          <select
-            disabled
-            aria-label={t("actions.bulk")}
-            className="h-full w-full cursor-not-allowed appearance-none bg-transparent ps-9 pe-9 text-[11px] font-medium text-[var(--color-soft)] opacity-60 outline-none"
-          >
-            <option>{t("actions.bulk")}</option>
-            <option>{t("actions.updateStock")}</option>
-            <option>{t("actions.changeCategory")}</option>
-            <option>{t("actions.changeStatus")}</option>
-          </select>
-
-          <div className="pointer-events-none absolute end-3">
-            <ChevronDown size={16} />
-          </div>
-        </div>
+      <div className="mt-2.5 flex h-[40px] w-full items-center rounded-[9px] bg-[var(--color-surface)] px-3 text-[11px] font-medium text-[var(--color-soft)] opacity-60 sm:w-[63%]">
+        <Zap size={16} className="me-2" />
+        {t("actions.bulk")}
+        <span className="ms-auto text-[10px]">
+          {t("actions.comingSoon")}
+        </span>
       </div>
     </section>
   );

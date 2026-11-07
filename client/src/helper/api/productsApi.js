@@ -13,11 +13,11 @@ export async function getProducts(limit = 20, skip = 0, token = null, filters = 
       params.set("search", filters.search.trim());
     }
 
-    if (filters.category) {
+    if (filters.category && filters.category !== "all") {
       params.set("category", filters.category);
     }
 
-    if (filters.brand) {
+    if (filters.brand && filters.brand !== "all") {
       params.set("brand", filters.brand);
     }
 
@@ -29,12 +29,10 @@ export async function getProducts(limit = 20, skip = 0, token = null, filters = 
       params.set("stockStatus", filters.stockStatus);
     }
 
-    // todo
     if (filters.categories) {
       params.set("categories", filters.categories);
     }
 
-    // todo
     if (filters.brands) {
       params.set("brands", filters.brands);
     }
@@ -45,8 +43,7 @@ export async function getProducts(limit = 20, skip = 0, token = null, filters = 
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const res = await fetch(
-      `${API_URL}/api/v1/products?${params.toString()}`,
+    const res = await fetch(`${API_URL}/api/v1/products?${params.toString()}`,
       {
         headers,
         cache: "no-store",
@@ -62,6 +59,7 @@ export async function getProducts(limit = 20, skip = 0, token = null, filters = 
     const { products, total, totalPages, page: currentPage, limit: currentLimit } = json.data;
 
     return {
+      success: true,
       products: products || [],
       total: total || 0,
       totalPages: totalPages || 0,
@@ -72,11 +70,13 @@ export async function getProducts(limit = 20, skip = 0, token = null, filters = 
     console.error("Error fetching products:", error);
 
     return {
+      success: false,
       products: [],
       total: 0,
       totalPages: 0,
       page: Math.floor(skip / limit) + 1,
       limit,
+      message: error.message || "Failed to fetch products",
     };
   }
 }

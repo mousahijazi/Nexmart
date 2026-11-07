@@ -590,6 +590,11 @@
             "allCategories": "جميع التصنيفات",
             "allBrands": "جميع العلامات التجارية",
             "allStockLevels": "جميع مستويات المخزون",
+            "allStatuses": "جميع الحالات",
+            "status": {
+                "active": "نشط",
+                "archived": "مؤرشف"
+            },
             "stock": {
                 "inStock": "متوفر",
                 "lowStock": "مخزون منخفض",
@@ -630,7 +635,8 @@
                 "bulk": "إجراءات جماعية",
                 "updateStock": "تحديث المخزون",
                 "changeCategory": "تغيير التصنيف",
-                "changeStatus": "تغيير الحالة"
+                "changeStatus": "تغيير الحالة",
+                "comingSoon": "قريباً"
             },
             "stats": {
                 "totalSkus": "إجمالي وحدات SKU",

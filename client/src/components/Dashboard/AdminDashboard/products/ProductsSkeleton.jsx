@@ -2,30 +2,6 @@ function Bone({ className = "" }) {
   return <div className={`animate-pulse rounded-md bg-[var(--color-sand)] ${className}`} />;
 }
 
-function StatsSkeleton() {
-  return (
-    <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="rounded-[12px] border border-[var(--color-border)] bg-[var(--color-cream)] p-4">
-          <Bone className="h-3 w-20" />
-          <Bone className="mt-3 h-5 w-16" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function FiltersSkeleton() {
-  return (
-    <div className="mb-4 flex flex-wrap items-center gap-2">
-      <Bone className="h-9 w-full sm:w-64" />
-      <Bone className="h-9 w-32" />
-      <Bone className="h-9 w-32" />
-      <Bone className="h-9 w-32" />
-    </div>
-  );
-}
-
 const ROW_COLS = "grid-cols-[44px_minmax(280px,1.5fr)_110px_110px_90px_110px_90px]";
 
 function TableSkeleton({ rows }) {
@@ -89,8 +65,6 @@ function PaginationSkeleton() {
 export default function ProductsPageSkeleton({ rows = 5 }) {
   return (
     <div>
-      <StatsSkeleton />
-      <FiltersSkeleton />
       <TableSkeleton rows={rows} />
       <PaginationSkeleton />
     </div>

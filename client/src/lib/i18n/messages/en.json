@@ -590,6 +590,11 @@
             "allCategories": "All Categories",
             "allBrands": "All Brands",
             "allStockLevels": "All Stock Levels",
+            "allStatuses": "All Statuses",
+            "status": {
+                "active": "Active",
+                "archived": "Archived"
+            },
             "stock": {
                 "inStock": "In Stock",
                 "lowStock": "Low Stock",
@@ -630,7 +635,8 @@
                 "bulk": "Bulk Actions",
                 "updateStock": "Update Stock",
                 "changeCategory": "Change Category",
-                "changeStatus": "Change Status"
+                "changeStatus": "Change Status", 
+                "comingSoon": "Comming soon"
             },
             "stats": {
                 "totalSkus": "TOTAL SKUS",

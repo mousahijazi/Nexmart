@@ -148,6 +148,16 @@ export {default as CategoryForm} from "./components/Dashboard/AdminDashboard/cat
 export {default as CategoryImage} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryImage";
 export {default as CategoryModalFooter} from "./components/Dashboard/AdminDashboard/categories/categoryModal/CategoryModalFooter";
 
+
+export {default as ProductsDashboard} from "./components/Dashboard/AdminDashboard/products/ProductsDashboard";
+export {default as ProductStats} from "./components/Dashboard/AdminDashboard/products/ProductStats";
+export {default as ProductsInteractive} from "./components/Dashboard/AdminDashboard/products/ProductsInteractive";
+export {default as ProductTable} from "./components/Dashboard/AdminDashboard/products/ProductTable";
+export {default as ProductRow} from "./components/Dashboard/AdminDashboard/products/ProductRow";
+export {default as ProductFilters} from "./components/Dashboard/AdminDashboard/products/ProductFilters";
+export {default as ProductPagination} from "./components/Dashboard/AdminDashboard/products/ProductPagination";
+export {default as ProductsPageSkeleton} from "./components/Dashboard/AdminDashboard/products/ProductsSkeleton";
+
 export {default as ProductModal} from "./components/Dashboard/AdminDashboard/products/productModal/ProductModal";
 
 export {default as OrdersDashboard} from "./components/Dashboard/AdminDashboard/orders/OrdersDashboard";

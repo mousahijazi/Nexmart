@@ -1,81 +1,13 @@
 "use client";
-import { useMemo, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
-import ProductStats from "./ProductStats";
-import ProductFilters from "./ProductFilters";
-import ProductTable from "./ProductTable";
-import ProductPagination from "./ProductPagination";
-import ProductsPageSkeleton from "./ProductsSkeleton";
-import { Package, Download, Filter } from "lucide-react";
-import { getCategoryName, getBrandName } from "./Productdisplay";
-import { ProductModal, AdminAddButton } from "@/index";
+import { useTranslations, useLocale } from "next-intl";
+import { Package, Download } from "lucide-react";
+import { ProductModal, AdminAddButton, ProductsInteractive, ProductStats } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function ProductsDashboard() {
   const t = useTranslations("Admin.products");
   const locale = useLocale();
-
-  const { products, productsLoading, productsPage, setProductsPage, productsLimit, setProductsLimit, productsTotal, toggleProductActive, productsTotalPages, openProductModal } = useAdminContext();
-
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
-  const [brand, setBrand] = useState("all");
-  const [stock, setStock] = useState("all");
-
-  const categories = useMemo(() => {
-    const unique = new Map();
-
-    products.forEach((product) => {
-      const id = product.category?._id || getCategoryName(product, locale);
-      const name = getCategoryName(product, locale);
-
-      if (name) unique.set(String(id), name);
-    });
-
-    return [...unique.entries()].map(([value, label]) => ({ value, label }));
-  }, [products, locale]);
-
-  const brands = useMemo(() => {
-    const unique = new Map();
-
-    products.forEach((product) => {
-      const id = product.brand?._id || getBrandName(product, locale);
-      const name = getBrandName(product, locale);
-
-      if (name) unique.set(String(id), name);
-    });
-
-    return [...unique.entries()].map(([value, label]) => ({ value, label }));
-  }, [products, locale]);
-
-  const filteredProducts = useMemo(() => {
-    const searchValue = search.trim().toLocaleLowerCase(locale);
-
-    return products.filter((product) => {
-      const nameEn = product.title?.en || "";
-      const nameAr = product.title?.ar || "";
-      const brandName = getBrandName(product, locale);
-      const categoryName = getCategoryName(product, locale);
-
-      const matchesSearch =
-        !searchValue ||
-        nameEn.toLocaleLowerCase(locale).includes(searchValue) ||
-        nameAr.toLocaleLowerCase(locale).includes(searchValue) ||
-        brandName.toLocaleLowerCase(locale).includes(searchValue) ||
-        product._id?.toLowerCase().includes(searchValue);
-
-      const productCategoryId = String(product.category?._id || categoryName);
-      const productBrandId = String(product.brand?._id || brandName);
-
-      const matchesCategory = category === "all" || productCategoryId === category;
-      const matchesBrand = brand === "all" || productBrandId === brand;
-
-      const stockStatus = product.stock <= 0 ? "outOfStock" : product.stock <= 10 ? "lowStock" : "inStock";
-      const matchesStock = stock === "all" || stockStatus === stock;
-
-      return (matchesSearch && matchesCategory && matchesBrand && matchesStock);
-    });
-  }, [products, search, category, brand, stock, locale]);
+  const { openProductModal } = useAdminContext();
 
   return (
     <div dir={locale === "ar" ? "rtl" : "ltr"} className="min-w-0 bg-[var(--color-cream)] text-[var(--color-ink)]">
@@ -119,41 +51,8 @@ export default function ProductsDashboard() {
         </section>
 
         <ProductModal />
-
-        {productsLoading ? (
-          <ProductsPageSkeleton rows={productsLimit} />
-        ) : (
-          <>
-            <ProductStats />
-
-            <ProductFilters
-              search={search}
-              setSearch={setSearch}
-              category={category}
-              setCategory={setCategory}
-              brand={brand}
-              setBrand={setBrand}
-              stock={stock}
-              setStock={setStock}
-              categories={categories}
-              brands={brands}
-            />
-
-            <ProductTable
-              products={filteredProducts}
-              onToggleActive={toggleProductActive}
-            />
-
-            <ProductPagination
-              page={productsPage}
-              totalPages={productsTotalPages}
-              totalCount={productsTotal}
-              limit={productsLimit}
-              onPageChange={setProductsPage}
-              onLimitChange={setProductsLimit}
-            />
-          </>
-        )}
+        <ProductStats />
+        <ProductsInteractive />
       </div>
     </div>
   );

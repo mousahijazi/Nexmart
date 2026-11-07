@@ -1,6 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
-import ProductRow from "./ProductRow";
+import { ProductRow } from "@/index";
 
 export default function ProductTable({ products, onToggleActive, onEdit }) {
   const t = useTranslations("Admin.products.table");

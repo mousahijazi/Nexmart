@@ -4,11 +4,10 @@ import { useTranslations } from "next-intl";
 // import AllOrdersPage from "./pages/AllOrdersPage";
 // import InventoryPage from "./pages/InventoryPage";
 // import CategoriesPage from "./pages/CategoriesPage";
-import ProductsDashboard from "./products/ProductsDashboard";
 // import SettlementsPage from "./pages/SettlementsPage";
 // import DealsPromosPage from "./pages/DealsPromosPage";
 // import ReportsSlaPage from "./pages/ReportsSlaPage";
-import { SettingsDashboard, CategoriesDashboard, BrandsDashboard, CustomersPage, DashboardPage, OffersDashboard, SeasonsDashboard, OrdersDashboard } from "@/index";
+import { SettingsDashboard, CategoriesDashboard, BrandsDashboard, CustomersPage, DashboardPage, OffersDashboard, SeasonsDashboard, OrdersDashboard, ProductsDashboard } from "@/index";
 
 const PAGES = {
   dashboard: DashboardPage,

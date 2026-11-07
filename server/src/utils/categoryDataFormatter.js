@@ -41,9 +41,7 @@ export const formatCategoryUpdateData = (req) => {
     updateData.isActive = req.body.isActive;
   }
 
-  if (req.body.removeImage === "true") {
-    updateData.image = null;
-  }
+  updateData.removeImage = req.body.removeImage === "true";
 
   if (req.file) {
     updateData.image = `/uploads/categories/${req.file.filename}`;

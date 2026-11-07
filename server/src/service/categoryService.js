@@ -99,9 +99,17 @@ const updateCategory = async (categoryId, categoryData) => {
     throw AppError.create("Category not found", 404, ERROR);
   }
 
-  const updatedCategory = await updateCategoryById(categoryId, categoryData);
+  const { removeImage, ...updateData } = categoryData;
 
-  if (categoryData.image && oldCategory.image) {
+  const hasNewImage = Boolean(updateData.image);
+
+  if (removeImage && !hasNewImage) {
+    throw AppError.create("Category image is required. Please upload a new image.", 400, FAIL);
+  }
+
+  const updatedCategory = await updateCategoryById(categoryId, updateData);
+
+  if (hasNewImage && oldCategory.image) {
     await deleteFile(oldCategory.image);
   }
 

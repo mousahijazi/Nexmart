@@ -41,9 +41,7 @@ export const formatBrandUpdateData = (req) => {
     updateData.isActive = req.body.isActive;
   }
 
-  if (req.body.removeImage === "true") {
-    updateData.logo = null;
-  }
+  updateData.removeLogo = req.body.removeImage === "true";
 
   if (req.file) {
     updateData.logo = `/uploads/brands/${req.file.filename}`;

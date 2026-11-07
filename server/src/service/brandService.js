@@ -96,9 +96,17 @@ const updateBrand = async (brandId, brandData) => {
     throw AppError.create("Brand not found", 404, ERROR);
   }
 
-  const updatedBrand = await updateBrandById(brandId, brandData);
+  const { removeLogo, ...updateData } = brandData;
 
-  if (brandData.logo && oldBrand.logo) {
+  const hasNewLogo = Boolean(updateData.logo);
+
+  if (removeLogo && !hasNewLogo) {
+    throw AppError.create("Brand logo is required. Please upload a new logo.", 400, FAIL);
+  }
+
+  const updatedBrand = await updateBrandById(brandId, updateData);
+
+  if (hasNewLogo && oldBrand.logo) {
     await deleteFile(oldBrand.logo);
   }
 

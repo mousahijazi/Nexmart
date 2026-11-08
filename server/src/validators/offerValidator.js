@@ -161,8 +161,9 @@ export const updateOfferValidator = [
       return true;
     }),
 
+  
   body("discount")
-    .notEmpty()
+    .optional()
     .isNumeric()
     .withMessage("Discount must be a number")
     .custom((value, { req }) => {
@@ -172,7 +173,9 @@ export const updateOfferValidator = [
         throw AppError.create("Discount must be at least 0", 400, FAIL);
       }
 
-      if (req.body.type === "percentage" && discount > 100) {
+      const finalType = req.body.type;
+
+      if (finalType === "percentage" && discount > 100) {
         throw AppError.create("Percentage discount cannot be greater than 100", 400, FAIL);
       }
 

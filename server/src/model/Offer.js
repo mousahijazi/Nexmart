@@ -99,5 +99,12 @@ const offerSchema = new mongoose.Schema(
   }
 );
 
+offerSchema.index({ createdAt: -1, _id: -1 });
+offerSchema.index({ targetType: 1, product: 1, startDate: 1, endDate: 1 });
+offerSchema.index({ targetType: 1, category: 1, startDate: 1, endDate: 1 });
+offerSchema.index({ season: 1, isActive: 1, startDate: 1, endDate: 1 });
+offerSchema.index({ "name.ar": 1 });
+offerSchema.index({ "name.en": 1 });
+
 const Offer = mongoose.model("Offer", offerSchema); 
 export default Offer;

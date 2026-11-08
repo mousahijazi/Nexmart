@@ -6,6 +6,7 @@ const updateOffersStatus = async () => {
   const expireResult = await Offer.updateMany(
     {
       endDate: { $lte: now },
+      archivedBySeason: { $ne: true },
       status: { $ne: "Expired" },
     },
     {

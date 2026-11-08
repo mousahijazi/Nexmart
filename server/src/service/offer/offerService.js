@@ -1,16 +1,28 @@
-import Offer from "../../model/Offer.js";
-import Product from "../../model/Product.js";
-import Category from "../../model/Category.js"
-import Season from "../../model/Season.js";
 import AppError from "../../utils/AppError.js";
 import { FAIL } from "../../utils/httpStatusText.js";
-import { createOffer as createOfferRepository, getAllOffers as getAllOffersRepository, getOfferById as getOfferByIdRepository, updateOffer as updateOfferRepository, deleteOffer as deleteOfferRepository } from "../../repositories/offerRepository.js";
+import {
+  createOffer as createOfferRepository,
+  getAllOffers as getAllOffersRepository,
+  getOfferById as getOfferByIdRepository,
+  findOfferById,
+  findProductById,
+  findCategoryById,
+  findSeasonById,
+  findProductsByCategory,
+  findOverlappingProductOffer,
+  findOverlappingCategoryOffer,
+  findOverlappingProductOffersForProducts,
+  deleteOffersByIds,
+  findProductsByIds,
+  updateOffer as updateOfferRepository,
+  updateOfferStatus as updateOfferStatusRepository,
+  deleteOffer as deleteOfferRepository,
+} from "../../repositories/offerRepository.js";
 import { calculateDiscountAmount } from "../../utils/pricingUtils.js";
 import { userRoles } from "../../utils/userRoles.js";
 import { isCurrentPeriod } from "../../utils/periodUtils.js";
 
-const calculateOfferStatus = (isActive, startDate, endDate, archivedBySeason = false) => {
-  const now = new Date();
+const calculateOfferStatus = (isActive, startDate, endDate, archivedBySeason = false, now = new Date()) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
@@ -18,7 +30,6 @@ const calculateOfferStatus = (isActive, startDate, endDate, archivedBySeason = f
 
   if (now >= end) return "Expired";
   if (now < start) return "Scheduled";
-
   if (!isActive) return "Inactive";
 
   return "Active";
@@ -48,7 +59,7 @@ const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate, chec
     return { startDate: start, endDate: end };
   }
 
-  const season = await Season.findById(seasonId);
+  const season = await findSeasonById(seasonId);
 
   if (!season) {
     throw AppError.create("Season not found.", 404, FAIL);
@@ -62,7 +73,7 @@ const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate, chec
   }
 
   if (start < seasonStart || end > seasonEnd) {
-    throw AppError.create(`Offer dates must be strictly within the season dates (${seasonStart.toISOString().slice(0, 10)} to ${seasonEnd.toISOString().slice(0, 10)}).`, 400, FAIL);
+    throw AppError.create(`Offer dates must be within the season dates (${seasonStart.toISOString().slice(0, 10)} to ${seasonEnd.toISOString().slice(0, 10)}).`, 400, FAIL);
   }
 
   return { startDate: start, endDate: end };
@@ -70,167 +81,131 @@ const normalizeOfferDatesForSeason = async ({ seasonId, startDate, endDate, chec
 
 const validateOfferTarget = async (offerData) => {
   if (offerData.targetType === "product") {
-    const product = await Product.findById(offerData.product);
+    const product = await findProductById(offerData.product);
 
     if (!product) {
-      throw AppError.create("Product not found", 404, FAIL);
+      throw AppError.create("Product not found.", 404, FAIL);
     }
 
     return product;
   }
 
   if (offerData.targetType === "category") {
-    const categoryId = offerData.category?._id || offerData.category;
-    
-    const category = await Category.findById(categoryId);
+    const category = await findCategoryById(offerData.category);
+
     if (!category) {
-      throw AppError.create("Category not found", 404, FAIL);
+      throw AppError.create("Category not found.", 404, FAIL);
     }
 
-    const products = await Product.find({ category: categoryId }).select("_id price");
-    return products;
+    return findProductsByCategory(category._id);
   }
 
-  return null;
-};
-
-const findOverlappingProductOffer = async (productId, startDate, endDate, excludedOfferId = null) => {
-  const filter = {
-    targetType: "product",
-    product: productId,
-    archivedBySeason: { $ne: true },
-    startDate: { $lt: new Date(endDate) },
-    endDate: { $gt: new Date(startDate) },
-  };
-
-  if (excludedOfferId) {
-    filter._id = { $ne: excludedOfferId };
-  }
-
-  return await Offer.findOne(filter);
+  throw AppError.create("Invalid offer target type.", 400, FAIL);
 };
 
 const removeWeakerProductOffers = async (categoryOffer, products) => {
-  for (const product of products) {
-    const productOffers = await Offer.find({
-      targetType: "product",
-      product: product._id,
-      startDate: { $lt: categoryOffer.endDate },
-      endDate: { $gt: categoryOffer.startDate },
-      isActive: true,
-    });
+  if (!products.length) return;
 
-    for (const productOffer of productOffers) {
-      const categoryDiscountAmount = calculateDiscountAmount(product.price, categoryOffer);
-      const productDiscountAmount = calculateDiscountAmount(product.price, productOffer);
+  const productIds = products.map((product) => product._id);
 
-      if (categoryDiscountAmount > productDiscountAmount) {
-        await Offer.findByIdAndDelete(productOffer._id);
-      }
+  const productOffers = await findOverlappingProductOffersForProducts(productIds, categoryOffer.startDate, categoryOffer.endDate);
+
+  const productsMap = new Map(
+    products.map((product) => [
+      String(product._id),
+      product,
+    ])
+  );
+
+  const offersToDelete = [];
+
+  for (const productOffer of productOffers) {
+    const product = productsMap.get(String(productOffer.product));
+
+    if (!product) continue;
+
+    const categoryDiscountAmount = calculateDiscountAmount(product.price, categoryOffer);
+    const productDiscountAmount = calculateDiscountAmount(product.price, productOffer);
+
+    if (categoryDiscountAmount > productDiscountAmount) {
+      offersToDelete.push(productOffer._id);
     }
+  }
+
+  await deleteOffersByIds(offersToDelete);
+};
+
+const validateDiscount = (type, discount) => {
+  const value = Number(discount);
+
+  if (!Number.isFinite(value) || value < 0) {
+    throw AppError.create("Invalid discount value.", 400, FAIL);
+  }
+
+  if (type === "percentage" && value > 100) {
+    throw AppError.create("Percentage discount cannot be greater than 100.", 400, FAIL);
   }
 };
 
-const getAllOffers = async ({ page = 1, limit = 10, season, isActive }, userRole) => {
-  const skip = (page - 1) * limit;
-  const filter = {};
+const getAllOffers = async ({ page = 1, limit = 10, search, status, target, season, isActive }, userRole) => {
+  const isAdmin = userRole === userRoles.ADMIN;
 
-  if (season) {
-    filter.season = season;
-  }
-
-  if (userRole === userRoles.ADMIN) {
-    if (isActive !== undefined) {
-      filter.isActive = isActive;
-    }
-  } else {
-    filter.isActive = true;
-    filter.archivedBySeason = { $ne: true };
-
-    const allActiveOffers = await Offer.find(filter).populate("product").populate("category");
-
-    const validOfferIds = [];
-
-    for (const offer of allActiveOffers) {
-      if (offer.targetType === "product") {
-        if (offer.product && offer.product.isActive) {
-          validOfferIds.push(offer._id);
-        }
-      } else if (offer.targetType === "category" && offer.category) {
-        const productsCount = await Product.countDocuments({
-          category: offer.category._id,
-          isActive: true,
-          archivedByCategory: { $ne: true },
-          archivedByBrand: { $ne: true },
-        });
-
-        if (productsCount > 0) {
-          validOfferIds.push(offer._id);
-        }
-      }
-    }
-
-    filter._id = { $in: validOfferIds };
-  }
-
-  const result = await getAllOffersRepository({ skip, limit, filter });
-
-  return {
-    offers: result.offers,
-    total: result.totaloffers,
+  return getAllOffersRepository({
     page,
     limit,
-    skip,
-    totalPages: Math.ceil(result.totaloffers / limit),
-  };
+    search,
+    status: isAdmin ? status : undefined,
+    target: isAdmin ? target : undefined,
+    season,
+    isAdmin,
+    isActive: isAdmin ? isActive : undefined,
+  });
 };
 
 const getOfferById = async (offerId, userRole) => {
+  const isAdmin = userRole === userRoles.ADMIN;
+
   const offer = await getOfferByIdRepository(offerId);
 
   if (!offer) {
-    return null;
+    throw AppError.create("Offer not found.", 404, FAIL);
   }
 
-  if (userRole !== userRoles.ADMIN) {
-    if (!offer.isActive || offer.archivedBySeason) {
+  if (isAdmin) {
+    return offer;
+  }
+
+  const now = new Date();
+
+  const isPubliclyAvailable = 
+    offer.isActive && !offer.archivedBySeason && 
+    new Date(offer.startDate) <= now && new Date(offer.endDate) > now;
+
+  if (!isPubliclyAvailable) return null;
+
+  if (offer.targetType === "product") {
+    const product = await findProductById(offer.product?._id || offer.product);
+
+    if (!product || !product.isActive || product.archivedByCategory || product.archivedByBrand) {
       return null;
     }
+  } else if (offer.targetType === "category") {
+    const categoryId = offer.category?._id || offer.category;
+    const products = await findProductsByCategory(categoryId);
 
-    if (offer.targetType === "product") {
-      const product = await Product.findById(offer.product);
-      if (!product || !product.isActive) {
-        return null;
-      }
-    } else if (offer.targetType === "category") {
-      const categoryId = offer.category?._id || offer.category;
+    const hasAvailableProducts = products.some(
+      (product) => product.isActive && !product.archivedByCategory && !product.archivedByBrand
+    );
 
-      const productsCount = await Product.countDocuments({
-        category: categoryId,
-        isActive: true,
-        archivedByCategory: { $ne: true },
-        archivedByBrand: { $ne: true },
-      });
-
-      if (productsCount === 0) {
-        return null;
-      }
-    }
+    if (!hasAvailableProducts) return null;
   }
 
   return offer;
 };
 
 const createOffer = async (offerData) => {
-  if (offerData.season) {
-    const season = await Season.findById(offerData.season);
-
-    if (!season) {
-      throw AppError.create("Season not found", 404, FAIL);
-    }
-  }
-
   const now = new Date();
+
   const normalizedDates = await normalizeOfferDatesForSeason({
     seasonId: offerData.season,
     startDate: offerData.startDate,
@@ -238,67 +213,61 @@ const createOffer = async (offerData) => {
     checkPast: true,
   });
 
-  offerData.startDate = normalizedDates.startDate;
-  offerData.endDate = normalizedDates.endDate;
-  
-  const startDate = offerData.startDate;
-  const endDate = offerData.endDate;
+  const startDate = normalizedDates.startDate;
+  const endDate = normalizedDates.endDate;
 
   if (endDate <= now) {
     throw AppError.create("Cannot create an offer with an end date in the past.", 400, FAIL);
   }
 
-  if (endDate <= startDate) {
-    throw AppError.create("End date must be after start date.", 400, FAIL);
-  }
+  offerData.startDate = startDate;
+  offerData.endDate = endDate;
 
-  const isFuture = startDate > now;
-
-  if (isFuture) {
+  if (startDate > now) {
     offerData.isActive = false;
   } else {
-    offerData.isActive = offerData.isActive !== undefined ? offerData.isActive : true;
+    offerData.isActive = offerData.isActive ?? true;
   }
 
-  offerData.status = calculateOfferStatus(offerData.isActive, offerData.startDate, offerData.endDate, offerData.archivedBySeason);
+  offerData.archivedBySeason = false;
 
   if (offerData.targetType === "product") {
     if (!offerData.product) {
       throw AppError.create("Product ID is required when target type is product.", 400, FAIL);
     }
 
-    offerData.category = undefined; 
+    offerData.category = null;
   } else if (offerData.targetType === "category") {
     if (!offerData.category) {
       throw AppError.create("Category ID is required when target type is category.", 400, FAIL);
     }
 
-    offerData.product = undefined; 
+    offerData.product = null;
+  } else {
+    throw AppError.create("Invalid offer target type.", 400, FAIL);
   }
 
   const target = await validateOfferTarget(offerData);
 
+  offerData.status = calculateOfferStatus(offerData.isActive, startDate, endDate, false, now);
+
+  validateDiscount(offerData.type, offerData.discount);
+
   if (offerData.targetType === "product") {
-    const existingProductOffer = await findOverlappingProductOffer(offerData.product, offerData.startDate, offerData.endDate);
+    const existingProductOffer = await findOverlappingProductOffer(offerData.product, startDate, endDate);
 
     if (existingProductOffer) {
-      throw AppError.create("This product already has another Product Offer during this period", 409, FAIL);
+      throw AppError.create("This product already has another Product Offer during this period.", 409, FAIL);
     }
 
-    const categoryOffer = await Offer.findOne({
-      targetType: "category",
-      category: target.category,
-      archivedBySeason: { $ne: true },
-      startDate: { $lt: new Date(offerData.endDate) },
-      endDate: { $gt: new Date(offerData.startDate) },
-    });
+    const categoryOffer = await findOverlappingCategoryOffer(target.category, startDate, endDate);
 
     if (categoryOffer) {
       const productDiscountAmount = calculateDiscountAmount(target.price, offerData);
       const categoryDiscountAmount = calculateDiscountAmount(target.price, categoryOffer);
 
       if (productDiscountAmount < categoryDiscountAmount) {
-        throw AppError.create("Product Offer must be stronger than the existing Category Offer", 409, FAIL);
+        throw AppError.create("Product Offer must be stronger than the existing Category Offer.", 409, FAIL);
       }
     }
   }
@@ -313,31 +282,37 @@ const createOffer = async (offerData) => {
 };
 
 const updateOffer = async (offerId, offerData) => {
-  const existingOffer = await Offer.findById(offerId);
+  const existingOffer = await findOfferById(offerId);
 
   if (!existingOffer) {
-    return null;
+    throw AppError.create("Existing offer not found.", 404, FAIL);
   }
 
+  const now = new Date();
+
   const finalTargetType = offerData.targetType || existingOffer.targetType;
+  const finalProduct = offerData.product !== undefined ? offerData.product : existingOffer.product;
+  const finalCategory = offerData.category !== undefined ? offerData.category : existingOffer.category;
 
   if (finalTargetType === "product") {
-    const targetProduct = offerData.product || existingOffer.product;
-    if (!targetProduct) {
+    if (!finalProduct) {
       throw AppError.create("Product ID is required for product offers.", 400, FAIL);
     }
-    
-    offerData.product = targetProduct;
+
+    offerData.product = finalProduct;
     offerData.category = null;
   } else if (finalTargetType === "category") {
-    const targetCategory = offerData.category || existingOffer.category;
-    if (!targetCategory) {
+    if (!finalCategory) {
       throw AppError.create("Category ID is required for category offers.", 400, FAIL);
     }
 
-    offerData.category = targetCategory;
+    offerData.category = finalCategory;
     offerData.product = null;
+  } else {
+    throw AppError.create("Invalid offer target type.", 400, FAIL);
   }
+
+  offerData.targetType = finalTargetType;
 
   const finalSeason = offerData.season !== undefined ? offerData.season : existingOffer.season;
   const requestedStartDate = offerData.startDate ?? existingOffer.startDate;
@@ -349,97 +324,89 @@ const updateOffer = async (offerId, offerData) => {
     endDate: requestedEndDate,
   });
 
-  const now = new Date();
-  const currentStartDate = normalizedDates.startDate;
-  const currentEndDate = normalizedDates.endDate;
+  const startDate = normalizedDates.startDate;
+  const endDate = normalizedDates.endDate;
 
-  const isExpired = currentEndDate <= now;
-  const isFuture = currentStartDate > now;
+  const isFuture = startDate > now;
+  const isExpired = endDate <= now;
 
-  if (offerData.isActive !== undefined) {
-    if (isExpired) {
-      throw AppError.create("Cannot update an offer to an end date in the past.", 400, FAIL);
-    }
-    if (isFuture && offerData.isActive === true) {
-      throw AppError.create("Cannot activate a future offer before its start date.", 400, FAIL);
-    }
+  if (offerData.isActive === true && (isFuture || isExpired)) {
+    throw AppError.create("Only a current offer can be activated.", 400, FAIL);
   }
 
-  const newStartDate = new Date(offerData.startDate || existingOffer.startDate);
-  const newEndDate = new Date(offerData.endDate || existingOffer.endDate);
+  delete offerData.archivedBySeason;
+  delete offerData.status;
+
+  let finalIsActive = offerData.isActive !== undefined ? offerData.isActive : existingOffer.isActive;
 
   if (isFuture || isExpired) {
-    if (newStartDate <= now && newEndDate > now) {
-      offerData.isActive = true;
-    } else {
-      offerData.isActive = false;
-    }
+    finalIsActive = false;
   }
+
+  offerData.startDate = startDate;
+  offerData.endDate = endDate;
+  offerData.isActive = finalIsActive;
 
   const updatedData = {
     ...existingOffer.toObject(),
     ...offerData,
+    season: finalSeason || null,
   };
 
-  if (updatedData.targetType === "product") {
-    const product = await Product.findById(updatedData.product);
+  validateDiscount(updatedData.type, updatedData.discount);
 
-    if (!product) {
-      throw AppError.create("Product not found", 404, FAIL);
+  let target;
+
+  if (finalTargetType === "product") {
+    target = await findProductById(updatedData.product);
+
+    if (!target) {
+      throw AppError.create("Product not found.", 404, FAIL);
     }
 
-    const existingProductOffer = await findOverlappingProductOffer(
-      updatedData.product,
-      updatedData.startDate || existingOffer.startDate,
-      updatedData.endDate || existingOffer.endDate,
-      offerId
-    );
+    const existingProductOffer = await findOverlappingProductOffer(updatedData.product, startDate, endDate, offerId);
 
     if (existingProductOffer) {
-      throw AppError.create("This product already has another Product Offer during this period", 409, FAIL);
+      throw AppError.create("This product already has another Product Offer during this period.", 409, FAIL);
     }
 
-    const categoryOffer = await Offer.findOne({
-      targetType: "category",
-      category: product.category,
-      archivedBySeason: { $ne: true },
-      startDate: { $lt: new Date(updatedData.endDate) },
-      endDate: { $gt: new Date(updatedData.startDate) },
-      _id: { $ne: offerId },
-    });
+    const categoryOffer = await findOverlappingCategoryOffer(target.category, startDate, endDate, offerId);
 
     if (categoryOffer) {
-      const productDiscountAmount = calculateDiscountAmount(product.price, updatedData);
-      const categoryDiscountAmount = calculateDiscountAmount(product.price, categoryOffer);
+      const productDiscountAmount = calculateDiscountAmount(target.price, updatedData);
+      const categoryDiscountAmount = calculateDiscountAmount(target.price, categoryOffer);
 
       if (productDiscountAmount < categoryDiscountAmount) {
-        throw AppError.create("Product Offer must be stronger than the existing Category Offer", 409, FAIL);
+        throw AppError.create("Product Offer must be stronger than the existing Category Offer.", 409, FAIL);
       }
     }
+  } else {
+    const category = await findCategoryById(updatedData.category);
+
+    if (!category) {
+      throw AppError.create("Category not found.", 404, FAIL);
+    }
+
+    target = await findProductsByCategory(category._id);
   }
 
-  offerData.status = calculateOfferStatus(
-    offerData.isActive !== undefined ? offerData.isActive : existingOffer.isActive,
-    offerData.startDate || existingOffer.startDate,
-    offerData.endDate || existingOffer.endDate
-  );
+  const finalStatus = calculateOfferStatus(finalIsActive, startDate, endDate, existingOffer.archivedBySeason, now);
+  offerData.status = finalStatus;
 
   const updatedOffer = await updateOfferRepository(offerId, offerData);
 
   if (updatedOffer && updatedOffer.targetType === "category") {
-    const products = await Product.find({ category: updatedOffer.category }).select("_id price");
-
-    await removeWeakerProductOffers(updatedOffer, products);
+    await removeWeakerProductOffers(updatedOffer, target);
   }
 
   return updatedOffer;
 };
 
 const updateOfferStatus = async (offerId, isActive) => {
-  const offer = await Offer.findById(offerId);
+  const offer = await findOfferById(offerId);
 
   if (!offer) {
-    throw AppError.create("Offer not found", 404, FAIL);
+    throw AppError.create("Offer not found.", 404, FAIL);
   }
 
   if (!isCurrentPeriod(offer.startDate, offer.endDate)) {
@@ -450,16 +417,12 @@ const updateOfferStatus = async (offerId, isActive) => {
     throw AppError.create("This offer belongs to an inactive season. Activate the season first.", 409, FAIL);
   }
 
-  offer.isActive = isActive;
-  offer.status = calculateOfferStatus(isActive, offer.startDate, offer.endDate);
-  await offer.save();
-
-  await offer.populate("product category season");
-  return offer;
+  const status = calculateOfferStatus(isActive, offer.startDate, offer.endDate, offer.archivedBySeason);
+  return updateOfferStatusRepository(offerId, isActive, status);
 };
 
 const deleteOffer = async (offerId) => {
-  return await deleteOfferRepository(offerId);
+  return deleteOfferRepository(offerId);
 };
 
 export {

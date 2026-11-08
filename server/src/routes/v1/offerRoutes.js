@@ -12,11 +12,11 @@ const router = express.Router();
 
 router.route("/")
   .get(optionalAuth, checkUserRole, getAllOffersController)
-  .post(authToken, authorizeRoles("ADMIN"), createOfferValidator, createOfferController);
+  .post(authToken, authorizeRoles("ADMIN"), createOfferValidator, validate, createOfferController);
 
 router.route("/:offerId")
   .get(optionalAuth, checkUserRole, getOfferByIdController)
-  .patch(authToken, authorizeRoles("ADMIN"), updateOfferValidator, updateOfferController)
+  .patch(authToken, authorizeRoles("ADMIN"), updateOfferValidator, validate, updateOfferController)
   .delete(authToken, authorizeRoles("ADMIN"), deleteOfferController);
 
 router.route("/:offerId/status")

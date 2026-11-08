@@ -948,6 +948,84 @@
                     "submitFailed": "Something went wrong. Please try again."
                 }
             }
+        },
+        "offers": {
+            "header": {
+                "title": "Offers Management",
+                "description": "Create, schedule, and manage promotional offers across the Nexmart catalog.",
+                "export": "Export Offers CSV",
+                "add": "Add New Offer"
+            },
+            "stats": {
+                "total": "Total Offers",
+                "addedThisMonth": "added this month",
+                "active": "Active Offers",
+                "activeNote": "Currently live across catalog",
+                "scheduled": "Scheduled Offers",
+                "scheduledNote": "Starts within next 14 days",
+                "expired": "Expired Offers",
+                "expiredNote": "Archived / completed campaigns"
+            },
+            "filters": {
+                "searchPlaceholder": "Search offer name...",
+                "status": "Status",
+                "target": "Target",
+                "season": "Season",
+                "allSeasons": "All Seasons",
+                "unnamedSeason": "Unnamed Season",
+                "reset": "Reset filters",
+                "options": {
+                    "status": {
+                        "all": "All Statuses",
+                        "active": "Active",
+                        "scheduled": "Scheduled",
+                        "expired": "Expired",
+                        "inactive": "Inactive"
+                    },
+                    "target": {
+                        "all": "All Targets",
+                        "product": "Product",
+                        "category": "Category"
+                    }
+                }
+            },
+            "table": {
+                "nameAndCode": "Offer Name & Code",
+                "target": "Target",
+                "discount": "Discount",
+                "season": "Season",
+                "validityPeriod": "Validity Period",
+                "status": "Status",
+                "actions": "Actions",
+                "empty": "No offers found."
+            },
+            "row": {
+                "offerFallback": "offer",
+                "collapse": "Collapse offer",
+                "expand": "Expand offer",
+                "targets": {
+                    "product": "Product",
+                    "category": "Category"
+                },
+                "statuses": {
+                    "Active": "Active",
+                    "Scheduled": "Scheduled",
+                    "Expired": "Expired",
+                    "Inactive": "Inactive"
+                },
+                "to": "to",
+                "specifications": "Offer Campaign Specifications",
+                "targetTypeAndName": "Target Type & Name",
+                "discountMode": "Discount Mode",
+                "discountTypes": {
+                    "percentage": "Percentage",
+                    "fixed": "Fixed"
+                },
+                "validityWindow": "Validity Window",
+                "affiliatedSeason": "Affiliated Season",
+                "editRules": "Edit Rules",
+                "viewConversionSla": "View Conversion SLA"
+            }
         }
     }
 }

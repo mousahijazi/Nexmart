@@ -1,23 +1,19 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { OfferRow, TablePagination } from "@/index";
 import { offerGridCols, offerTableMinWidth } from "./offersData";
+import { useTranslations } from "next-intl";
 
-export default function OffersTable({ offers }) {
+export default function OffersTable({ offers, page, setPage, limit, setLimit, total, totalPages }) {
+  const t = useTranslations("Admin.offers");
   const [openOffers, setOpenOffers] = useState([]);
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(6);
-
-  const totalPages = Math.max(1, Math.ceil(offers.length / rowsPerPage));
-  const safePage = Math.min(page, totalPages);
-
-  const visibleOffers = useMemo(() => {
-    const start = (safePage - 1) * rowsPerPage;
-    return offers.slice(start, start + rowsPerPage);
-  }, [offers, safePage, rowsPerPage]);
 
   const toggleOffer = (id) => {
-    setOpenOffers((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+    setOpenOffers((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id]
+    );
   };
 
   return (
@@ -25,36 +21,39 @@ export default function OffersTable({ offers }) {
       <div className="min-w-0 overflow-x-auto scrollbar-thin">
         <div className={`${offerTableMinWidth} w-full`}>
           <div className={`grid ${offerGridCols} gap-3 bg-[var(--color-sand)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]`}>
-            <span>Offer Name &amp; Code</span>
-            <span>Target</span>
-            <span>Discount</span>
-            <span>Season</span>
-            <span>Validity Period</span>
-            <span>Status</span>
-            <span>Actions</span>
+            <span>{t("table.nameAndCode")}</span>
+            <span>{t("table.target")}</span>
+            <span>{t("table.discount")}</span>
+            <span>{t("table.season")}</span>
+            <span>{t("table.validityPeriod")}</span>
+            <span>{t("table.status")}</span>
+            <span>{t("table.actions")}</span>
           </div>
 
-          {visibleOffers.length > 0 ? (visibleOffers.map((offer) => (
-              <OfferRow key={offer._id} offer={offer} isExpanded={openOffers.includes(offer._id)} onToggle={() => toggleOffer(offer._id)} />
+          {offers.length > 0 ? (
+            offers.map((offer) => (
+              <OfferRow
+                key={offer._id}
+                offer={offer}
+                isExpanded={openOffers.includes(offer._id)}
+                onToggle={() => toggleOffer(offer._id)}
+              />
             ))
           ) : (
             <div className="flex min-h-[180px] items-center justify-center text-[12px] text-[var(--color-muted)]">
-              No offers found.
+              {t("table.empty")}
             </div>
           )}
         </div>
       </div>
 
       <TablePagination
-        page={safePage}
-        totalPages={totalPages}
-        total={offers.length}
-        rowsPerPage={rowsPerPage}
+        page={page}
+        totalPages={Math.max(1, totalPages)}
+        total={total}
+        rowsPerPage={limit}
         onPageChange={setPage}
-        onRowsChange={(value) => {
-          setRowsPerPage(value);
-          setPage(1);
-        }}
+        onRowsChange={setLimit}
         noun="offers"
       />
     </section>

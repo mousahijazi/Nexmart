@@ -88,15 +88,32 @@ const getPublicTargetIds = async () => {
     archivedByBrand: { $ne: true },
   };
 
-  const [productIds, categoryIds] = await Promise.all([
+  const [productIds, categoryResults] = await Promise.all([
     Product.distinct("_id", validProductFilter),
-    Product.distinct("category", {
-      ...validProductFilter,
-      category: { $ne: null },
-    }),
+
+    Product.aggregate([
+      {
+        $match: validProductFilter,
+      },
+      {
+        $group: {
+          _id: "$category",
+        },
+      },
+      {
+        $match: {
+          _id: { $type: "objectId" },
+        },
+      },
+    ]),
   ]);
 
-  return { productIds, categoryIds };
+  const categoryIds = categoryResults.map((item) => item._id);
+
+  return {
+    productIds,
+    categoryIds,
+  };
 };
 
 const createOffer = async (offerData) => {

@@ -948,6 +948,84 @@
                     "submitFailed": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
                 }
             }
+        },
+        "offers": {
+            "header": {
+                "title": "إدارة العروض",
+                "description": "أنشئ العروض الترويجية وجدولها وأدرها عبر منتجات متجر Nexmart.",
+                "export": "تصدير العروض CSV",
+                "add": "إضافة عرض جديد"
+            },
+            "stats": {
+                "total": "إجمالي العروض",
+                "addedThisMonth": "تمت إضافتها هذا الشهر",
+                "active": "العروض النشطة",
+                "activeNote": "العروض المتاحة حاليًا في المتجر",
+                "scheduled": "العروض المجدولة",
+                "scheduledNote": "تبدأ خلال الأيام الـ14 القادمة",
+                "expired": "العروض المنتهية",
+                "expiredNote": "الحملات المؤرشفة أو المكتملة"
+            },
+            "filters": {
+                "searchPlaceholder": "ابحث عن اسم العرض...",
+                "status": "الحالة",
+                "target": "الهدف",
+                "season": "الموسم",
+                "allSeasons": "كل المواسم",
+                "unnamedSeason": "موسم بدون اسم",
+                "reset": "إعادة تعيين الفلاتر",
+                "options": {
+                    "status": {
+                        "all": "كل الحالات",
+                        "active": "نشط",
+                        "scheduled": "مجدول",
+                        "expired": "منتهي",
+                        "inactive": "غير نشط"
+                    },
+                    "target": {
+                        "all": "كل الأهداف",
+                        "product": "منتج",
+                        "category": "تصنيف"
+                    }
+                }
+            },
+            "table": {
+                "nameAndCode": "اسم العرض ورمزه",
+                "target": "الهدف",
+                "discount": "الخصم",
+                "season": "الموسم",
+                "validityPeriod": "فترة الصلاحية",
+                "status": "الحالة",
+                "actions": "الإجراءات",
+                "empty": "لم يتم العثور على عروض."
+            },
+            "row": {
+                "offerFallback": "عرض",
+                "collapse": "طي تفاصيل العرض",
+                "expand": "عرض تفاصيل العرض",
+                "targets": {
+                    "product": "منتج",
+                    "category": "تصنيف"
+                },
+                "statuses": {
+                    "Active": "نشط",
+                    "Scheduled": "مجدول",
+                    "Expired": "منتهي",
+                    "Inactive": "غير نشط"
+                },
+                "to": "إلى",
+                "specifications": "تفاصيل الحملة",
+                "targetTypeAndName": "نوع الهدف واسمه",
+                "discountMode": "نوع الخصم",
+                "discountTypes": {
+                    "percentage": "نسبة مئوية",
+                    "fixed": "مبلغ ثابت"
+                },
+                "validityWindow": "فترة الصلاحية",
+                "affiliatedSeason": "الموسم المرتبط",
+                "editRules": "تعديل القواعد",
+                "viewConversionSla": "عرض معدل التحويل"
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ import { ChevronDown, ChevronRight, Package, LayoutGrid, Flag, Pencil, LineChart
 import { getImageUrl } from "@/helper/getImage";
 import { formatDate } from "@/components/Dashboard/AdminDashboard/shared/formatDate";
 import { formatDiscount } from "./offersData";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAdminContext } from "@/Context/Adminprovider";
 import { AdminEditButton, AdminArchiveButton } from "@/index";
 import { offerGridCols } from "./offersData";
@@ -28,9 +28,10 @@ function InfoBox({ label, value }) {
 
 export default function OfferRow({ offer, isExpanded, onToggle }) {
   const locale = useLocale();
+  const t = useTranslations("Admin.offers");
   const { openEditOffer, toggleOfferActive } = useAdminContext();
   const toggle = getToggleState(offer, "offer");
-  const offerName = offer?.name?.en || offer?.name?.ar || "offer";
+  const offerName = offer?.name?.en || offer?.name?.ar || t("row.offerFallback");
   const TargetIcon = offer.targetType === "product" ? Package : LayoutGrid;
   const discountText = formatDiscount(offer.discount, offer.type);
   const targetImage = offer.targetType === "product" ? offer.product?.mainImage : offer.category?.image;
@@ -43,7 +44,7 @@ export default function OfferRow({ offer, isExpanded, onToggle }) {
           <button
             type="button"
             onClick={onToggle}
-            aria-label={isExpanded ? "Collapse offer" : "Expand offer"}
+            aria-label={isExpanded ? t("row.collapse") : t("row.expand")}
             className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[var(--color-soft)] hover:bg-[var(--color-sand)]"
           >
             {isExpanded ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
@@ -66,7 +67,7 @@ export default function OfferRow({ offer, isExpanded, onToggle }) {
           <div className="min-w-0">
             <p className="truncate text-[12px] font-medium text-[var(--color-ink)]">{targetName}</p>
             <span className="mt-1 inline-block rounded bg-[var(--color-sand)] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]">
-              {offer.targetType}
+              {t(`row.targets.${offer.targetType}`)}
             </span>
           </div>
         </div>
@@ -86,13 +87,13 @@ export default function OfferRow({ offer, isExpanded, onToggle }) {
 
         <div className="text-[11px] leading-[1.4] text-[var(--color-soft)]">
           <p className="text-[var(--color-ink)]">{formatDate(offer.startDate)}</p>
-          <p>to {formatDate(offer.endDate)}</p>
+          <p>{t("row.to")} {formatDate(offer.endDate)}</p>
         </div>
 
         <div>
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold ${statusStyles[offer.status]}`}>
             <span className="h-1.5 w-1.5 rounded-full bg-current" />
-            {offer.status}
+            {t(`row.statuses.${offer.status}`)}
           </span>
         </div>
 
@@ -105,7 +106,7 @@ export default function OfferRow({ offer, isExpanded, onToggle }) {
             disabledReason={toggle.reason}
             onClick={() => toggleOfferActive(offer._id, !offer.isActive)}
           />
-          
+
           <AdminEditButton name={offerName} onClick={() => openEditOffer(offer)} />
         </div>
       </div>
@@ -115,26 +116,26 @@ export default function OfferRow({ offer, isExpanded, onToggle }) {
           <div className="rounded-[12px] border border-[var(--color-border)] bg-[var(--color-cream)] p-4">
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]">
-                Offer Campaign Specifications
+                {t("row.specifications")}
               </p>
             </div>
 
             <p className="mt-3 text-[12px] leading-[1.6] text-[var(--color-soft-2)]">{offer.description?.[locale]}</p>
 
             <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-              <InfoBox label="Target Type & Name" value={`${offer.targetType}: ${targetName}`} />
-              <InfoBox label="Discount Mode" value={`${offer.type === "percentage" ? "Percentage" : "Fixed"}: ${discountText}`} />
-              <InfoBox label="Validity Window" value={`${formatDate(offer.startDate)} – ${formatDate(offer.endDate)}`} />
-              <InfoBox label="Affiliated Season" value={offer.season?.name?.[locale]} />
+              <InfoBox label={t("row.targetTypeAndName")} value={`${t(`row.targets.${offer.targetType}`)}: ${targetName}`} />
+              <InfoBox label={t("row.discountMode")} value={`${t(`row.discountTypes.${offer.type}`)}: ${discountText}`} />
+              <InfoBox label={t("row.validityWindow")} value={`${formatDate(offer.startDate)} – ${formatDate(offer.endDate)}`} />
+              <InfoBox label={t("row.affiliatedSeason")} value={offer.season?.name?.[locale]} />
             </div>
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--color-divider)] pt-4">
               <div className="flex flex-wrap items-center gap-2">
                 <button type="button" className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[11px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-sand)]">
-                  <Pencil size={13} /> Edit Rules
+                  <Pencil size={13} /> {t("row.editRules")}
                 </button>
                 <button type="button" className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[11px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-sand)]">
-                  <LineChart size={13} /> View Conversion SLA
+                  <LineChart size={13} /> {t("row.viewConversionSla")}
                 </button>
               </div>
             </div>

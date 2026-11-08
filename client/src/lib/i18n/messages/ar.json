@@ -1025,6 +1025,62 @@
                 "affiliatedSeason": "الموسم المرتبط",
                 "editRules": "تعديل القواعد",
                 "viewConversionSla": "عرض معدل التحويل"
+            },
+            "modal": {
+                "title": {
+                    "add": "إضافة عرض جديد",
+                    "edit": "تعديل العرض"
+                },
+                "close": "إغلاق",
+                "loading": "جارٍ التحميل...",
+                "alerts": {
+                    "added": "تمت إضافة العرض بنجاح",
+                    "updated": "تم تعديل العرض بنجاح",
+                    "error": "حدث خطأ ما"
+                },
+                "form": {
+                    "fields": {
+                        "nameEn": "الاسم (بالإنجليزية)",
+                        "nameAr": "الاسم (بالعربية)",
+                        "descriptionEn": "الوصف (بالإنجليزية)",
+                        "descriptionAr": "الوصف (بالعربية)"
+                    },
+                    "placeholders": {
+                        "nameEn": "اسم العرض",
+                        "nameAr": "اسم العرض",
+                        "descriptionEn": "وصف العرض",
+                        "descriptionAr": "وصف العرض",
+                        "selectProduct": "اختر منتجًا",
+                        "selectCategory": "اختر تصنيفًا",
+                        "noSeason": "بدون موسم"
+                    },
+                    "discountType": "نوع الخصم",
+                    "discountTypes": {
+                        "percentage": "نسبة مئوية (%)",
+                        "fixed": "مبلغ ثابت (ريال سعودي)"
+                    },
+                    "discountValue": "قيمة الخصم",
+                    "targetType": "نوع الهدف",
+                    "targets": {
+                        "product": "منتج",
+                        "category": "تصنيف"
+                    },
+                    "product": "المنتج",
+                    "category": "التصنيف",
+                    "season": "الموسم (اختياري)",
+                    "startDate": "تاريخ البداية",
+                    "endDate": "تاريخ الانتهاء",
+                    "seasonDateNotice": "يجب أن تكون تواريخ العرض ضمن فترة الموسم: {start} – {end}",
+                    "activeOffer": "العرض نشط",
+                    "activeOfferDescription": "سيتم تفعيل العروض المستقبلية تلقائيًا عند حلول تاريخ بدايتها."
+                },
+                "footer": {
+                    "cancel": "إلغاء",
+                    "adding": "جارٍ الإضافة...",
+                    "updating": "جارٍ التحديث...",
+                    "add": "إضافة العرض",
+                    "update": "تحديث العرض"
+                }
             }
         }
     }

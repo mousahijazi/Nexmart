@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { OfferForm, OfferModalFooter } from "@/index";
 import { createOfferSchema } from "@/lib/schemas/offerSchema";
 import { getCategories, getProducts, getSeasons } from "@/helper/fetchApi";
@@ -44,6 +44,7 @@ export default function OfferModal() {
   const { isOfferModalOpen, offerModalMode, editingOffer, closeOfferModal, addOffer, editOffer } = useAdminContext();
   const { showAlert } = useAlertContext();
   const locale = useLocale();
+  const t = useTranslations("Admin.offers.modal");
 
   const isEdit = offerModalMode === "edit";
 
@@ -144,10 +145,10 @@ export default function OfferModal() {
     const result = isEdit ? await editOffer(editingOffer._id, payload) : await addOffer(payload);
 
     if (result?.success) {
-      showAlert(isEdit ? "تم تعديل العرض بنجاح" : "تمت إضافة العرض بنجاح", "success");
+      showAlert(isEdit ? t("alerts.updated") : t("alerts.added"), "success");
       closeOfferModal();
     } else {
-      showAlert(result?.message || "حدث خطأ ما", "danger");
+      showAlert(result?.message || t("alerts.error"), "danger");
     }
   };
 
@@ -156,7 +157,7 @@ export default function OfferModal() {
       <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-[var(--color-cream)] shadow-xl">
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-divider)] px-5 py-4 sm:px-6">
           <h2 className="text-base font-semibold text-[var(--color-ink)]">
-            {isEdit ? "تعديل العرض" : "إضافة عرض جديد"}
+            {isEdit ? t("title.edit") : t("title.add")}
           </h2>
 
           <button
@@ -164,7 +165,7 @@ export default function OfferModal() {
             onClick={closeOfferModal}
             disabled={isSubmitting}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-muted)] transition hover:bg-[var(--color-sand)] disabled:cursor-not-allowed"
-            aria-label="Close"
+            aria-label={t("close")}
           >
             <X size={16} />
           </button>

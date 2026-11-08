@@ -1,19 +1,22 @@
 "use client";
 import { ChevronDown } from "lucide-react";
 import { RHFerrors } from "@/index";
+import { useTranslations } from "next-intl";
 
 function getName(item, locale) {
   return item?.name?.[locale] || item?.name?.en || item?.name?.ar || item?.title?.[locale] || item?.title?.en || item?.title?.ar || "";
 }
 
 function SelectField({ label, name, register, errors, disabled, placeholder, options, locale, inputClass, labelClass }) {
+  const t = useTranslations("Admin.offers.modal");
+
   return (
     <div>
       <label className={labelClass}>{label}</label>
 
       <div className="relative">
         <select {...register(name)} disabled={disabled} className={`${inputClass} appearance-none pr-8 disabled:opacity-60`}>
-          <option value="">{disabled ? "Loading..." : placeholder}</option>
+          <option value="">{disabled ? t("loading") : placeholder}</option>
           {options.map((option) => (
             <option key={option._id} value={option._id}>
               {getName(option, locale)}
@@ -29,7 +32,6 @@ function SelectField({ label, name, register, errors, disabled, placeholder, opt
   );
 }
 
-// دالة لتنسيق التاريخ لصيغة datetime-local
 const toInput = (iso) => {
   if (!iso) return undefined;
   const date = new Date(iso);
@@ -38,6 +40,7 @@ const toInput = (iso) => {
 };
 
 export default function OfferForm({ register, errors, watch, products, categories, seasons, locale, loadingOptions, inputClass, labelClass, sectionClass }) {
+  const t = useTranslations("Admin.offers.modal.form");
   const targetType = watch("targetType");
   const discountType = watch("type");
   const selectedSeasonId = watch("season");
@@ -49,10 +52,10 @@ export default function OfferForm({ register, errors, watch, products, categorie
   const seasonMax = selectedSeason ? toInput(selectedSeason.endDate) : undefined;
 
   const textFields = [
-    { label: "Name (English)", name: "nameEn", placeholder: "Offer name" },
-    { label: "الاسم (عربي)", name: "nameAr", placeholder: "اسم العرض" },
-    { label: "Description (English)", name: "descriptionEn", placeholder: "Offer description", textarea: true },
-    { label: "الوصف (عربي)", name: "descriptionAr", placeholder: "وصف العرض", textarea: true },
+    { label: t("fields.nameEn"), name: "nameEn", placeholder: t("placeholders.nameEn") },
+    { label: t("fields.nameAr"), name: "nameAr", placeholder: t("placeholders.nameAr") },
+    { label: t("fields.descriptionEn"), name: "descriptionEn", placeholder: t("placeholders.descriptionEn"), textarea: true },
+    { label: t("fields.descriptionAr"), name: "descriptionAr", placeholder: t("placeholders.descriptionAr"), textarea: true },
   ];
 
   const selectProps = { register, errors, locale, inputClass, labelClass };
@@ -81,11 +84,11 @@ export default function OfferForm({ register, errors, watch, products, categorie
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className={labelClass}>Discount Type</label>
+              <label className={labelClass}>{t("discountType")}</label>
               <div className="relative">
                 <select {...register("type")} className={`${inputClass} appearance-none pr-8`}>
-                  <option value="percentage">Percentage (%)</option>
-                  <option value="fixed">Fixed amount (SAR)</option>
+                  <option value="percentage">{t("discountTypes.percentage")}</option>
+                  <option value="fixed">{t("discountTypes.fixed")}</option>
                 </select>
                 <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
               </div>
@@ -94,7 +97,7 @@ export default function OfferForm({ register, errors, watch, products, categorie
 
             <div>
               <label className={labelClass}>
-                Discount Value {discountType === "percentage" ? "(%)" : "(SAR)"}
+                {t("discountValue")} {discountType === "percentage" ? "(%)" : "(SAR)"}
               </label>
 
               <input
@@ -113,12 +116,12 @@ export default function OfferForm({ register, errors, watch, products, categorie
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className={labelClass}>Target Type</label>
+              <label className={labelClass}>{t("targetType")}</label>
 
               <div className="relative">
                 <select {...register("targetType")} className={`${inputClass} appearance-none pr-8`}>
-                  <option value="product">Product</option>
-                  <option value="category">Category</option>
+                  <option value="product">{t("targets.product")}</option>
+                  <option value="category">{t("targets.category")}</option>
                 </select>
 
                 <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
@@ -130,9 +133,9 @@ export default function OfferForm({ register, errors, watch, products, categorie
             {targetType === "product" ? (
               <SelectField
                 key="product"
-                label="Product"
+                label={t("product")}
                 name="product"
-                placeholder="Select product"
+                placeholder={t("placeholders.selectProduct")}
                 options={products}
                 disabled={loadingOptions}
                 {...selectProps}
@@ -140,9 +143,9 @@ export default function OfferForm({ register, errors, watch, products, categorie
             ) : (
               <SelectField
                 key="category"
-                label="Category"
+                label={t("category")}
                 name="category"
-                placeholder="Select category"
+                placeholder={t("placeholders.selectCategory")}
                 options={categories}
                 disabled={loadingOptions}
                 {...selectProps}
@@ -151,9 +154,9 @@ export default function OfferForm({ register, errors, watch, products, categorie
           </div>
 
           <SelectField
-            label="Season (optional)"
+            label={t("season")}
             name="season"
-            placeholder="No season"
+            placeholder={t("placeholders.noSeason")}
             options={seasons}
             disabled={loadingOptions}
             {...selectProps}
@@ -165,7 +168,7 @@ export default function OfferForm({ register, errors, watch, products, categorie
         <div className="space-y-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className={labelClass}>Start Date</label>
+              <label className={labelClass}>{t("startDate")}</label>
               <input
                 type="datetime-local"
                 {...register("startDate")}
@@ -177,7 +180,7 @@ export default function OfferForm({ register, errors, watch, products, categorie
             </div>
 
             <div>
-              <label className={labelClass}>End Date</label>
+              <label className={labelClass}>{t("endDate")}</label>
               <input
                 type="datetime-local"
                 {...register("endDate")}
@@ -191,15 +194,18 @@ export default function OfferForm({ register, errors, watch, products, categorie
 
           {selectedSeason && (
             <p className="-mt-2 text-xs text-[var(--color-muted-3)]">
-              Offer dates must be within the season: {new Date(selectedSeason.startDate).toLocaleDateString("en-US")} – {new Date(selectedSeason.endDate).toLocaleDateString("en-US")}
+              {t("seasonDateNotice", {
+                start: new Date(selectedSeason.startDate).toLocaleDateString(locale),
+                end: new Date(selectedSeason.endDate).toLocaleDateString(locale),
+              })}
             </p>
           )}
 
           <div className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-field)] px-3.5 py-3">
             <div>
-              <p className="text-sm font-medium text-[var(--color-ink)]">Active Offer</p>
+              <p className="text-sm font-medium text-[var(--color-ink)]">{t("activeOffer")}</p>
               <p className="mt-0.5 text-xs text-[var(--color-muted-3)]">
-                Future offers are activated automatically on their start date.
+                {t("activeOfferDescription")}
               </p>
             </div>
 

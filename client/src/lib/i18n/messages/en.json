@@ -1025,6 +1025,62 @@
                 "affiliatedSeason": "Affiliated Season",
                 "editRules": "Edit Rules",
                 "viewConversionSla": "View Conversion SLA"
+            },
+            "modal": {
+                "title": {
+                    "add": "Add New Offer",
+                    "edit": "Edit Offer"
+                },
+                "close": "Close",
+                "loading": "Loading...",
+                "alerts": {
+                    "added": "Offer added successfully",
+                    "updated": "Offer updated successfully",
+                    "error": "Something went wrong"
+                },
+                "form": {
+                    "fields": {
+                        "nameEn": "Name (English)",
+                        "nameAr": "Name (Arabic)",
+                        "descriptionEn": "Description (English)",
+                        "descriptionAr": "Description (Arabic)"
+                    },
+                    "placeholders": {
+                        "nameEn": "Offer name",
+                        "nameAr": "Offer name",
+                        "descriptionEn": "Offer description",
+                        "descriptionAr": "Offer description",
+                        "selectProduct": "Select product",
+                        "selectCategory": "Select category",
+                        "noSeason": "No season"
+                    },
+                    "discountType": "Discount Type",
+                    "discountTypes": {
+                        "percentage": "Percentage (%)",
+                        "fixed": "Fixed amount (SAR)"
+                    },
+                    "discountValue": "Discount Value",
+                    "targetType": "Target Type",
+                    "targets": {
+                        "product": "Product",
+                        "category": "Category"
+                    },
+                    "product": "Product",
+                    "category": "Category",
+                    "season": "Season (optional)",
+                    "startDate": "Start Date",
+                    "endDate": "End Date",
+                    "seasonDateNotice": "Offer dates must be within the season: {start} – {end}",
+                    "activeOffer": "Active Offer",
+                    "activeOfferDescription": "Future offers are activated automatically on their start date."
+                },
+                "footer": {
+                    "cancel": "Cancel",
+                    "adding": "Adding...",
+                    "updating": "Updating...",
+                    "add": "Add Offer",
+                    "update": "Update Offer"
+                }
             }
         }
     }

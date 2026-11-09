@@ -1154,6 +1154,40 @@
                 "Inactive": "Inactive",
                 "Pending": "Pending",
                 "Draft": "Draft"
+            },
+            "modal": {
+                "addTitle": "Add New Season",
+                "editTitle": "Edit Season",
+                "close": "Close"
+            },
+            "form": {
+                "nameEn": {
+                    "label": "Name (English)",
+                    "placeholder": "Season name"
+                },
+                "nameAr": {
+                    "label": "Name (Arabic)",
+                    "placeholder": "Season name in Arabic"
+                },
+                "descriptionEn": {
+                    "label": "Description (English)",
+                    "placeholder": "Season description"
+                },
+                "descriptionAr": {
+                    "label": "Description (Arabic)",
+                    "placeholder": "Season description in Arabic"
+                },
+                "startDate": "Start Date",
+                "endDate": "End Date",
+                "activeSeason": "Active Season",
+                "activeSeasonDescription": "Future seasons are activated automatically on their start date."
+            },
+            "footer": {
+                "cancel": "Cancel",
+                "add": "Add Season",
+                "update": "Update Season",
+                "adding": "Adding...",
+                "updating": "Updating..."
             }
         }
     }

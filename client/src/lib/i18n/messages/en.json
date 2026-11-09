@@ -1082,6 +1082,79 @@
                     "update": "Update Offer"
                 }
             }
+        }, 
+        "seasons": {
+            "header": {
+                "title": "Seasons Management",
+                "badge": "GCC Engine",
+                "description": "Plan seasonal campaigns, manage their schedules, and organize associated offers.",
+                "export": "Export Seasons CSV",
+                "exportUnavailable": "CSV export is not available yet.",
+                "addSeason": "Add New Season"
+            },
+            "stats": {
+                "total": "Total Seasons",
+                "plannedNextYear": "{count, plural, =0 {No seasons planned} one {# season planned} other {# seasons planned}}",
+                "active": "Active Seasons",
+                "activeNote": "Currently running campaigns",
+                "upcoming": "Upcoming Seasons",
+                "upcomingNote": "Scheduled for future dates",
+                "withOffers": "Seasons With Offers",
+                "withOffersNote": "{percent}% campaigns configured"
+            },
+            "filters": {
+                "searchPlaceholder": "Search season name (EN/AR)...",
+                "searchLabel": "Search seasons",
+                "status": "Status",
+                "reset": "Reset filters"
+            },
+            "status": {
+                "All Statuses": "All Statuses",
+                "Active": "Active",
+                "Scheduled": "Scheduled",
+                "Expired": "Expired",
+                "Inactive": "Inactive"
+            },
+            "table": {
+                "season": "Season",
+                "offers": "Offers",
+                "startDate": "Start Date",
+                "endDate": "End Date",
+                "duration": "Duration",
+                "status": "Status",
+                "actions": "Actions",
+                "empty": "No seasons found.",
+                "paginationNoun": "seasons"
+            },
+            "row": {
+                "unnamedSeason": "Unnamed season",
+                "collapseSeason": "Collapse season",
+                "expandSeason": "Expand season",
+                "offersCount": "{count, plural, =0 {No offers} one {# offer} other {# offers}}",
+                "duration": "{count, plural, =0 {0 days} one {# day} other {# days}}",
+                "bilingualName": "Bilingual Name",
+                "validityPeriod": "Validity Period",
+                "campaignStatus": "Campaign Status",
+                "description": "Description",
+                "associatedOffers": "Associated Offers ({count} Total)",
+                "discountOff": "OFF",
+                "currency": "SAR",
+                "product": "Product",
+                "category": "Category",
+                "loading": "Loading...",
+                "loadMoreOffers": "Load More Offers ({count} left)",
+                "viewOffersConsole": "View all in Offers Console →",
+                "noOffersTitle": "No offers assigned to this season yet.",
+                "noOffersDescription": "Assign discounts or promotions to activate seasonal marketing widgets for storefront visitors."
+            },
+            "offerStatus": {
+                "Active": "Active",
+                "Scheduled": "Scheduled",
+                "Expired": "Expired",
+                "Inactive": "Inactive",
+                "Pending": "Pending",
+                "Draft": "Draft"
+            }
         }
     }
 }

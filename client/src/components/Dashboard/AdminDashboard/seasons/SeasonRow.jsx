@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { ChevronDown, ChevronRight, Sun, Tag, Percent, Loader2 } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/routing";
 import { formatDate, daysBetween } from "@/components/Dashboard/AdminDashboard/shared/formatDate";
 import { getToggleState } from "@/components/Dashboard/AdminDashboard/shared/periodUtils";
@@ -16,11 +16,17 @@ const statusStyles = {
   Inactive: "bg-[var(--color-sand)] text-[var(--color-muted)]",
 };
 
-function StatusBadge({ status }) {
+function StatusBadge({ status, t }) {
+  const label = t.has(`status.${status}`) ? t(`status.${status}`) : status;
+
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold ${statusStyles[status] || statusStyles.Inactive}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold ${
+        statusStyles[status] || statusStyles.Inactive
+      }`}
+    >
       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
-      {status}
+      {label}
     </span>
   );
 }
@@ -28,31 +34,44 @@ function StatusBadge({ status }) {
 function InfoBlock({ label, children }) {
   return (
     <div className="min-w-0">
-      <p className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-muted)]">{label}</p>
-      <div className="mt-1 text-[12px] font-medium text-[var(--color-ink)]">{children}</div>
+      <p className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-muted)]">
+        {label}
+      </p>
+
+      <div className="mt-1 text-[12px] font-medium text-[var(--color-ink)]">
+        {children}
+      </div>
     </div>
   );
 }
 
-function formatOfferDiscount(offer) {
+function formatOfferDiscount(offer, t) {
   return offer.type === "percentage"
-    ? `${offer.discount}% OFF`
-    : `SAR ${Number(offer.discount).toFixed(2)} OFF`;
+    ? `${offer.discount}% ${t("row.discountOff")}`
+    : `${t("row.currency")} ${Number(offer.discount).toFixed(2)} ${t("row.discountOff")}`;
 }
 
-function getOfferTarget(offer, locale) {
+function getOfferTarget(offer, locale, t) {
   if (offer.targetType === "product") {
     const title = offer.product?.title;
-    return `Product: ${title?.[locale] || title?.en || title?.ar || "—"}`;
+    const value = title?.[locale] || title?.en || title?.ar || "—";
+
+    return `${t("row.product")}: ${value}`;
   }
 
   const name = offer.category?.name;
-  return `Category: ${name?.[locale] || name?.en || name?.ar || "—"}`;
+  const value = name?.[locale] || name?.en || name?.ar || "—";
+
+  return `${t("row.category")}: ${value}`;
 }
 
-export default function SeasonRow({ season, isExpanded, onToggle, offersData, onLoadOffers, onLoadMoreOffers  }) {
+export default function SeasonRow({ season, isExpanded, onToggle, offersData, onLoadOffers, onLoadMoreOffers }) {
   const locale = useLocale();
+  const t = useTranslations("Admin.seasons");
+
   const { openEditSeason, toggleSeasonActive } = useAdminContext();
+
+  const isArabic = locale === "ar";
 
   const offers = offersData?.offers || [];
   const offersLoading = offersData?.loading || false;
@@ -62,7 +81,8 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
   const offersCount = season.offersCount || 0;
   const durationDays = daysBetween(season.startDate, season.endDate);
   const toggle = getToggleState(season, "season");
-  const seasonName = season.name?.en || season.name?.ar || "season";
+
+  const seasonName = season.name?.[locale] || season.name?.en || season.name?.ar || t("row.unnamedSeason");
 
   useEffect(() => {
     if (isExpanded && offersCount > 0 && !offersData) {
@@ -77,10 +97,14 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
           <button
             type="button"
             onClick={onToggle}
-            aria-label={isExpanded ? "Collapse season" : "Expand season"}
+            aria-label={isExpanded ? t("row.collapseSeason") : t("row.expandSeason")}
             className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[var(--color-soft)] hover:bg-[var(--color-sand)]"
           >
-            {isExpanded ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
+            {isExpanded ? (
+              <ChevronDown size={15} />
+            ) : (
+              <ChevronRight size={15} />
+            )}
           </button>
 
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-sand)] text-[var(--color-soft)]">
@@ -88,24 +112,37 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
           </span>
 
           <div className="min-w-0">
-            <p className="truncate text-[14px] font-semibold text-[var(--color-ink)]">{season.name?.en}</p>
-            <p dir="rtl" className="mt-1 truncate text-left text-[9px] text-[var(--color-muted)]">{season.name?.ar}</p>
+            <p className="truncate text-[14px] font-semibold text-[var(--color-ink)]">
+              {season.name?.en || seasonName}
+            </p>
+
+            <p dir="rtl" className="mt-1 truncate text-start text-[9px] text-[var(--color-muted)]">
+              {season.name?.ar}
+            </p>
           </div>
         </div>
 
         <div>
           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-sand)] px-2 py-1 text-[9px] font-bold text-[var(--color-green-dark)]">
             <Tag size={10} />
-            {offersCount} Offers
+            {t("row.offersCount", { count: offersCount })}
           </span>
         </div>
 
-        <div className="text-[11px] text-[var(--color-soft)]">{formatDate(season.startDate)}</div>
-        <div className="text-[11px] text-[var(--color-soft)]">{formatDate(season.endDate)}</div>
-        <div className="text-[11px] text-[var(--color-soft)]">{durationDays} days</div>
+        <div className="text-[11px] text-[var(--color-soft)]">
+          {formatDate(season.startDate)}
+        </div>
+
+        <div className="text-[11px] text-[var(--color-soft)]">
+          {formatDate(season.endDate)}
+        </div>
+
+        <div className="text-[11px] text-[var(--color-soft)]">
+          {t("row.duration", { count: durationDays })}
+        </div>
 
         <div>
-          <StatusBadge status={season.status} />
+          <StatusBadge status={season.status} t={t} />
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -117,7 +154,7 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
             disabledReason={toggle.reason}
             onClick={() => toggleSeasonActive(season._id, !season.isActive)}
           />
-          
+
           <AdminEditButton name={seasonName} onClick={() => openEditSeason(season)} />
         </div>
       </div>
@@ -125,19 +162,30 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
       {isExpanded && (
         <div className="border-b border-[var(--color-divider)] bg-[var(--color-cream)] px-5 py-4">
           <div className="grid grid-cols-1 gap-4 rounded-[12px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:grid-cols-2 lg:grid-cols-4">
-            <InfoBlock label="Bilingual Name">
+            <InfoBlock label={t("row.bilingualName")}>
               <p>{season.name?.en}</p>
-              <p dir="rtl" className="mt-0.5 text-left text-[11px] text-[var(--color-muted)]">{season.name?.ar}</p>
+
+              <p dir="rtl" className="mt-0.5 text-start text-[11px] text-[var(--color-muted)]">
+                {season.name?.ar}
+              </p>
             </InfoBlock>
 
-            <InfoBlock label="Validity Period">
-              <p>{formatDate(season.startDate)} – {formatDate(season.endDate)}</p>
-              <p className="mt-0.5 text-[11px] text-[var(--color-gold)]">{durationDays} Days</p>
+            <InfoBlock label={t("row.validityPeriod")}>
+              <p>
+                {formatDate(season.startDate)} –{" "}
+                {formatDate(season.endDate)}
+              </p>
+
+              <p className="mt-0.5 text-[11px] text-[var(--color-gold)]">
+                {t("row.duration", { count: durationDays })}
+              </p>
             </InfoBlock>
 
-            <InfoBlock label="Campaign Status">{season.status}</InfoBlock>
+            <InfoBlock label={t("row.campaignStatus")}>
+              <StatusBadge status={season.status} t={t} />
+            </InfoBlock>
 
-            <InfoBlock label="Description">
+            <InfoBlock label={t("row.description")}>
               <p className="line-clamp-2 text-[11px] font-normal text-[var(--color-soft-2)]">
                 {season.description?.[locale] || season.description?.en || "—"}
               </p>
@@ -149,7 +197,9 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <p className="flex items-center gap-1.5 text-[12px] font-semibold text-[var(--color-ink)]">
                   <Percent size={13} />
-                  Associated Offers ({offersCount} Total)
+                  {t("row.associatedOffers", {
+                    count: offersCount,
+                  })}
                 </p>
               </div>
 
@@ -167,15 +217,21 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
 
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[12px] font-semibold text-[var(--color-ink)]">
-                          {offer.name?.[locale] || offer.name?.en}
+                          {offer.name?.[locale] || offer.name?.en || offer.name?.ar}
                         </p>
-                        <p className="truncate text-[10px] text-[var(--color-muted)]">{getOfferTarget(offer, locale)}</p>
+
+                        <p className="truncate text-[10px] text-[var(--color-muted)]">
+                          {getOfferTarget(offer, locale, t)}
+                        </p>
                       </div>
 
                       <span className="shrink-0 rounded bg-[var(--color-gold-light)] px-2 py-1 text-[9px] font-bold text-[var(--color-green-dark)]">
-                        {formatOfferDiscount(offer)}
+                        {formatOfferDiscount(offer, t)}
                       </span>
-                      <span className="shrink-0 text-[10px] text-[var(--color-soft)]">{offer.status}</span>
+
+                      <span className="shrink-0 text-[10px] text-[var(--color-soft)]">
+                        {t.has(`offerStatus.${offer.status}`) ? t(`offerStatus.${offer.status}`) : offer.status}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -189,15 +245,18 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
                     disabled={offersLoading}
                     className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-[10px] font-semibold text-[var(--color-green-dark)] hover:bg-[var(--color-sand)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {offersLoading && <Loader2 size={13} className="animate-spin" />}
-                    {offersLoading ? "Loading..." : `Load More Offers (${remaining} left)`}
+                    {offersLoading && (
+                      <Loader2 size={13} className="animate-spin" />
+                    )}
+
+                    {offersLoading ? t("row.loading") : t("row.loadMoreOffers", { count: remaining })}
                   </button>
                 </div>
               )}
 
               <div className="mt-3 flex flex-wrap items-center justify-end gap-2 text-[10px]">
                 <Link href="/products" className="font-semibold text-[var(--color-green)]">
-                  View all in Offers Console →
+                  {t("row.viewOffersConsole")}
                 </Link>
               </div>
             </div>
@@ -208,10 +267,11 @@ export default function SeasonRow({ season, isExpanded, onToggle, offersData, on
               </div>
 
               <h3 className="mt-3 text-[13px] font-semibold text-[var(--color-ink)]">
-                No offers assigned to this season yet.
+                {t("row.noOffersTitle")}
               </h3>
+
               <p className="mt-1 max-w-[420px] text-[10px] leading-5 text-[var(--color-muted)]">
-                Assign discounts or promotions to activate seasonal marketing widgets for storefront visitors.
+                {t("row.noOffersDescription")}
               </p>
             </div>
           )}

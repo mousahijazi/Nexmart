@@ -1,9 +1,11 @@
-"use client"
+"use client";
 import { Download, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useAdminContext } from "@/Context/Adminprovider";
 import { AdminAddButton } from "@/index";
 
 export default function SeasonsHeader() {
+  const t = useTranslations("Admin.seasons");
   const { openSeasonModal } = useAdminContext();
 
   return (
@@ -16,26 +18,32 @@ export default function SeasonsHeader() {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-[25px] font-medium leading-none tracking-[-0.035em] text-[var(--color-ink)] sm:text-[29px]">
-              Seasons Management
+              {t("header.title")}
             </h1>
+
             <span className="rounded-full bg-[var(--color-gold-light)] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-[var(--color-green-dark)]">
-              GCC Engine
+              {t("header.badge")}
             </span>
           </div>
 
           <p className="mt-2 max-w-[650px] text-[11px] leading-[1.45] text-[var(--color-soft-2)] sm:text-[13px]">
-            Plan seasonal campaigns, manage their schedules, and organize associated offers.
+            {t("header.description")}
           </p>
         </div>
       </div>
 
       <div className="flex w-full flex-wrap items-center gap-2 xl:w-auto">
-        <button type="button" className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[11px] font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-sand)]">
+        <button
+          type="button"
+          disabled
+          title={t("header.exportUnavailable")}
+          className="flex min-h-[44px] cursor-not-allowed items-center justify-center gap-2 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[11px] font-semibold text-[var(--color-muted)] opacity-60"
+        >
           <Download size={16} />
-          Export Seasons CSV
+          {t("header.export")}
         </button>
 
-        <AdminAddButton label="Add New Season" onClick={openSeasonModal} />
+        <AdminAddButton label={t("header.addSeason")} onClick={openSeasonModal} />
       </div>
     </section>
   );

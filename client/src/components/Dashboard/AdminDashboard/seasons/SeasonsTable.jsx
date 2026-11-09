@@ -1,26 +1,21 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { SeasonRow, TablePagination } from "@/index";
 import { seasonGridCols, seasonTableMinWidth } from "./seasonsData";
 import { useAdminContext } from "@/Context/Adminprovider";
+import { useTranslations } from "next-intl";
 
 export default function SeasonsTable({ seasons }) {
-  const { seasonOffers, fetchSeasonOffers, loadMoreSeasonOffers } = useAdminContext();
+  const t = useTranslations("Admin.seasons");
+  const { seasonOffers, fetchSeasonOffers, loadMoreSeasonOffers, seasonsPage, setSeasonsPage, seasonsLimit, setSeasonsLimit, seasonsTotal, seasonsTotalPages } = useAdminContext();
+
   const [openSeasons, setOpenSeasons] = useState([]);
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(6);
-
-  const totalPages = Math.max(1, Math.ceil(seasons.length / rowsPerPage));
-  const safePage = Math.min(page, totalPages);
-
-  const visibleSeasons = useMemo(() => {
-    const start = (safePage - 1) * rowsPerPage;
-    return seasons.slice(start, start + rowsPerPage);
-  }, [seasons, safePage, rowsPerPage]);
 
   const toggleSeason = (id) => {
     setOpenSeasons((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id]
     );
   };
 
@@ -29,17 +24,17 @@ export default function SeasonsTable({ seasons }) {
       <div className="min-w-0 overflow-x-auto scrollbar-thin">
         <div className={`${seasonTableMinWidth} w-full`}>
           <div className={`grid ${seasonGridCols} gap-3 bg-[var(--color-sand)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--color-soft)]`}>
-            <span>Season</span>
-            <span>Offers</span>
-            <span>Start Date</span>
-            <span>End Date</span>
-            <span>Duration</span>
-            <span>Status</span>
-            <span>Actions</span>
+            <span>{t("table.season")}</span>
+            <span>{t("table.offers")}</span>
+            <span>{t("table.startDate")}</span>
+            <span>{t("table.endDate")}</span>
+            <span>{t("table.duration")}</span>
+            <span>{t("table.status")}</span>
+            <span>{t("table.actions")}</span>
           </div>
 
-          {visibleSeasons.length > 0 ? (
-            visibleSeasons.map((season) => (
+          {seasons?.length > 0 ? (
+            seasons.map((season) => (
               <SeasonRow
                 key={season._id}
                 season={season}
@@ -52,23 +47,20 @@ export default function SeasonsTable({ seasons }) {
             ))
           ) : (
             <div className="flex min-h-[180px] items-center justify-center text-[12px] text-[var(--color-muted)]">
-              No seasons found.
+              {t("table.empty")}
             </div>
           )}
         </div>
       </div>
 
       <TablePagination
-        page={safePage}
-        totalPages={totalPages}
-        total={seasons.length}
-        rowsPerPage={rowsPerPage}
-        onPageChange={setPage}
-        onRowsChange={(value) => {
-          setRowsPerPage(value);
-          setPage(1);
-        }}
-        noun="seasons"
+        page={seasonsPage}
+        totalPages={seasonsTotalPages}
+        total={seasonsTotal}
+        rowsPerPage={seasonsLimit}
+        onPageChange={setSeasonsPage}
+        onRowsChange={setSeasonsLimit}
+        noun={t("table.paginationNoun")}
       />
     </section>
   );

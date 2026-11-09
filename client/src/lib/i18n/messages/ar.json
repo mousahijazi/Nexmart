@@ -1082,6 +1082,79 @@
                     "update": "تحديث العرض"
                 }
             }
+        },
+        "seasons": {
+            "header": {
+                "title": "إدارة المواسم",
+                "badge": "محرك دول الخليج",
+                "description": "خطط للحملات الموسمية، وأدر جداولها الزمنية، ونظّم العروض المرتبطة بها.",
+                "export": "تصدير المواسم CSV",
+                "exportUnavailable": "تصدير CSV غير متاح حاليًا.",
+                "addSeason": "إضافة موسم جديد"
+            },
+            "stats": {
+                "total": "إجمالي المواسم",
+                "plannedNextYear": "{count, plural, =0 {لا توجد مواسم مخطط لها} zero {لا توجد مواسم مخطط لها} one {موسم واحد مخطط له} two {موسمان مخطط لهما} few {# مواسم مخطط لها} many {# موسمًا مخططًا له} other {# موسم مخطط له}}",
+                "active": "المواسم النشطة",
+                "activeNote": "الحملات الجارية حاليًا",
+                "upcoming": "المواسم القادمة",
+                "upcomingNote": "المجدولة لتواريخ مستقبلية",
+                "withOffers": "المواسم ذات العروض",
+                "withOffersNote": "{percent}% من الحملات تم إعدادها"
+            },
+            "filters": {
+                "searchPlaceholder": "ابحث عن اسم الموسم (عربي/إنجليزي)...",
+                "searchLabel": "البحث في المواسم",
+                "status": "الحالة",
+                "reset": "إعادة تعيين الفلاتر"
+            },
+            "status": {
+                "All Statuses": "جميع الحالات",
+                "Active": "نشط",
+                "Scheduled": "مجدول",
+                "Expired": "منتهي",
+                "Inactive": "غير نشط"
+            },
+            "table": {
+                "season": "الموسم",
+                "offers": "العروض",
+                "startDate": "تاريخ البداية",
+                "endDate": "تاريخ النهاية",
+                "duration": "المدة",
+                "status": "الحالة",
+                "actions": "الإجراءات",
+                "empty": "لم يتم العثور على مواسم.",
+                "paginationNoun": "موسم"
+            },
+            "row": {
+                "unnamedSeason": "موسم بدون اسم",
+                "collapseSeason": "طي تفاصيل الموسم",
+                "expandSeason": "عرض تفاصيل الموسم",
+                "offersCount": "{count, plural, =0 {لا توجد عروض} zero {لا توجد عروض} one {عرض واحد} two {عرضان} few {# عروض} many {# عرضًا} other {# عرض}}",
+                "duration": "{count, plural, =0 {0 يوم} zero {0 يوم} one {يوم واحد} two {يومان} few {# أيام} many {# يومًا} other {# يوم}}",
+                "bilingualName": "الاسم باللغتين",
+                "validityPeriod": "فترة الصلاحية",
+                "campaignStatus": "حالة الحملة",
+                "description": "الوصف",
+                "associatedOffers": "العروض المرتبطة ({count} إجماليًا)",
+                "discountOff": "خصم",
+                "currency": "ريال",
+                "product": "المنتج",
+                "category": "التصنيف",
+                "loading": "جارٍ التحميل...",
+                "loadMoreOffers": "تحميل المزيد من العروض (متبقي {count})",
+                "viewOffersConsole": "عرض الكل في لوحة العروض ←",
+                "noOffersTitle": "لا توجد عروض مرتبطة بهذا الموسم حتى الآن.",
+                "noOffersDescription": "أضف خصومات أو عروضًا ترويجية لتفعيل عناصر التسويق الموسمية لزوار المتجر."
+            },
+            "offerStatus": {
+                "Active": "نشط",
+                "Scheduled": "مجدول",
+                "Expired": "منتهي",
+                "Inactive": "غير نشط",
+                "Pending": "قيد الانتظار",
+                "Draft": "مسودة"
+            }
         }
     }
 }

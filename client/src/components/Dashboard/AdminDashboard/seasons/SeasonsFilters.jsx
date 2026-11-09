@@ -1,9 +1,12 @@
 "use client";
 import { Search, RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { FilterSelect } from "@/index";
 import { seasonStatusOptions } from "./seasonsData";
 
 export default function SeasonsFilters({ search, setSearch, status, setStatus, onReset }) {
+  const t = useTranslations("Admin.seasons");
+
   return (
     <section className="mb-5 rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
@@ -14,23 +17,28 @@ export default function SeasonsFilters({ search, setSearch, status, setStatus, o
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search season name (EN/AR)..."
+            placeholder={t("filters.searchPlaceholder")}
+            aria-label={t("filters.searchLabel")}
             className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-field)] py-2.5 pl-9 pr-3 text-[12px] text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-muted-2)] focus:border-[var(--color-green-light)]"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <FilterSelect
-            label="Status"
+            label={t("filters.status")}
             value={status}
             onChange={setStatus}
-            options={seasonStatusOptions}
+            options={seasonStatusOptions.map((option) => ({
+              ...option,
+              label: t(`status.${option.value ?? option}`),
+            }))}
           />
 
           <button
             type="button"
             onClick={onReset}
-            aria-label="Reset filters"
+            aria-label={t("filters.reset")}
+            title={t("filters.reset")}
             className="flex h-[40px] w-[40px] items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-soft)] transition hover:bg-[var(--color-sand)]"
           >
             <RotateCcw size={15} />

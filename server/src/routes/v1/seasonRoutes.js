@@ -6,20 +6,20 @@ import optionalAuth from "../../middlewares/optionalAuth.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
 import validate from "../../middlewares/validate.js";
 import { StatusValidator } from "../../validators/statusSchema.js";
-import { createSeasonValidator, updateSeasonValidator } from "../../validators/seasonValidator.js";
+import { createSeasonValidator, updateSeasonValidator, getAllSeasonsValidator, seasonIdValidator } from "../../validators/seasonValidator.js";
 
 const router = express.Router();
 
 router.route("/")
-  .get(optionalAuth, checkUserRole, getAllSeasonsController)
-  .post(authToken, authorizeRoles("ADMIN"), createSeasonValidator, createSeasonController);
+  .get(optionalAuth, checkUserRole, getAllSeasonsValidator, validate, getAllSeasonsController)
+  .post(authToken, authorizeRoles("ADMIN"), createSeasonValidator, validate, createSeasonController);
 
 router.route("/:seasonId")
-  .get(optionalAuth, checkUserRole, getSeasonByIdController)
-  .patch(authToken, authorizeRoles("ADMIN"), updateSeasonValidator, updateSeasonController)
-  .delete(authToken, authorizeRoles("ADMIN"), deleteSeasonController);
+  .get(optionalAuth, checkUserRole, seasonIdValidator, validate, getSeasonByIdController)
+  .patch(authToken, authorizeRoles("ADMIN"), updateSeasonValidator, validate, updateSeasonController)
+  .delete(authToken, authorizeRoles("ADMIN"), seasonIdValidator, validate, deleteSeasonController);
 
 router.route("/:seasonId/status")
-  .patch(authToken, authorizeRoles("ADMIN"), StatusValidator, validate, updateSeasonStatusController);
+  .patch(authToken, authorizeRoles("ADMIN"), seasonIdValidator, StatusValidator, validate, updateSeasonStatusController);
 
 export default router;

@@ -6,6 +6,7 @@ import "dotenv/config";
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import startOfferExpirationJob from "./jobs/offerExpirationJob.js";
+import startSeasonLifecycleJob from "./jobs/seasonLifecycleJob.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -15,6 +16,8 @@ connectDB()
     
     app.listen(PORT, () => {
       console.log(`Nexmart API running on port ${PORT}`);
+
+      startSeasonLifecycleJob();
       startOfferExpirationJob();
     });
   })

@@ -1,70 +1,170 @@
-import { createSeason as createSeasonRepository, getAllSeasons as getAllSeasonsRepository, getSeasonById as getSeasonByIdRepository, updateSeason as updateSeasonRepository, deleteSeason as deleteSeasonRepository } from "../repositories/seasonRepository.js";
+import {
+  createSeason as createSeasonRepository,
+  getAllSeasons as getAllSeasonsRepository,
+  getSeasonById as getSeasonByIdRepository,
+  updateSeason as updateSeasonRepository,
+  deleteSeason as deleteSeasonRepository,
+} from "../repositories/seasonRepository.js";
 import Season from "../model/Season.js";
 import Offer from "../model/Offer.js";
 import Product from "../model/Product.js";
 import { userRoles } from "../utils/userRoles.js";
-import { isCurrentPeriod } from "../utils/periodUtils.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
 
-const calculateSeasonStatus = (isActive, startDate, endDate) => {
-  if (!isActive) return "Inactive";
+const escapeRegex = (value = "") => {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
 
+const isValidDate = (date) => {
+  return date instanceof Date && Number.isFinite(date.getTime());
+};
+
+const calculateSeasonStatus = (isActive, startDate, endDate) => {
   const now = new Date();
+
   const start = new Date(startDate);
   const end = new Date(endDate);
 
-  if (now < start) return "Scheduled";
-  if (now >= start && now <= end) return "Active";
-  return "Expired";
-};
-
-const getAllSeasons = async ({ page = 1, limit = 10 }, userRole) => {
-  const skip = (page - 1) * limit;
-  const filter = {};
-
-  if (userRole !== userRoles.ADMIN) {
-    filter.isActive = true;
-
-    const activeOffers = await Offer.find({
-      isActive: true,
-      archivedBySeason: { $ne: true },
-      season: { $ne: null },
-    }).populate("product category");
-
-    const validSeasonIds = new Set();
-
-    for (const offer of activeOffers) {
-      if (!offer.season) continue;
-
-      if (offer.targetType === "product" && offer.product && offer.product.isActive) {
-        validSeasonIds.add(offer.season.toString());
-      } else if (offer.targetType === "category" && offer.category) {
-        const productsCount = await Product.countDocuments({
-          category: offer.category._id,
-          isActive: true,
-          archivedByCategory: { $ne: true },
-          archivedByBrand: { $ne: true },
-        });
-
-        if (productsCount > 0) {
-          validSeasonIds.add(offer.season.toString());
-        }
-      }
-    }
-
-    filter._id = { $in: Array.from(validSeasonIds) };
+  if (now >= end) {
+    return "Expired";
   }
 
-  const result = await getAllSeasonsRepository({ skip, limit, filter });
+  if (now < start) {
+    return "Scheduled";
+  }
+
+  if (!isActive) {
+    return "Inactive";
+  }
+
+  return "Active";
+};
+
+const validateSeasonDates = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (!isValidDate(start) || !isValidDate(end)) {
+    throw AppError.create("Invalid season start date or end date.", 400, FAIL);
+  }
+
+  if (end <= start) {
+    throw AppError.create("End date must be after start date.", 400, FAIL);
+  }
+
+  return {
+    start,
+    end,
+  };
+};
+
+const synchronizeSeasonOffers = async (seasonId, isActive) => {
+  await Offer.updateMany(
+    { season: seasonId },
+    {
+      $set: { archivedBySeason: !isActive },
+    }
+  );
+};
+
+const getValidSeasonIds = async () => {
+  const activeOffers = await Offer.find({
+    isActive: true,
+    archivedBySeason: { $ne: true },
+    season: { $ne: null },
+  })
+    .select("season targetType product category")
+    .populate([
+      { path: "product", select: "isActive archivedByCategory archivedByBrand" },
+      { path: "category", select: "_id" },
+    ]).lean();
+
+  const validSeasonIds = new Set();
+  const categoryIds = new Set();
+
+  for (const offer of activeOffers) {
+    if (!offer.season) continue;
+
+    const seasonId = offer.season.toString();
+
+    if (offer.targetType === "product" && offer.product && offer.product.isActive && offer.product.archivedByCategory !== true && offer.product.archivedByBrand !== true) {
+      validSeasonIds.add(seasonId);
+    }
+
+    if (offer.targetType === "category" && offer.category?._id) {
+      categoryIds.add(offer.category._id.toString());
+    }
+  }
+
+  if (categoryIds.size > 0) {
+    const validCategories = await Product.distinct("category", {
+      category: { $in: Array.from(categoryIds) },
+      isActive: true,
+      archivedByCategory: { $ne: true },
+      archivedByBrand: { $ne: true },
+    });
+
+    const validCategoryIds = new Set(validCategories.map((id) => id.toString()));
+
+    for (const offer of activeOffers) {
+      if (offer.targetType === "category" && offer.category?._id && validCategoryIds.has(offer.category._id.toString())) {
+        validSeasonIds.add(offer.season.toString());
+      }
+    }
+  }
+
+  return Array.from(validSeasonIds);
+};
+
+const getAllSeasons = async ({ page = 1, limit = 10, search = "", status = "" }, userRole) => {
+  const safePage = Math.max(1, Number(page) || 1);
+  const safeLimit = Math.min(100, Math.max(1, Number(limit) || 10));
+
+  const skip = (safePage - 1) * safeLimit;
+
+  const filter = {};
+
+  const normalizedSearch = String(search).trim();
+
+  if (normalizedSearch) {
+    const searchRegex = new RegExp(escapeRegex(normalizedSearch), "i");
+
+    filter.$or = [
+      { "name.ar": searchRegex },
+      { "name.en": searchRegex },
+    ];
+  }
+
+  const normalizedStatus = String(status).trim();
+
+  if (userRole === userRoles.ADMIN) {
+    if (normalizedStatus && normalizedStatus !== "All Statuses") {
+      filter.status = normalizedStatus;
+    }
+  } else {
+    filter.isActive = true;
+    filter.status = "Active";
+
+    const now = new Date();
+    
+    filter.startDate = { $lte: now };
+    filter.endDate = { $gt: now };
+
+    const validSeasonIds = await getValidSeasonIds();
+
+    filter._id = { $in: validSeasonIds };
+  }
+
+  const result = await getAllSeasonsRepository({ skip, limit: safeLimit, filter });
 
   return {
     seasons: result.seasons,
     total: result.totalSeasons,
-    page,
-    limit,
+    page: safePage,
+    limit: safeLimit,
     skip,
-    totalPages: Math.ceil(result.totalSeasons / limit),
+    totalPages: Math.ceil(result.totalSeasons / safeLimit),
   };
 };
 
@@ -76,40 +176,14 @@ const getSeasonById = async (seasonId, userRole) => {
   }
 
   if (userRole !== userRoles.ADMIN) {
-    if (!season.isActive) {
+    if (!season.isActive || season.status !== "Active") {
       return null;
     }
 
-    const activeOffers = await Offer.find({
-      season: seasonId,
-      isActive: true,
-      archivedBySeason: { $ne: true },
-    }).populate("product category");
+    const validSeasonIds = await getValidSeasonIds();
+    const isVisible = validSeasonIds.includes(season._id.toString());
 
-    let hasValidOffersWithProducts = false;
-
-    for (const offer of activeOffers) {
-      if (offer.targetType === "product" && offer.product && offer.product.isActive) {
-        hasValidOffersWithProducts = true;
-        break;
-      } else if (offer.targetType === "category" && offer.category) {
-        const categoryId = offer.category?._id || offer.category;
-
-        const productsCount = await Product.countDocuments({
-          category: categoryId,
-          isActive: true,
-          archivedByCategory: { $ne: true },
-          archivedByBrand: { $ne: true },
-        });
-
-        if (productsCount > 0) {
-          hasValidOffersWithProducts = true;
-          break;
-        }
-      }
-    }
-
-    if (!hasValidOffersWithProducts) {
+    if (!isVisible) {
       return null;
     }
   }
@@ -119,19 +193,11 @@ const getSeasonById = async (seasonId, userRole) => {
 
 const createSeason = async (seasonData) => {
   const now = new Date();
-  const start = new Date(seasonData.startDate);
-  const end = new Date(seasonData.endDate);
 
-  if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) {
-    throw AppError.create("Invalid season start date or end date.", 400, FAIL);
-  }
+  const { start, end } = validateSeasonDates(seasonData.startDate, seasonData.endDate);
 
   if (end <= now) {
     throw AppError.create("Cannot create a season with an end date in the past.", 400, FAIL);
-  }
-
-  if (end <= start) {
-    throw AppError.create("End date must be after start date.", 400, FAIL);
   }
 
   if (start > now) {
@@ -140,54 +206,64 @@ const createSeason = async (seasonData) => {
     seasonData.isActive = seasonData.isActive !== undefined ? seasonData.isActive : true;
   }
 
-  seasonData.status = calculateSeasonStatus(seasonData.isActive, seasonData.startDate, seasonData.endDate);
+  seasonData.status = calculateSeasonStatus(seasonData.isActive, start, end);
 
   return await createSeasonRepository(seasonData);
 };
 
 const updateSeason = async (seasonId, seasonData) => {
   const existingSeason = await Season.findById(seasonId);
+
   if (!existingSeason) {
     return null;
   }
 
   const now = new Date();
+
   const requestedStartDate = seasonData.startDate ? new Date(seasonData.startDate) : existingSeason.startDate;
   const requestedEndDate = seasonData.endDate ? new Date(seasonData.endDate) : existingSeason.endDate;
 
-  if (!Number.isFinite(requestedStartDate.getTime()) || !Number.isFinite(requestedEndDate.getTime())) {
-    throw AppError.create("Invalid season start date or end date.", 400, FAIL);
-  }
+  const { start, end } = validateSeasonDates(requestedStartDate, requestedEndDate);
 
-  if (requestedEndDate <= requestedStartDate) {
-    throw AppError.create("End date must be after start date.", 400, FAIL);
-  }
+  const isFuture = start > now;
+  const isExpired = end <= now;
 
-  const isExpired = requestedEndDate <= now;
-  const isFuture = requestedStartDate > now;
+  let finalIsActive = existingSeason.isActive;
+
+  if (existingSeason.status === "Scheduled" && !isFuture && !isExpired) {
+    finalIsActive = true;
+  }
 
   if (seasonData.isActive !== undefined) {
-    if (isExpired) {
-      throw AppError.create("Cannot update a season to an end date in the past.", 400, FAIL);
-    }
-    if (isFuture && seasonData.isActive === true) {
+    finalIsActive = seasonData.isActive;
+  }
+
+  if (isFuture) {
+    if (seasonData.isActive === true) {
       throw AppError.create("Cannot activate a future season before its start date.", 400, FAIL);
     }
+
+    finalIsActive = false;
   }
 
-  if (isFuture || isExpired) {
-    if (requestedStartDate <= now && requestedEndDate > now) {
-      seasonData.isActive = true;
-    } else {
-      seasonData.isActive = false;
+  if (isExpired) {
+    if (seasonData.isActive === true) {
+      throw AppError.create("Cannot activate an expired season.", 400, FAIL);
     }
+
+    finalIsActive = false;
   }
 
-  const finalIsActive = seasonData.isActive !== undefined ? seasonData.isActive : existingSeason.isActive;
+  seasonData.isActive = finalIsActive;
+  seasonData.status = calculateSeasonStatus(finalIsActive, start, end);
 
-  seasonData.status = calculateSeasonStatus(finalIsActive, requestedStartDate, requestedEndDate);
+  const updatedSeason = await updateSeasonRepository(seasonId, seasonData);
 
-  return await updateSeasonRepository(seasonId, seasonData);
+  if (existingSeason.isActive !== finalIsActive) {
+    await synchronizeSeasonOffers(seasonId, finalIsActive);
+  }
+
+  return updatedSeason;
 };
 
 const updateSeasonStatus = async (seasonId, isActive) => {
@@ -197,23 +273,45 @@ const updateSeasonStatus = async (seasonId, isActive) => {
     throw AppError.create("Season not found", 404, FAIL);
   }
 
-  if (!isCurrentPeriod(season.startDate, season.endDate)) {
+  const now = new Date();
+
+  const start = new Date(season.startDate);
+  const end = new Date(season.endDate);
+
+  if (now < start || now >= end) {
     throw AppError.create("Only a current season can be activated or deactivated.", 400, FAIL);
   }
 
+  if (typeof isActive !== "boolean") {
+    throw AppError.create("isActive must be a boolean value.", 400, FAIL);
+  }
+
   season.isActive = isActive;
-  season.status = calculateSeasonStatus(isActive, season.startDate, season.endDate);
+  season.status = calculateSeasonStatus(isActive, start, end);
   await season.save();
 
-  await Offer.updateMany(
-    { season: seasonId },
-    { $set: { archivedBySeason: !isActive } }
-  );
+  await synchronizeSeasonOffers(seasonId, isActive);
 
   return season;
 };
 
 const deleteSeason = async (seasonId) => {
+  const season = await Season.findById(seasonId);
+
+  if (!season) {
+    return null;
+  }
+
+  await Offer.updateMany(
+    { season: seasonId },
+    {
+      $set: {
+        season: null,
+        archivedBySeason: false,
+      },
+    }
+  );
+
   return await deleteSeasonRepository(seasonId);
 };
 

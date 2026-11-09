@@ -73,5 +73,8 @@ seasonSchema.virtual("offersCount", {
   count: true,
 });
 
+seasonSchema.index({ status: 1, createdAt: -1 });
+seasonSchema.index({ isActive: 1, status: 1, startDate: 1, endDate: 1 });
+
 const Season = mongoose.model("Season", seasonSchema);
 export default Season;

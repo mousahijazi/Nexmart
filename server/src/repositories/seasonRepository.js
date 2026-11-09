@@ -5,16 +5,21 @@ const createSeason = async (seasonData) => {
 };
 
 const getAllSeasons = async ({ skip, limit, filter = {} }) => {
-  const seasons = await Season.find(filter, { __v: false })
-    .populate("offersCount").sort({ createdAt: -1 }).skip(skip).limit(limit);
+  const [seasons, totalSeasons] = await Promise.all([
+    Season.find(filter, { __v: false })
+      .populate("offersCount").sort({ createdAt: -1 }).skip(skip).limit(limit),
 
-  const totalSeasons = await Season.countDocuments(filter);
+    Season.countDocuments(filter),
+  ]);
 
-  return { seasons, totalSeasons };
+  return {
+    seasons,
+    totalSeasons,
+  };
 };
 
 const getSeasonById = async (seasonId) => {
-  return await Season.findById(seasonId, { __v: false });
+  return await Season.findById(seasonId, { __v: false }).populate("offersCount");
 };
 
 const updateSeason = async (seasonId, seasonData) => {
@@ -25,7 +30,7 @@ const updateSeason = async (seasonId, seasonData) => {
       returnDocument: "after",
       runValidators: true,
     }
-  );
+  ).populate("offersCount");
 };
 
 const deleteSeason = async (seasonId) => {

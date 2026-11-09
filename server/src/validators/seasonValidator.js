@@ -1,9 +1,17 @@
-import { body, param } from "express-validator";
-import mongoose from "mongoose";
+import { body, param, query } from "express-validator";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
+import mongoose from "mongoose";
 
-const isValidObjectId = (value) => mongoose.Types.ObjectId.isValid(value);
+const isValidObjectId = (value) => {
+  return mongoose.Types.ObjectId.isValid(value);
+};
+
+export const seasonIdValidator = [
+  param("seasonId")
+    .custom(isValidObjectId)
+    .withMessage("Invalid season ID format"),
+];
 
 export const createSeasonValidator = [
   body("name.ar")
@@ -44,8 +52,15 @@ export const createSeasonValidator = [
     .isISO8601()
     .withMessage("End date must be a valid ISO date")
     .custom((value, { req }) => {
-      if (new Date(value) <= new Date(req.body.startDate)) {
-        throw AppError.create("End date must be greater than start date", 400, FAIL);
+      const start = new Date(req.body.startDate);
+      const end = new Date(value);
+
+      if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) {
+        return true;
+      }
+
+      if (end <= start) {
+        throw AppError.create("End date must be greater than start date", 400, FAIL)
       }
 
       return true;
@@ -59,9 +74,7 @@ export const createSeasonValidator = [
 ];
 
 export const updateSeasonValidator = [
-  param("seasonId")
-    .custom(isValidObjectId)
-    .withMessage("Invalid season ID format"),
+  ...seasonIdValidator,
 
   body("name.ar")
     .optional()
@@ -102,4 +115,31 @@ export const updateSeasonValidator = [
     .isBoolean()
     .withMessage("isActive must be a boolean value")
     .toBoolean(),
+];
+
+export const getAllSeasonsValidator = [
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer")
+    .toInt(),
+
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Limit must be between 1 and 100")
+    .toInt(),
+
+  query("search")
+    .optional()
+    .isString()
+    .withMessage("Search must be a string")
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage("Search cannot exceed 100 characters"),
+
+  query("status")
+    .optional()
+    .isIn(["", "All Statuses", "Active", "Inactive", "Scheduled", "Expired"])
+    .withMessage("Invalid season status"),
 ];

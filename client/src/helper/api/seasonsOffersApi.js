@@ -1,51 +1,42 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const getErrorMessage = (json, fallback) => {
-  return (json?.message || json?.data?.message || json?.error?.message || fallback);
-};
-
 // Seasons
 export async function getActiveSeasons(page = 1, limit = 1) {
   try {
     const params = new URLSearchParams({
       page: String(page),
       limit: String(limit),
-      isActive: "true",
+      status: "Active",
     });
 
-    const res = await fetch(`${API_URL}/api/v1/seasons?${params.toString()}`, { cache: "no-store" });
-
-    if (!res.ok) {
-      throw new Error(getErrorMessage(json, `Failed to fetch seasons: ${res.status}`));
-    }
+    const res = await fetch(`${API_URL}/api/v1/seasons?${params.toString()}`,
+      { cache: "no-store" }
+    );
 
     const json = await res.json();
+
+    if (!res.ok || json?.status !== "success") {
+      throw new Error(getErrorMessage(json, `Failed to fetch active seasons: ${res.status}`));
+    }
+
     const data = json?.data;
+
     const seasons = Array.isArray(data?.seasons) ? data.seasons : [];
 
-    const now = Date.now();
-
-    const activeSeasons = seasons.filter((season) => {
-      if (season.isActive !== true) return false;
-
-      const start = new Date(season.startDate).getTime();
-      const end = new Date(season.endDate).getTime();
-
-      return (Number.isFinite(start) && Number.isFinite(end) && start <= now && now < end);
-    });
-
     return {
-      season: activeSeasons[0],
+      season: seasons[0] || null,
+      seasons,
       page: Number(data?.page ?? page),
       limit: Number(data?.limit ?? limit),
-      total: Number(data?.total ?? seasons.length),
-      totalPages: Number(data?.totalPages ?? Math.ceil(Number(data?.total ?? data?.totalSeasons ?? seasons.length) / limit)),
+      total: Number(data?.total ?? 0),
+      totalPages: Number(data?.totalPages ?? 0),
     };
   } catch (error) {
     console.error("getActiveSeasons:", error);
 
     return {
       season: null,
+      seasons: [],
       page,
       limit,
       total: 0,
@@ -55,7 +46,17 @@ export async function getActiveSeasons(page = 1, limit = 1) {
 }
 
 export async function getAdminSeasonOffers(seasonId, limit = 10, page = 1, token) {
-  if (!seasonId) return { success: false, offers: [], total: 0 };
+  if (!seasonId) {
+    return {
+      success: false,
+      offers: [],
+      total: 0,
+      page,
+      limit,
+      totalPages: 0,
+      message: "Season ID is required",
+    };
+  }
 
   try {
     const params = new URLSearchParams({
@@ -64,22 +65,34 @@ export async function getAdminSeasonOffers(seasonId, limit = 10, page = 1, token
       limit: String(limit),
     });
 
-    const res = await fetch(`${API_URL}/api/v1/offers?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
+    const res = await fetch(`${API_URL}/api/v1/offers?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
 
     const json = await res.json();
 
-    if (!res.ok || json.status !== "success") {
-      return { success: false, offers: [], total: 0, message: getErrorMessage(json, `Failed to fetch season offers`) };
+    if (!res.ok || json?.status !== "success") {
+      return {
+        success: false,
+        offers: [],
+        total: 0,
+        page,
+        limit,
+        totalPages: 0,
+        message: getErrorMessage(json, "Failed to fetch season offers"),
+      };
     }
 
-    const data = json.data;
+    const data = json?.data;
 
     return {
       success: true,
-      offers: Array.isArray(data?.offers) ? json.data.offers : [],
+      offers: Array.isArray(data?.offers) ? data.offers : [],
       total: Number(data?.total ?? 0),
       page: Number(data?.page ?? page),
       limit: Number(data?.limit ?? limit),
@@ -87,13 +100,15 @@ export async function getAdminSeasonOffers(seasonId, limit = 10, page = 1, token
     };
   } catch (error) {
     console.error("getAdminSeasonOffers:", error);
-    return { 
-      success: false, 
-      offers: [], 
+
+    return {
+      success: false,
+      offers: [],
       total: 0,
-      page: page,
-      limit: limit,
+      page,
+      limit,
       totalPages: 0,
+      message: error.message || "Failed to fetch season offers",
     };
   }
 }
@@ -106,17 +121,21 @@ export async function getSeasonOffers(seasonId, limit = 10) {
       season: String(seasonId),
       isActive: "true",
       page: "1",
-      limit: limit,
+      limit: String(limit),
     });
 
-    const res = await fetch(`${API_URL}/api/v1/offers?${params.toString()}`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/api/v1/offers?${params.toString()}`,
+      { cache: "no-store" }
+    );
 
-    if (!res.ok) {
+    const json = await res.json();
+
+    if (!res.ok || json?.status !== "success") {
       throw new Error(getErrorMessage(json, `Failed to fetch season offers: ${res.status}`));
     }
 
-    const json = await res.json();
     const data = json?.data;
+
     const offers = Array.isArray(data?.offers) ? data.offers : [];
 
     const now = Date.now();
@@ -128,11 +147,15 @@ export async function getSeasonOffers(seasonId, limit = 10) {
       const end = new Date(offer.endDate).getTime();
 
       return (
-        String(offerSeasonId) === String(seasonId) && offer.isActive === true && Number.isFinite(start) && Number.isFinite(end) && start <= now && now < end
+        String(offerSeasonId) === String(seasonId) &&
+        offer.isActive === true &&
+        Number.isFinite(start) && Number.isFinite(end) &&
+        start <= now && now < end
       );
     });
   } catch (error) {
     console.error("getSeasonOffers:", error);
+
     return [];
   }
 }
@@ -151,23 +174,23 @@ export async function getSeasonProducts(seasonId, limit = 3) {
 
       if (offer.targetType === "product") {
         const product = await getOfferProducts(offer, 1).then((result) => result[0]);
+
         if (!product?._id) continue;
 
         const productId = String(product._id);
+
         if (seenProductIds.has(productId)) continue;
 
         seenProductIds.add(productId);
 
-        products.push({
-          ...product,
-          seasonOffer: offer,
-        });
+        products.push({ ...product, seasonOffer: offer });
 
         continue;
       }
 
       if (offer.targetType === "category") {
         const remaining = limit - products.length;
+
         const offerProducts = await getOfferProducts(offer, remaining);
 
         for (const product of offerProducts) {
@@ -179,10 +202,7 @@ export async function getSeasonProducts(seasonId, limit = 3) {
 
           seenProductIds.add(productId);
 
-          products.push({
-            ...product,
-            seasonOffer: offer,
-          });
+          products.push({ ...product, seasonOffer: offer });
 
           if (products.length >= limit) break;
         }
@@ -192,16 +212,29 @@ export async function getSeasonProducts(seasonId, limit = 3) {
     return products;
   } catch (error) {
     console.error("getSeasonProducts:", error);
+
     return [];
   }
 }
 
-export async function getSeasons(limit = 10, page = 1, token = null) {
+export async function getSeasons(limit = 10, page = 1, token = null, filters = {}) {
   try {
     const params = new URLSearchParams({
       page: String(page),
       limit: String(limit),
     });
+
+    const search = String(filters.search || "").trim();
+
+    if (search) {
+      params.set("search", search);
+    }
+
+    const status = String(filters.status || "").trim();
+
+    if (status && !["all", "All Statuses"].includes(status)) {
+      params.set("status", status);
+    }
 
     const headers = {};
 
@@ -211,15 +244,23 @@ export async function getSeasons(limit = 10, page = 1, token = null) {
 
     const res = await fetch(`${API_URL}/api/v1/seasons?${params.toString()}`,
       {
+        method: "GET",
         headers,
         cache: "no-store",
       }
     );
 
     const json = await res.json();
+
+    if (!res.ok || json?.status !== "success") {
+      throw new Error(
+        getErrorMessage(json, `Failed to fetch seasons: ${res.status}`)
+      );
+    }
+
     const data = json?.data;
 
-    return { 
+    return {
       success: true,
       seasons: Array.isArray(data?.seasons) ? data.seasons : [],
       total: Number(data?.total ?? 0),
@@ -228,8 +269,10 @@ export async function getSeasons(limit = 10, page = 1, token = null) {
       totalPages: Number(data?.totalPages ?? 0),
     };
   } catch (error) {
-    return { 
-      success: true,
+    console.error("getSeasons:", error);
+
+    return {
+      success: false,
       seasons: [],
       message: error.message || "Failed to fetch seasons",
       total: 0,
@@ -242,51 +285,77 @@ export async function getSeasons(limit = 10, page = 1, token = null) {
 
 export async function createSeason(payload, token) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/seasons`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(`${API_URL}/api/v1/seasons`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     const json = await res.json();
 
-    if (!res.ok || json.status !== "success") {
-      return { success: false, message: getErrorMessage(json, "Failed to create season")};
+    if (!res.ok || json?.status !== "success") {
+      return {
+        success: false,
+        message: getErrorMessage(json, "Failed to create season"),
+      };
     }
 
-    const data = json.data;
+    const data = json?.data;
 
-    return { success: true, season: data?.season };
-  } catch {
-    return { success: false, message: "Something went wrong" };
+    return {
+      success: true,
+      season: data?.season ?? null,
+    };
+  } catch (error) {
+    console.error("createSeason:", error);
+
+    return {
+      success: false,
+      message: error.message || "Something went wrong",
+    };
   }
 }
 
 export async function updateSeason(seasonId, payload, token) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/seasons/${seasonId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(`${API_URL}/api/v1/seasons/${seasonId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     const json = await res.json();
 
-    if (!res.ok || json.status !== "success") {
-      return { success: false, message: getErrorMessage(json, "Failed to update season") };
+    if (!res.ok || json?.status !== "success") {
+      return {
+        success: false,
+        message: getErrorMessage(json, "Failed to update season"),
+      };
     }
 
-    const data = json.data;
+    const data = json?.data;
 
-    return { success: true, season: data?.season };
-  } catch {
-    return { success: false, message: "Something went wrong" };
+    return {
+      success: true,
+      season: data?.season ?? null,
+    };
+  } catch (error) {
+    console.error("updateSeason:", error);
+
+    return {
+      success: false,
+      message: error.message || "Something went wrong",
+    };
   }
 }
 

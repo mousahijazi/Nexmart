@@ -9,6 +9,7 @@ export default function SeasonsFilters({ search, setSearch, status, setStatus, o
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div className="relative min-w-0 flex-1">
           <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted-2)]" />
+
           <input
             type="text"
             value={search}
@@ -19,7 +20,12 @@ export default function SeasonsFilters({ search, setSearch, status, setStatus, o
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <FilterSelect label="Status" value={status} onChange={setStatus} options={seasonStatusOptions} />
+          <FilterSelect
+            label="Status"
+            value={status}
+            onChange={setStatus}
+            options={seasonStatusOptions}
+          />
 
           <button
             type="button"

@@ -143,8 +143,8 @@ export default function OrderDashboardData() {
                             <div>{t("table.date")}</div>
                             <div>{t("table.status")}</div>
                             <div>{t("table.total")}</div>
-                            <div className="text-start md:text-end">{t("details") || "Action"}</div>
                             <div className="text-start md:text-end">الإجراءات</div>
+                            <div className="text-start md:text-end">{t("details") || "Action"}</div>
                         </div>
 
                         <div className="px-5">

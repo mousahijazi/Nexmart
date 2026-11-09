@@ -70,11 +70,10 @@ export default function OfferModal() {
 
       const token = localStorage.getItem("nexmart-token");
 
-      // todo
       const [productsResult, categoriesResult, seasonsResult] = await Promise.all([
         getProducts(20, 0, token),
         getCategories(),
-        getSeasons(),
+        getSeasons(20, 1, token),
       ]);
 
       if (cancelled) return;

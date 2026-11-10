@@ -5,9 +5,11 @@ import { useUserContext } from "../UserProvider";
 
 const ORDERS_LIMIT = 10;
 const ORDER_ITEMS_LIMIT = 10;
+const SEARCH_DEBOUNCE_DELAY = 400;
 
 export default function useAdminOrders({ showAlert, enabled }) {
   const { user, loading } = useUserContext();
+
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
 
@@ -19,50 +21,91 @@ export default function useAdminOrders({ showAlert, enabled }) {
   const [orderItemsPagination, setOrderItemsPagination] = useState({});
   const [orderItemsLoading, setOrderItemsLoading] = useState({});
 
+  const [ordersStats, setOrdersStats] = useState({
+    total: 0,
+    pending: 0,
+    confirmed: 0,
+    paid: 0,
+  });
+
   const [ordersSearch, setOrdersSearch] = useState("");
+  const [debouncedOrdersSearch, setDebouncedOrdersSearch] = useState("");
+
   const [ordersStatusFilter, setOrdersStatusFilter] = useState("");
   const [ordersPaymentFilter, setOrdersPaymentFilter] = useState("");
 
-  const fetchOrders = useCallback(async ({ page = 1, search = ordersSearch, orderStatus = ordersStatusFilter, paymentStatus = ordersPaymentFilter } = {}) => {
-      const token = localStorage.getItem("nexmart-token");
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedOrdersSearch(ordersSearch.trim());
+    }, SEARCH_DEBOUNCE_DELAY);
 
-      if (!token) {
-        setOrders([]);
-        setOrdersTotal(0);
-        setOrdersTotalPages(1);
-        setOrdersLoading(false);
-        showAlert("You are not authenticated", "danger");
+    return () => clearTimeout(timeoutId);
+  }, [ordersSearch]);
 
-        return { success: false };
-      }
+  const fetchOrders = useCallback(async ({ page = 1, search = debouncedOrdersSearch, orderStatus = ordersStatusFilter, paymentStatus = ordersPaymentFilter } = {}) => {
+    const token = localStorage.getItem("nexmart-token");
 
-      setOrdersLoading(true);
+    if (!token) {
+      setOrders([]);
+      setOrdersTotal(0);
+      setOrdersTotalPages(1);
+      setOrdersPage(1);
+      setOrdersLoading(false);
 
-      try {
-        const result = await getAdminOrders({ token, page, limit: ORDERS_LIMIT, search, orderStatus, paymentStatus });
+      setOrdersStats({ total: 0, pending: 0, confirmed: 0, paid: 0 });
 
-        setOrders(result.orders || []);
-        setOrdersPage(result.pagination?.page || page);
-        setOrdersTotal(result.pagination?.total || 0);
-        setOrdersTotalPages(result.pagination?.totalPages || 1);
+      showAlert("You are not authenticated", "danger");
 
-        return { success: true, data: result };
-      } catch (error) {
-        showAlert(error.message || "Failed to load orders", "danger");
-        return { success: false };
-      } finally {
-        setOrdersLoading(false);
-      }
-    }, [ordersSearch, ordersStatusFilter, ordersPaymentFilter, showAlert]
-  );
+      return { success: false };
+    }
+
+    setOrdersLoading(true);
+
+    try {
+      const result = await getAdminOrders({
+        token,
+        page,
+        limit: ORDERS_LIMIT,
+        search,
+        orderStatus,
+        paymentStatus,
+      });
+
+      setOrders(result.orders || []);
+
+      setOrdersPage(result.pagination?.page || page);
+      setOrdersTotal(result.pagination?.total || 0);
+      setOrdersTotalPages(result.pagination?.totalPages || 1);
+
+      setOrdersStats({
+        total: result.stats?.total ?? 0,
+        pending: result.stats?.pending ?? 0,
+        confirmed: result.stats?.confirmed ?? 0,
+        paid: result.stats?.paid ?? 0,
+      });
+
+      return {
+        success: true,
+        data: result,
+      };
+    } catch (error) {
+      showAlert(error.message || "Failed to load orders", "danger");
+
+      return { success: false };
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, [debouncedOrdersSearch, ordersStatusFilter, ordersPaymentFilter, showAlert]);
 
   useEffect(() => {
-    if (!enabled) return;
-    if (loading) return;
+    if (!enabled || loading) return;
 
-    if (user.role === "ADMIN") {
-      fetchOrders({ page: 1 });
+    if (user?.role !== "ADMIN") {
+      setOrdersLoading(false);
+      return;
     }
+
+    fetchOrders({ page: 1 });
   }, [fetchOrders, loading, user?.role, enabled]);
 
   const fetchOrderItems = useCallback(async (orderId, page = 1) => {
@@ -93,14 +136,15 @@ export default function useAdminOrders({ showAlert, enabled }) {
 
     try {
       const result = await getBackendAdminOrderItems(orderId, token, { page, limit: ORDER_ITEMS_LIMIT });
+
       const newItems = result.items || [];
 
       setOrderItems((current) => ({
         ...current,
         [orderId]:
-            page === 1
-                ? newItems
-                : [...(current[orderId] || []), ...newItems],
+          page === 1
+            ? newItems
+            : [...(current[orderId] || []), ...newItems],
       }));
 
       setOrderItemsPagination((current) => ({
@@ -115,6 +159,7 @@ export default function useAdminOrders({ showAlert, enabled }) {
       };
     } catch (error) {
       showAlert(error.message || "Failed to load order items", "danger");
+
       return { success: false };
     } finally {
       setOrderItemsLoading((current) => ({
@@ -128,7 +173,7 @@ export default function useAdminOrders({ showAlert, enabled }) {
     const pagination = orderItemsPagination[orderId];
 
     if (!pagination?.hasNextPage || orderItemsLoading[orderId]) {
-        return { success: false };
+      return { success: false };
     }
 
     return fetchOrderItems(orderId, pagination.page + 1);
@@ -136,7 +181,7 @@ export default function useAdminOrders({ showAlert, enabled }) {
 
   const changeOrdersPage = useCallback((page) => {
     if (page < 1 || page > ordersTotalPages || ordersLoading) {
-        return;
+      return;
     }
 
     fetchOrders({ page });
@@ -166,8 +211,13 @@ export default function useAdminOrders({ showAlert, enabled }) {
 
     ordersSearch,
     searchOrders,
+
+    ordersStats,
+    setOrdersStats,
+
     ordersStatusFilter,
     filterOrdersByStatus,
+
     ordersPaymentFilter,
     filterOrdersByPaymentStatus,
 

@@ -1189,6 +1189,101 @@
                 "adding": "جارٍ الإضافة...",
                 "updating": "جارٍ التحديث..."
             }
+        },
+        "orders": {
+            "header": {
+                "title": "إدارة الطلبات",
+                "description": "راجع طلبات العملاء، وتابع حالات الدفع، وراقب تنفيذ الطلبات.",
+                "export": "تصدير طلبات الصفحة الحالية CSV"
+            },
+            "export": {
+                "orderNumber": "رقم الطلب",
+                "customer": "العميل",
+                "phone": "رقم الهاتف",
+                "total": "الإجمالي",
+                "paymentStatus": "حالة الدفع",
+                "orderStatus": "حالة الطلب",
+                "createdAt": "تاريخ الإنشاء"
+            },
+            "stats": {
+                "total": "إجمالي الطلبات",
+                "totalNote": "إجمالي الطلبات المطابقة للفلاتر",
+                "pending": "الطلبات المعلقة",
+                "pendingNote": "بانتظار تأكيد الطلب",
+                "confirmed": "الطلبات المؤكدة",
+                "confirmedNote": "تم تأكيدها وبانتظار التجهيز",
+                "paid": "الطلبات المدفوعة",
+                "paidNote": "الطلبات التي تم دفع قيمتها"
+            },
+            "filters": {
+                "searchPlaceholder": "ابحث برقم الطلب أو اسم العميل أو الهاتف...",
+                "searchLabel": "البحث في الطلبات",
+                "orderStatus": "حالة الطلب",
+                "paymentStatus": "حالة الدفع",
+                "allOrderStatuses": "جميع الحالات",
+                "allPaymentStatuses": "جميع حالات الدفع",
+                "reset": "إعادة ضبط الفلاتر"
+            },
+            "statuses": {
+                "unknown": "غير معروف",
+                "order": {
+                    "pending": "معلق",
+                    "confirmed": "مؤكد",
+                    "shipped": "تم الشحن",
+                    "delivered": "تم التسليم",
+                    "cancelled": "ملغي"
+                },
+                "payment": {
+                    "pending": "قيد الانتظار",
+                    "paid": "مدفوع",
+                    "failed": "فشل الدفع",
+                    "refunded": "مسترد"
+                }
+            },
+            "table": {
+                "expandOrder": "توسيع الطلب",
+                "orderId": "رقم الطلب",
+                "customer": "العميل",
+                "items": "المنتجات",
+                "orderDate": "تاريخ الطلب",
+                "total": "الإجمالي",
+                "payment": "الدفع",
+                "orderStatus": "حالة الطلب",
+                "actions": "الإجراءات",
+                "empty": "لم يتم العثور على طلبات.",
+                "showing": "عرض {start}–{end} من أصل {total} طلب"
+            },
+            "pagination": {
+                "previous": "السابق",
+                "next": "التالي",
+                "showing": "عرض {start}–{end} من أصل {total} طلب",
+                "rowsPerPage": "عدد الصفوف في الصفحة:"
+            },
+            "row": {
+                "expandOrder": "توسيع الطلب",
+                "collapseOrder": "طي الطلب",
+                "noPaymentId": "لا يوجد رقم دفع",
+                "orderId": "رقم الطلب",
+                "createdAt": "تاريخ الإنشاء",
+                "paymentId": "رقم عملية الدفع",
+                "notAvailable": "غير متوفر",
+                "customerContact": "العميل ومعلومات التواصل",
+                "shippingAddress": "عنوان التوصيل",
+                "paymentOrderStatus": "حالة الدفع والطلب",
+                "orderItems": "منتجات الطلب ({count})",
+                "loadingItems": "جارٍ تحميل منتجات الطلب...",
+                "noItems": "لا توجد منتجات في هذا الطلب.",
+                "unnamedProduct": "منتج بدون اسم",
+                "quantity": "الكمية: {count}",
+                "loading": "جارٍ التحميل...",
+                "loadMoreItems": "تحميل المزيد من المنتجات",
+                "priceBreakdown": "تفاصيل السعر",
+                "subtotal": "المجموع الفرعي",
+                "tax": "الضريبة",
+                "shipping": "الشحن",
+                "discount": "الخصم",
+                "total": "الإجمالي"
+            }
         }
     }
 }

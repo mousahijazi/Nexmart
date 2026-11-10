@@ -1,9 +1,9 @@
 "use client";
 import { Search, RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { FilterSelect } from "@/index";
 import { orderStatusOptions, paymentStatusOptions } from "./ordersData";
 
-// todo
 function formatOption(option) {
   if (option === "All Statuses" || option === "All Payment Statuses") {
     return option;
@@ -15,17 +15,42 @@ function formatOption(option) {
 }
 
 export default function OrdersFilters({ search, setSearch, status, setStatus, paymentStatus, setPaymentStatus, onReset }) {
-  const orderOptions = orderStatusOptions.map(formatOption);
-  const paymentOptions = paymentStatusOptions.map(formatOption);
+  const t = useTranslations("Admin.orders");
 
-  // todo
-  const statusLabelMap = Object.fromEntries(
-    orderStatusOptions.map((value, index) => [formatOption(value), value])
+  const orderStatusLabels = {
+    "All Statuses": t("filters.allOrderStatuses"),
+    pending: t("statuses.order.pending"),
+    confirmed: t("statuses.order.confirmed"),
+    shipped: t("statuses.order.shipped"),
+    delivered: t("statuses.order.delivered"),
+    cancelled: t("statuses.order.cancelled"),
+  };
+
+  const paymentStatusLabels = {
+    "All Payment Statuses": t("filters.allPaymentStatuses"),
+    pending: t("statuses.payment.pending"),
+    paid: t("statuses.payment.paid"),
+    failed: t("statuses.payment.failed"),
+    refunded: t("statuses.payment.refunded"),
+  };
+
+  const translateOrderOption = (value) => orderStatusLabels[value] ?? formatOption(value);
+  const translatePaymentOption = (value) => paymentStatusLabels[value] ?? formatOption(value);
+  const orderOptions = orderStatusOptions.map(translateOrderOption);
+  const paymentOptions = paymentStatusOptions.map(translatePaymentOption);
+
+  const orderLabelMap = Object.fromEntries(
+    orderStatusOptions.map((value) => [
+      translateOrderOption(value),
+      value,
+    ])
   );
 
-  // todo
   const paymentLabelMap = Object.fromEntries(
-    paymentStatusOptions.map((value, index) => [formatOption(value), value])
+    paymentStatusOptions.map((value) => [
+      translatePaymentOption(value),
+      value,
+    ])
   );
 
   return (
@@ -38,22 +63,23 @@ export default function OrdersFilters({ search, setSearch, status, setStatus, pa
             type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search order ID, customer, or phone..."
+            placeholder={t("filters.searchPlaceholder")}
+            aria-label={t("filters.searchLabel")}
             className="w-full min-w-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-field)] py-2.5 pl-9 pr-3 text-[12px] text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-muted-2)] focus:border-[var(--color-green-light)]"
           />
         </div>
 
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <FilterSelect
-            label="Order Status"
-            value={formatOption(status)}
-            onChange={(value) => setStatus(statusLabelMap[value] ?? "")}
+            label={t("filters.orderStatus")}
+            value={translateOrderOption(status)}
+            onChange={(value) => setStatus(orderLabelMap[value] ?? "")}
             options={orderOptions}
           />
 
           <FilterSelect
-            label="Payment Status"
-            value={formatOption(paymentStatus)}
+            label={t("filters.paymentStatus")}
+            value={translatePaymentOption(paymentStatus)}
             onChange={(value) => setPaymentStatus(paymentLabelMap[value] ?? "")}
             options={paymentOptions}
           />
@@ -61,7 +87,8 @@ export default function OrdersFilters({ search, setSearch, status, setStatus, pa
           <button
             type="button"
             onClick={onReset}
-            aria-label="Reset filters"
+            aria-label={t("filters.reset")}
+            title={t("filters.reset")}
             className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-soft)] transition hover:bg-[var(--color-sand)]"
           >
             <RotateCcw size={15} />

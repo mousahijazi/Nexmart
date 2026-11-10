@@ -1,50 +1,67 @@
 "use client";
 import { Download, ShoppingBag } from "lucide-react";
-import { mockOrders } from "./ordersData";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
+import { useAdminContext } from "@/Context/Adminprovider";
 
 export default function OrdersHeader() {
+  const t = useTranslations("Admin.orders");
+  const locale = useLocale();
+
+  const { orders, ordersLoading } = useAdminContext();
+
   const exportOrders = () => {
+    if (!orders.length || ordersLoading) return;
+
     const columns = [
-      "Order Number",
-      "Customer",
-      "Phone",
-      "Total",
-      "Payment Status",
-      "Order Status",
-      "Created At",
+      t("export.orderNumber"),
+      t("export.customer"),
+      t("export.phone"),
+      t("export.total"),
+      t("export.paymentStatus"),
+      t("export.orderStatus"),
+      t("export.createdAt"),
     ];
 
-    const rows = mockOrders.map((order) => [
-      order.orderNumber,
-      order.customer,
-      order.phone,
-      order.totalPrice,
-      order.paymentStatus,
-      order.orderStatus,
-      order.createdAt,
-    ]);
+    const rows = orders.map((order) => {
+      const shippingInfo = order.shippingInfo || {};
 
-    // todo
+      const customer = [
+        shippingInfo.firstName,
+        shippingInfo.lastName,
+      ].filter(Boolean).join(" ");
+
+      return [
+        order._id,
+        customer,
+        shippingInfo.phone || "",
+        order.totalPrice,
+        order.paymentStatus,
+        order.orderStatus,
+        order.createdAt,
+      ];
+    });
+
     const escapeCSV = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
 
-    // todo
-    const csv = [ columns, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\r\n");
+    const csv = [columns, ...rows]
+      .map((row) => row.map(escapeCSV).join(","))
+      .join("\r\n");
 
-    // todo
     const blob = new Blob(["\uFEFF" + csv], {
       type: "text/csv;charset=utf-8;",
     });
 
-    // todo
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
 
-    // todo
     link.href = url;
-    link.download = "nexmart-orders-demo.csv";
-    link.click();
+    link.download = `nexmart-orders-${locale}.csv`;
 
-    // todo
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
     URL.revokeObjectURL(url);
   };
 
@@ -58,12 +75,12 @@ export default function OrdersHeader() {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-[25px] font-medium leading-none tracking-[-0.035em] text-[var(--color-ink)] sm:text-[29px]">
-              Orders Management
+              {t("header.title")}
             </h1>
           </div>
 
           <p className="mt-2 max-w-[650px] text-[11px] leading-[1.45] text-[var(--color-soft-2)] sm:text-[13px]">
-            Review customer orders, monitor payment statuses, and track fulfillment.
+            {t("header.description")}
           </p>
         </div>
       </div>
@@ -72,10 +89,11 @@ export default function OrdersHeader() {
         <button
           type="button"
           onClick={exportOrders}
-          className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[11px] font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-sand)]"
+          disabled={ordersLoading || orders.length === 0}
+          className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[11px] font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-sand)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Download size={16} />
-          Export Orders CSV
+          {t("header.export")}
         </button>
       </div>
     </section>

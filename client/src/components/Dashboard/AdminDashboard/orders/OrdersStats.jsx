@@ -1,37 +1,43 @@
+"use client";
 import { ShoppingBag, Clock3, CheckCircle2, Wallet } from "lucide-react";
 import { StatCard } from "@/index";
+import { useAdminContext } from "@/Context/Adminprovider";
+import { useTranslations } from "next-intl";
 
-export default function OrdersStats({ stats }) {
+export default function OrdersStats() {
+  const { ordersStats } = useAdminContext();
+  const t = useTranslations("Admin.orders");
+
   return (
     <section className="mb-5 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <StatCard
-        label="Total Orders"
-        value={stats.total}
-        note="Orders in demo dataset"
+        label={t("stats.total")}
+        value={ordersStats?.total}
+        note={t("stats.totalNote")}
         icon={ShoppingBag}
         accent="green"
       />
 
       <StatCard
-        label="Pending Orders"
-        value={stats.pending}
-        note="Awaiting order confirmation"
+        label={t("stats.pending")}
+        value={ordersStats?.pending}
+        note={t("stats.pendingNote")}
         icon={Clock3}
         accent="gold"
       />
 
       <StatCard
-        label="Confirmed Orders"
-        value={stats.confirmed}
-        note="Confirmed and awaiting fulfillment"
+        label={t("stats.confirmed")}
+        value={ordersStats?.confirmed}
+        note={t("stats.confirmedNote")}
         icon={CheckCircle2}
         accent="green"
       />
 
       <StatCard
-        label="Paid Orders"
-        value={stats.paid}
-        note="Orders with paid payment status"
+        label={t("stats.paid")}
+        value={ordersStats?.paid}
+        note={t("stats.paidNote")}
         icon={Wallet}
         accent="green"
       />

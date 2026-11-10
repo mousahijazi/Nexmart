@@ -1,12 +1,25 @@
+
+"use client";
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 function getPageNumbers(current, total) {
   const pages = new Set([1, total, current, current - 1, current + 1]);
-  return [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+
+  return [...pages]
+    .filter((page) => page >= 1 && page <= total)
+    .sort((a, b) => a - b);
 }
 
-export default function OrdersPagination({page, pageSize, totalCount, onPageChange, onPageSizeChange, pageSizeOptions = [5, 10, 25, 50]}) {
+export default function OrdersPagination({ page, pageSize, totalCount, onPageChange, onPageSizeChange, pageSizeOptions = [5, 10, 25, 50] }) {
+  const t = useTranslations("Admin.orders");
+  const locale = useLocale();
+
+  const numberFormat = new Intl.NumberFormat(locale);
+
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
   const start = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, totalCount);
   const pageNumbers = getPageNumbers(page, totalPages);
@@ -14,13 +27,24 @@ export default function OrdersPagination({page, pageSize, totalCount, onPageChan
   return (
     <div className="flex flex-col gap-3 border-t border-[var(--color-divider)] pt-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2 text-sm text-[var(--color-muted-2)]">
-        <span> Showing {start}-{end} of {totalCount.toLocaleString("en-US")} orders </span>
-        <span className="text-[var(--color-muted-3)]">&middot;</span>
+        <span>
+          {t("pagination.showing", {
+            start: numberFormat.format(start),
+            end: numberFormat.format(end),
+            total: numberFormat.format(totalCount),
+          })}
+        </span>
+
+        <span className="text-[var(--color-muted-3)]">
+          &middot;
+        </span>
+
         <label className="flex items-center gap-1.5">
-          Rows per page:
+          {t("pagination.rowsPerPage")}
+
           <select
             value={pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+            onChange={(event) => onPageSizeChange(Number(event.target.value))}
             className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-1.5 py-1 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-green-light)]"
           >
             {pageSizeOptions.map((size) => (
@@ -38,27 +62,35 @@ export default function OrdersPagination({page, pageSize, totalCount, onPageChan
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={page === 1}
           className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border)] text-[var(--color-muted-2)] enabled:hover:bg-[var(--color-sand)] disabled:opacity-40"
-          aria-label="Previous page"
+          aria-label={t("pagination.previous")}
+          title={t("pagination.previous")}
         >
           <ChevronLeft size={15} />
         </button>
 
-        {pageNumbers.map((num, idx) => {
-          const prev = pageNumbers[idx - 1];
-          const showEllipsis = prev !== undefined && num - prev > 1;
+        {pageNumbers.map((num, index) => {
+          const previous = pageNumbers[index - 1];
+          const showEllipsis = previous !== undefined && num - previous > 1;
+
           return (
             <span key={num} className="flex items-center">
-              {showEllipsis && <span className="px-1.5 text-sm text-[var(--color-muted-3)]">&hellip;</span>}
+              {showEllipsis && (
+                <span className="px-1.5 text-sm text-[var(--color-muted-3)]">
+                  &hellip;
+                </span>
+              )}
+
               <button
                 type="button"
                 onClick={() => onPageChange(num)}
+                aria-current={num === page ? "page" : undefined}
                 className={
                   num === page
                     ? "flex h-8 w-8 items-center justify-center rounded-md bg-[var(--color-green)] text-sm font-medium text-white"
                     : "flex h-8 w-8 items-center justify-center rounded-md text-sm text-[var(--color-soft-2)] hover:bg-[var(--color-sand)]"
                 }
               >
-                {num}
+                {numberFormat.format(num)}
               </button>
             </span>
           );
@@ -69,7 +101,8 @@ export default function OrdersPagination({page, pageSize, totalCount, onPageChan
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           disabled={page === totalPages}
           className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border)] text-[var(--color-muted-2)] enabled:hover:bg-[var(--color-sand)] disabled:opacity-40"
-          aria-label="Next page"
+          aria-label={t("pagination.next")}
+          title={t("pagination.next")}
         >
           <ChevronRight size={15} />
         </button>

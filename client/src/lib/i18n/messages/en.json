@@ -1189,6 +1189,101 @@
                 "adding": "Adding...",
                 "updating": "Updating..."
             }
+        },
+        "oreders": {
+            "header": {
+                "title": "Orders Management",
+                "description": "Review customer orders, monitor payment statuses, and track fulfillment.",
+                "export": "Export Current Page CSV"
+            },
+            "export": {
+                "orderNumber": "Order Number",
+                "customer": "Customer",
+                "phone": "Phone",
+                "total": "Total",
+                "paymentStatus": "Payment Status",
+                "orderStatus": "Order Status",
+                "createdAt": "Created At"
+            },
+            "stats": {
+                "total": "Total Orders",
+                "totalNote": "Total orders matching your filters",
+                "pending": "Pending Orders",
+                "pendingNote": "Awaiting order confirmation",
+                "confirmed": "Confirmed Orders",
+                "confirmedNote": "Confirmed and awaiting fulfillment",
+                "paid": "Paid Orders",
+                "paidNote": "Orders with paid payment status"
+            },
+            "filters": {
+                "searchPlaceholder": "Search order ID, customer, or phone...",
+                "searchLabel": "Search orders",
+                "orderStatus": "Order Status",
+                "paymentStatus": "Payment Status",
+                "allOrderStatuses": "All Statuses",
+                "allPaymentStatuses": "All Payment Statuses",
+                "reset": "Reset filters"
+            },
+            "statuses": {
+                "unknown": "Unknown",
+                "order": {
+                    "pending": "Pending",
+                    "confirmed": "Confirmed",
+                    "shipped": "Shipped",
+                    "delivered": "Delivered",
+                    "cancelled": "Cancelled"
+                },
+                "payment": {
+                    "pending": "Pending",
+                    "paid": "Paid",
+                    "failed": "Failed",
+                    "refunded": "Refunded"
+                }
+            },
+            "table": {
+                "expandOrder": "Expand order",
+                "orderId": "Order ID",
+                "customer": "Customer",
+                "items": "Items",
+                "orderDate": "Order Date",
+                "total": "Total",
+                "payment": "Payment",
+                "orderStatus": "Order Status",
+                "actions": "Actions",
+                "empty": "No orders found.",
+                "showing": "Showing {start}–{end} of {total} orders"
+            },
+            "pagination": {
+                "previous": "Previous",
+                "next": "Next",
+                "showing": "Showing {start}–{end} of {total} orders",
+                "rowsPerPage": "Rows per page:"
+            },
+            "row": {
+                "expandOrder": "Expand order",
+                "collapseOrder": "Collapse order",
+                "noPaymentId": "No payment ID",
+                "orderId": "Order ID",
+                "createdAt": "Created At",
+                "paymentId": "Payment ID",
+                "notAvailable": "Not available",
+                "customerContact": "Customer & Contact",
+                "shippingAddress": "Shipping Address",
+                "paymentOrderStatus": "Payment & Order Status",
+                "orderItems": "Order Items ({count})",
+                "loadingItems": "Loading order items...",
+                "noItems": "No order items found.",
+                "unnamedProduct": "Unnamed product",
+                "quantity": "Qty: {count}",
+                "loading": "Loading...",
+                "loadMoreItems": "Load more items",
+                "priceBreakdown": "Price Breakdown",
+                "subtotal": "Subtotal",
+                "tax": "Tax",
+                "shipping": "Shipping",
+                "discount": "Discount",
+                "total": "Total"
+            }
         }
     }
 }

@@ -4,11 +4,14 @@ import { useLocale, useTranslations } from "next-intl";
 import { heroStats } from "./Stats";
 import { AdminAddButton, ProductModal } from "@/index";
 import { useAdminContext } from "@/Context/Adminprovider";
+import { useUserContext } from "@/Context/UserProvider";
 
-export default function OverviewHero({ adminName = "Eng. Tariq Al-Mansoor", dateLabel, onExport, onAddProduct }) {
+export default function OverviewHero({ dateLabel, onExport, onAddProduct }) {
   const t = useTranslations("Admin.dashboard");
   const locale = useLocale();
   const { openProductModal } = useAdminContext();
+  const { user } = useUserContext();
+  const adminName = user?.firstName ? `${user?.firstName} ${user?.lastName}` : "";
 
   const formattedDate =
     dateLabel ||

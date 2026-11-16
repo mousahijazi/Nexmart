@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { User, ShieldCheck, LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useUserContext } from "@/Context/UserProvider";
 import { UpdateUser, LogoutButton, EditProfileButton } from "@/index";
-import { useTranslations } from "next-intl";
 
 export default function SettingsDashboard({ role = "user" }) {
   const { user } = useUserContext();
@@ -36,30 +36,29 @@ export default function SettingsDashboard({ role = "user" }) {
 
   const content = isAdmin
     ? {
-        title: "Admin Settings",
-        subtitle: "Manage your administrator account and profile settings.",
+        title: tSettings("adminTitle"),
+        subtitle: tSettings("adminSubtitle"),
 
-        personalInfoTitle: "Personal Information",
-        personalInfoSubtitle: "Update the information associated with your administrator account.",
+        personalInfoTitle: tSettings("adminPersonalInfoTitle"),
+        personalInfoSubtitle: tSettings("adminPersonalInfoSubtitle"),
 
-        securityTitle: "Security",
-        securitySubtitle: "Security information for your administrator account.",
+        securityTitle: tSettings("adminSecurityTitle"),
+        securitySubtitle: tSettings("adminSecuritySubtitle"),
 
-        emailAccountLabel: "Email Account",
-        emailLinkedDesc: "Your administrator account is linked to your email address.",
+        emailAccountLabel: tSettings("emailAccountLabel"),
+        emailLinkedDesc: tSettings("adminEmailLinkedDesc", { email: user?.email || "" }),
 
-        protected: "Protected",
+        protected: tSettings("protected"),
 
-        logoutTitle: "Sign Out",
-        logoutSubtitle: "Sign out of your administrator account.",
+        logoutTitle: tSettings("adminLogoutTitle"),
+        logoutSubtitle: tSettings("adminLogoutSubtitle"),
       }
     : {
         title: tSettings("title"),
         subtitle: tSettings("subtitle"),
 
         personalInfoTitle: tSettings("personalInfoTitle"),
-        // personalInfoSubtitle: tSettings("personalInfoSubtitle"),
-        personalInfoSubtitle: "settings",
+        personalInfoSubtitle: tSettings("personalInfoSubtitle"),
 
         securityTitle: tSettings("securityTitle"),
         securitySubtitle: tSettings("securitySubtitle"),
@@ -103,7 +102,7 @@ export default function SettingsDashboard({ role = "user" }) {
             </p>
           </div>
 
-          <EditProfileButton onClick={() => setIsModalOpen(true)} label="Edit" />
+          <EditProfileButton onClick={() => setIsModalOpen(true)} label={tSettings("editButton")} />
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

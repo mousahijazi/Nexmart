@@ -9,10 +9,11 @@ export default function UserImage() {
     <div className="relative shrink-0">
       <Image
           src={getImageUrl(user?.avatar) || `/Profile.jpg`}
-          alt={user?.firstName || "Guest"}
+          alt={`User profile picture for ${user?.firstName || "Guest"}`}
           width={35}
           height={35}
-          unoptimized
+          sizes="35px"
+          quality={60}
           className="rounded-full aspect-square shrink-0 object-cover bg-gray-400 dark:border dark:border-zinc-300 cursor-pointer"
       />
       {isUploadingImage && (

@@ -84,6 +84,8 @@ const buildProductsFilter = async (query, userRole) => {
     filter.isActive = true;
     filter.archivedByCategory = false;
     filter.archivedByBrand = false;
+    filter.stock = { $gt: 0 };
+    filter.status = "Available";
 
     return filter;
   }
@@ -173,6 +175,8 @@ const getProductById = async (productId, userRole) => {
     filter.isActive = true;
     filter.archivedByCategory = false;
     filter.archivedByBrand = false;
+    filter.stock = { $gt: 0 };
+    filter.status = "Available";
   }
 
   const product = await productRepository.findProduct(filter);
@@ -185,7 +189,15 @@ const getProductById = async (productId, userRole) => {
 };
 
 const createProduct = async (productData) => {
-  return productRepository.createProduct(productData);
+  const stock = Number(productData.stock ?? 0);
+
+  const product = {
+    ...productData,
+    stock,
+    status: stock > 0 ? "Available" : "OutOfStock",
+  };
+
+  return productRepository.createProduct(product);
 };
 
 const updateProduct = async (productId, productData) => {
@@ -200,6 +212,20 @@ const updateProduct = async (productId, productData) => {
   delete updateData.existingImages;
   delete updateData.newMainImage;
   delete updateData.newImages;
+
+  delete updateData.status;
+
+  if (updateData.stock !== undefined) {
+    const stock = Number(updateData.stock);
+
+    if (!Number.isFinite(stock) || stock < 0) {
+      throw AppError.create("Invalid product stock", 400, FAIL);
+    }
+
+    updateData.stock = stock;
+    updateData.status = stock > 0 ? "Available" : "OutOfStock";
+  }
+
 
   let imagesToDelete = [];
 

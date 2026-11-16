@@ -4,7 +4,6 @@ import UserProvider from "./UserProvider";
 import ThemeProvider from "./ThemeProvider";
 import WishlistProvider from "./WishlistProvider";
 import CheckoutProvider from "./CheckoutProvider";
-import AdminProvider from "./Adminprovider";
 import ReviewProvider from "./ReviewProvider";
 import OrdersProvider from "./OrdersContext";
 
@@ -13,7 +12,6 @@ export default function ContextProviders({children}) {
     <ThemeProvider>
       <AlertProvider>
         <UserProvider>
-          <AdminProvider>
             <ReviewProvider>
               <CheckoutProvider>
                 <OrdersProvider>
@@ -25,7 +23,6 @@ export default function ContextProviders({children}) {
                 </OrdersProvider>
               </CheckoutProvider>
             </ReviewProvider>
-          </AdminProvider>
         </UserProvider>
       </AlertProvider>
     </ThemeProvider>

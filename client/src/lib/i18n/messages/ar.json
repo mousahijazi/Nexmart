@@ -269,9 +269,10 @@
             "dashboardData": {
                 "products": "المنتجات",
                 "price": "السعر",
-                "taxes": "الضرائب",
                 "categories": "الاصناف",
-                "total": "المجموع"
+                "total": "المجموع",
+                "taxes": "الضرائب",
+                "shipping": "الشحن"
             }
         }
     },
@@ -341,7 +342,18 @@
             "emailLinkedDesc": "حسابك مرتبط بهذا البريد الإلكتروني {email}",
             "protected": "محمي",
             "logoutTitle": "تسجيل الخروج",
-            "logoutSubtitle": "سيتم تسجيل خروجك من هذا الجهاز"
+            "logoutSubtitle": "سيتم تسجيل خروجك من هذا الجهاز",
+            "editButton": "تعديل",
+            "personalInfoSubtitle": "تحديث المعلومات المرتبطة بحسابك الشخصي.",
+            "adminTitle": "إعدادات المسؤول",
+            "adminSubtitle": "إدارة حساب المسؤول الخاص بك وإعدادات ملفك الشخصي.",
+            "adminPersonalInfoTitle": "المعلومات الشخصية",
+            "adminPersonalInfoSubtitle": "تحديث المعلومات المرتبطة بحساب المسؤول الخاص بك.",
+            "adminSecurityTitle": "الأمان",
+            "adminSecuritySubtitle": "معلومات الأمان الخاصة بحساب المسؤول الخاص بك.",
+            "adminEmailLinkedDesc": "حساب المسؤول الخاص بك مرتبط ببريدك الإلكتروني: {email}",
+            "adminLogoutTitle": "تسجيل الخروج",
+            "adminLogoutSubtitle": "تسجيل الخروج من حساب المسؤول الخاص بك."
         },
         "accountDashboard": {
             "badge": "لوحة الحساب",

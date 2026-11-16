@@ -12,7 +12,7 @@ const INITIAL_VISIBLE = 4;
 export default function CartProducts() {
   const t = useTranslations();
   const locale = useLocale();
-  const { cart, loadingCart, cartPricing, pricingLoading, pricingError, increaseQuantity, decreaseQuantity } = useProductContext();
+  const { cart, loadingCart, cartPricing, pricingLoading, increaseQuantity, decreaseQuantity } = useProductContext();
   const [showAll, setShowAll] = useState(false);
   const pricedById = new Map((cartPricing?.items || []).map((item) => [
       String(item.productId),
@@ -41,32 +41,14 @@ export default function CartProducts() {
             </div>
           )
       :  (
-        <>
-          {pricingLoading && (
-            <p className="px-5 py-3 text-sm text-gray-500">
-              جاري تحديث الأسعار...
-            </p>
-          )}
-
-          {pricingError && (
-            <p className="px-5 py-3 text-sm text-red-500">
-              تعذر تحديث الأسعار. حاول مرة أخرى.
-            </p>
-          )}
-
-          {cartPricing?.issues?.length > 0 && (
-            <p className="px-5 py-3 text-sm text-red-500">
-              توجد منتجات أو كميات تحتاج إلى مراجعة قبل إتمام الشراء.
-            </p>
-          )}
-
+        <div className="flex flex-col">
           <div className="grid grid-cols-1 xs:grid-cols-[80px_1fr_auto] sm:grid-cols-[96px_1fr_auto] gap-[18px] p-5 border-b border-[var(--color-divider)] items-center">
             {visibleItems.map((ele, index) => {
               const pricing = pricedById.get(String(ele._id));
 
               return (
                 <div key={index} className="flex flex-col items-center gap-3 xs:contents max-sm:bg-[var(--color-sand)] px-2.5 py-3 rounded-2xl">
-                  <Link href={`/products/${ele?._id}`} className="relative w-[180px] h-[120px] xs:w-full xs:h-full rounded-2xl overflow-hidden">
+                  <Link href={`/products/${ele?._id}`} className="relative w-[180px] h-[120px] xs:w-full xs:h-[120px] rounded-2xl overflow-hidden">
                     <Image 
                       src={getImageUrl(ele.mainImage)}
                       alt={ele?.title?.[locale] || "somthing error"}
@@ -83,7 +65,7 @@ export default function CartProducts() {
                     </div>
                   </div>
 
-                  <div className="text-end flex flex-col items-end gap-[14px]">
+                  <div className={`text-end flex flex-col items-end gap-[14px] transition-opacity duration-200 ${pricingLoading ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
                     <div className="text-[17px] font-bold text-green-dark whitespace-nowrap">
                       {pricing?.pricing?.finalPrice?.toFixed(2) ?? "—"}
                       {" "}
@@ -116,17 +98,19 @@ export default function CartProducts() {
                     </div>
                   </div>
                 </div>
-            )})}
-            {hasMore && (
-                <button
-                    onClick={() => setShowAll((prev) => !prev)}
-                    className="mt-5 text-sm font-semibold text-[var(--color-green)] dark:text-[var(--color-gold)] underline cursor-pointer"
-                >
-                    {showAll ? "Show less" : `Show ${cart.length - INITIAL_VISIBLE} more`}
-                </button>
-            )}
+              );
+            })}
           </div>
-        </>   
+
+          {hasMore && (
+            <button
+              onClick={() => setShowAll((prev) => !prev)}
+              className="mt-5 mx-5 text-sm font-semibold text-[var(--color-green)] dark:text-[var(--color-gold)] underline cursor-pointer self-start"
+            >
+              {showAll ? "Show less" : `Show ${cart.length - INITIAL_VISIBLE} more`}
+            </button>
+          )}
+        </div>   
       )
   )
 }

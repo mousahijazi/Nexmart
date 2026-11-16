@@ -1,13 +1,11 @@
 import { Link } from "../../lib/i18n/routing";
-import { ButtonTheme, Auth, TranslationButton } from "../../index";
+import { Auth } from "../../index";
 import { ShoppingCart, Heart} from "lucide-react";
 import { useProductContext } from "../../Context/CartProvider";
-import { useTranslations } from "next-intl";
 import { useWishlistContext } from "../../Context/WishlistProvider";
 
 export default function Icon() {
-    const t = useTranslations();
-    const {cart} = useProductContext();
+    const { cartItemsCount } = useProductContext();
     const {wishlist} = useWishlistContext();
 
   return (
@@ -17,7 +15,7 @@ export default function Icon() {
                 <Link href="/cart" className="flex items-center gap-1 relative text-gray-600 hover:text-gray-900 dark:text-[#D4C7BC] dark:hover:text-[#A68A64] transition-colors">
                     <ShoppingCart size={25} strokeWidth={2.5} />
                     <span className="absolute -top-1.5  min-[360px]:-right-2 bg-gray-800 dark:bg-[#A68A64] text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
-                        {cart.length}
+                        { cartItemsCount }
                     </span>
                 </Link>
                 <Link href="/wishlist" className="flex relative">

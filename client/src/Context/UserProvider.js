@@ -18,10 +18,12 @@ export default function UserProvider({children}) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const {showAlert} = useAlertContext();
 
+
   const fetchUser = async () => {
     const token = localStorage.getItem("nexmart-token");
 
     if (!token) {
+      localStorage.removeItem("nexmart-user");
       setUser(null);
       setRole(null);
       setRedirectTo(null);
@@ -29,10 +31,26 @@ export default function UserProvider({children}) {
       return;
     }
 
+    const cachedUser = localStorage.getItem("nexmart-user");
+
+    if (cachedUser) {
+      try {
+        const parsedUser = JSON.parse(cachedUser);
+
+        setUser(parsedUser);
+        setRole(parsedUser.role);
+        setLoading(false);
+      } catch {
+        localStorage.removeItem("nexmart-user");
+      }
+    }
+
     const result = await getCurrentUser(token);
 
     if (!result.success) {
       localStorage.removeItem("nexmart-token");
+      localStorage.removeItem("nexmart-user");
+
       setUser(null);
       setRole(null);
       setRedirectTo(null);
@@ -43,6 +61,9 @@ export default function UserProvider({children}) {
     setUser(result.user);
     setRole(result.role);
     setRedirectTo(result.redirectTo);
+
+    localStorage.setItem("nexmart-user", JSON.stringify(result.user));
+
     setLoading(false);
   };
 
@@ -85,6 +106,8 @@ export default function UserProvider({children}) {
       showAlert("Unable to get user information", "danger");
       return { success: false };
     }
+
+    localStorage.setItem("nexmart-user", JSON.stringify(loggedInUser));
 
     const userId = loggedInUser._id;
 
@@ -154,6 +177,7 @@ export default function UserProvider({children}) {
         };
       }
 
+      localStorage.setItem("nexmart-user", JSON.stringify(result.user));
       setUser(result.user);
       showAlert("Profile updated successfully!", "success");
 
@@ -182,6 +206,7 @@ export default function UserProvider({children}) {
     }
 
     localStorage.removeItem("nexmart-token");
+    localStorage.removeItem("nexmart-user");
     
     setUser(null);
     setRole(null);

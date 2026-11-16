@@ -30,6 +30,6 @@ router.use("/orders", orderRoutes);
 router.use("/orders", orderItemRoutes);
 router.use("/admin/orders", adminOrderRoutes);
 
-router.use("/payments", paymentRoutes)
+router.use("/payments", paymentRoutes);
 
 export default router;

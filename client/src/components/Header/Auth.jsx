@@ -1,5 +1,4 @@
 "use client"; 
-import { Link } from "../../lib/i18n/routing"; 
 import { UserImage } from "../../index"; 
 import { useUserContext } from "../../Context/UserProvider"; 
 import { useTranslations } from "next-intl"; 

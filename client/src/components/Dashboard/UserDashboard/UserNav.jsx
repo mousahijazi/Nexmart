@@ -17,10 +17,6 @@ export default function UserNav() {
     const accountNav = [
         { id: "dashboard", label: t("dashboard"), badge: "" },
         { id: "orders", label: t("orders"), badge: orders.length },
-        { id: "wishlist", label: t("wishlist"), badge: wishlist.length },
-        { id: "addresses", label: t("addresses"), badge: "" },
-        { id: "payments", label: t("payments"), badge: "" },
-        { id: "returns", label: t("returns"), badge: returnedCount },
         { id: "settings", label: t("settings"), badge: "" },
     ];
 

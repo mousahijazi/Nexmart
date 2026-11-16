@@ -5,17 +5,15 @@ async function orderApiRequest(path, { method = "GET", token, body, signal } = {
     throw new Error("You must log in to manage orders");
   }
 
-  const response = await fetch(`${API_URL}${path}`,
-    {
-      method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        ...(body ? { "Content-Type": "application/json" } : {}),
-      },
-      ...(body ? { body: JSON.stringify(body) } : {}),
-      signal,
-    }
-  );
+  const response = await fetch(`${API_URL}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(body ? { "Content-Type": "application/json" } : {}),
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+    signal,
+  });
 
   let payload;
 
@@ -32,7 +30,7 @@ async function orderApiRequest(path, { method = "GET", token, body, signal } = {
   return payload?.data ?? payload;
 }
 
-export const getAdminOrders = ({ token, page = 1, limit = 10, search = "", orderStatus = "", paymentStatus = "" } = {}) => {
+export const getAdminOrders = ({ token, page = 1, limit = 10, search = "", orderStatus = "", paymentStatus = "", shippingDecision = "" } = {}) => {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),
@@ -50,7 +48,11 @@ export const getAdminOrders = ({ token, page = 1, limit = 10, search = "", order
     params.set("paymentStatus", paymentStatus);
   }
 
-  return orderApiRequest(`/api/v1/admin/orders?${params.toString()}`, { token, method: "GET" });
+  if (shippingDecision) {
+    params.set("shippingDecision", shippingDecision);
+  }
+
+  return orderApiRequest(`/api/v1/admin/orders?${params.toString()}`, { token });
 };
 
 export async function getBackendAdminOrderItems(orderId, token, { page = 1, limit = 10 } = {}) {
@@ -59,7 +61,28 @@ export async function getBackendAdminOrderItems(orderId, token, { page = 1, limi
     limit: String(limit),
   });
 
-  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/items?${params.toString()}`, { token });
+  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/items?${params.toString()}`,
+    { token }
+  );
+}
+
+export async function rejectBackendOrder(orderId, reason, token) {
+  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/reject`,
+    {
+      method: "PATCH",
+      token,
+      body: { reason },
+    }
+  );
+}
+
+export async function shipBackendOrder(orderId, token) {
+  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/ship`,
+    {
+      method: "POST",
+      token,
+    }
+  );
 }
 
 export async function createBackendOrder({ token, shippingInfo, items, coupon }) {
@@ -72,22 +95,42 @@ export async function createBackendOrder({ token, shippingInfo, items, coupon })
         productId: item.productId ?? item._id,
         quantity: item.quantity || 1,
       })),
-
       coupon: coupon?.trim().toLowerCase() || "",
     },
   });
 }
 
 export async function getBackendMyOrders(token, { page = 1, limit = 10 } = {}) {
-  return orderApiRequest(`/api/v1/orders/my?page=${page}&limit=${limit}`, { token });
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return orderApiRequest(`/api/v1/orders/my?${params.toString()}`,
+    { token }
+  );
 }
 
-export async function getBackendOrderById(orderId, token) {
-  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}`, { token });
+export async function getBackendOrderById(orderId, token, { page = 1, limit = 10 } = {}) {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}?${params.toString()}`,
+    { token }
+  );
 }
 
-export async function getBackendOrderItems(orderId, token) {
-  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}/items`, { token });
+export async function getBackendOrderItems(orderId, token, { page = 1, limit = 10 } = {}) {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}/items?${params.toString()}`,
+    { token }
+  );
 }
 
 export async function updateBackendOrder(orderId, shippingInfo, token) {
@@ -101,8 +144,7 @@ export async function updateBackendOrder(orderId, shippingInfo, token) {
 }
 
 export async function replaceBackendOrderItems(orderId, items, coupon, token) {
-  return orderApiRequest(
-    `/api/v1/orders/${encodeURIComponent(orderId)}/items`,
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}/items`,
     {
       method: "PATCH",
       token,
@@ -120,6 +162,20 @@ export async function replaceBackendOrderItems(orderId, items, coupon, token) {
   );
 }
 
+export async function deliverBackendOrder(orderId, token) {
+  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/deliver`,
+    {
+      method: "PATCH",
+      token,
+    }
+  );
+}
+
 export async function cancelBackendOrder(orderId, token) {
-  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}`, { method: "DELETE", token });
+  return orderApiRequest(`/api/v1/orders/${encodeURIComponent(orderId)}`,
+    {
+      method: "DELETE",
+      token,
+    }
+  );
 }

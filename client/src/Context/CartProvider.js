@@ -92,22 +92,41 @@ export default function ProductProvider({ children }) {
     };
   }, [cart, loadingCart]);
 
+  
   const addToStorage = (product) => {
     if (!product) return;
 
-    const exists = cart.find((item) => item?._id === product?._id);
-    if (exists) {
-      showAlert(`${product?.title?.[locale]} has already in cart!`, "danger");
+    const existing = cart.find((item) => String(item?._id) === String(product?._id));
+
+    const availableStock = Number(product.stock ?? existing?.stock ?? 0);
+
+    if (availableStock <= 0) {
+      showAlert("This product is out of stock", "danger");
       return;
     }
 
-    setCart((prev) => [
-      ...prev,
-      { ...product, quantity: 1 },
-    ]);
+    if (existing && existing.quantity >= availableStock) {
+      showAlert("Requested quantity exceeds available stock", "danger");
+      return;
+    }
 
-    showAlert(`${product?.title?.[locale]} added to cart`);
+    setCart((prev) => {
+      const exists = prev.some((item) => String(item?._id) === String(product?._id));
+
+      if (exists) {
+        return prev.map((item) =>
+          String(item._id) === String(product._id)
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...prev, { ...product, quantity: 1 }];
+    });
+
+    showAlert(existing ? `${product?.title?.[locale]} quantity increased` : `${product?.title?.[locale]} added to cart`);
   };
+
 
   const removeFromCart = (product) => {
     setCart((prev) => prev.filter((item) => item?._id !== product?._id));
@@ -165,6 +184,8 @@ export default function ProductProvider({ children }) {
   const shipping = cartPricing?.totals?.shipping ?? 0;
   const grandTotal = cartPricing?.totals?.grandTotal ?? 0;
 
+  const cartItemsCount = cart.reduce((total, product) => total + (Number(product.quantity) || 0), 0);
+
   const value = {
     cart,
     setCart,
@@ -183,6 +204,8 @@ export default function ProductProvider({ children }) {
     taxes,
     shipping,
     grandTotal,
+
+    cartItemsCount,
   };
 
   return (

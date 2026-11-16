@@ -1,145 +1,327 @@
 import mongoose from "mongoose";
 import AppError from "../../utils/AppError.js";
-import { findAllOrders, findOrderById, countAllOrders, countOrdersByStatus } from "../../repositories/orderRepository.js";
-import { ERROR, FAIL } from "../../utils/httpStatusText.js";
+import { findAllOrders, findOrderById, countAllOrders, countOrdersByStatus, updateOrderConditionally } from "../../repositories/orderRepository.js";
 import { findOrderItemsPage, countOrderItemsByOrderId } from "../../repositories/orderItemRepository.js";
+import { ERROR, FAIL } from "../../utils/httpStatusText.js";
+import getAuthenticatedUserId from "../../utils/getAuthenticatedUserId.js";
 
 const ORDER_STATUSES = [
-    "pending",
-    "confirmed",
-    "shipped",
-    "delivered",
-    "cancelled",
+  "pending",
+  "confirmed",
+  "onHold",
+  "shipped",
+  "delivered",
+  "cancelled",
 ];
 
 const PAYMENT_STATUSES = [
-    "pending",
-    "paid",
-    "failed",
-    "refunded",
+  "pending",
+  "paid",
+  "failed",
+  "refunded",
+];
+
+const SHIPPING_DECISIONS = [
+  "pending",
+  "approved",
+  "rejected",
 ];
 
 const escapeRegex = (value) => {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 };
 
-const getAdminOrdersService = async (query) => {
-    const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
-    const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 10));
+const parsePagination = (query = {}) => {
+  const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
 
-    const filter = {};
+  const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 10));
 
-    if (query.orderStatus) {
-        if (!ORDER_STATUSES.includes(query.orderStatus)) {
-            throw AppError.create("Invalid order status", 400);
-        }
+  return { page, limit };
+};
 
-        filter.orderStatus = query.orderStatus;
+const getAdminOrdersService = async (query = {}) => {
+  const { page, limit } = parsePagination(query);
+
+  const filter = {};
+
+  if (query.orderStatus) {
+    if (!ORDER_STATUSES.includes(query.orderStatus)) {
+      throw AppError.create("Invalid order status", 400, FAIL);
     }
 
-    if (query.paymentStatus) {
-        if (!PAYMENT_STATUSES.includes(query.paymentStatus)) {
-            throw AppError.create("Invalid payment status", 400);
-        }
+    filter.orderStatus = query.orderStatus;
+  }
 
-        filter.paymentStatus = query.paymentStatus;
+  if (query.paymentStatus) {
+    if (!PAYMENT_STATUSES.includes(query.paymentStatus)) {
+      throw AppError.create("Invalid payment status", 400, FAIL);
     }
 
-    const search = query.search?.trim();
+    filter.paymentStatus = query.paymentStatus;
+  }
 
-    if (search) {
-        const safeSearch = escapeRegex(search);
-        const searchRegex = new RegExp(safeSearch, "i");
-
-        const searchConditions = [
-            { "shippingInfo.firstName": searchRegex },
-            { "shippingInfo.lastName": searchRegex },
-            { "shippingInfo.phone": searchRegex },
-            { paymentId: searchRegex },
-        ];
-
-        if (mongoose.isValidObjectId(search)) {
-            searchConditions.push({
-                _id: new mongoose.Types.ObjectId(search),
-            });
-        }
-
-        filter.$or = searchConditions;
+  if (query.shippingDecision) {
+    if (!SHIPPING_DECISIONS.includes(query.shippingDecision)) {
+      throw AppError.create("Invalid shipping decision", 400, FAIL);
     }
 
-    const [orders, total] = await Promise.all([
-        findAllOrders({ filter, page, limit }),
-        countAllOrders(filter),
-    ]);
+    filter.shippingDecision = query.shippingDecision;
+  }
 
-    const totalPages = Math.max(1, Math.ceil(total / limit));
+  const search = typeof query.search === "string" ? query.search.trim() : "";
 
-    return {
-        orders,
-        pagination: {
-            page,
-            limit,
-            total,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1,
-        },
-    };
+  if (search) {
+    const searchRegex = new RegExp(escapeRegex(search), "i");
+
+    const searchConditions = [
+      { "shippingInfo.firstName": searchRegex },
+      { "shippingInfo.lastName": searchRegex },
+      { "shippingInfo.phone": searchRegex },
+      { paymentId: searchRegex },
+    ];
+
+    if (mongoose.isValidObjectId(search)) {
+      searchConditions.push({ _id: new mongoose.Types.ObjectId(search) });
+    }
+
+    filter.$or = searchConditions;
+  }
+
+  const [orders, total] = await Promise.all([
+    findAllOrders({ filter, page, limit }),
+    countAllOrders(filter),
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    orders,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
 };
 
 const getAdminOrderStats = async () => {
-    const [total, pending, confirmed, paid] = await Promise.all([
-        countAllOrders(),
-        countOrdersByStatus("orderStatus", "pending"),
-        countOrdersByStatus("orderStatus", "confirmed"),
-        countOrdersByStatus("paymentStatus", "paid"),
-    ]);
+  const [total, pending, confirmed, onHold, shipped, delivered, cancelled, paid, failed, refunded, shippingPending, shippingRejected, shippingApproved] = await Promise.all([
+    countAllOrders(),
+    countOrdersByStatus("orderStatus", "pending"),
+    countOrdersByStatus("orderStatus", "confirmed"),
+    countOrdersByStatus("orderStatus", "onHold"),
+    countOrdersByStatus("orderStatus", "shipped"),
+    countOrdersByStatus("orderStatus", "delivered"),
+    countOrdersByStatus("orderStatus", "cancelled"),
+    countOrdersByStatus("paymentStatus", "paid"),
+    countOrdersByStatus("paymentStatus", "failed"),
+    countOrdersByStatus("paymentStatus", "refunded"),
+    countOrdersByStatus("shippingDecision", "pending"),
+    countOrdersByStatus("shippingDecision", "rejected"),
+    countOrdersByStatus("shippingDecision", "approved"),
+  ]);
 
-    return {
-        total,
-        pending,
-        confirmed,
-        paid,
-    };
+  return {
+    total,
+    pending,
+    confirmed,
+    onHold,
+    shipped,
+    delivered,
+    cancelled,
+    paid,
+    failed,
+    refunded,
+    shippingPending,
+    shippingRejected,
+    shippingApproved,
+  };
 };
 
 const getAdminOrderItemsService = async (orderId, query = {}) => {
-    if (!mongoose.isValidObjectId(orderId)) {
-        throw AppError.create("Invalid order ID", 400, FAIL);
-    }
+  if (!mongoose.isValidObjectId(orderId)) {
+    throw AppError.create("Invalid order ID", 400, FAIL);
+  }
 
-    const order = await findOrderById(orderId);
+  const order = await findOrderById(orderId);
 
-    if (!order) {
-        throw AppError.create("Order not found", 404, ERROR);
-    }
+  if (!order) {
+    throw AppError.create("Order not found", 404, ERROR);
+  }
 
-    const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
-    const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 10));
+  const { page, limit } = parsePagination(query);
 
-    const [items, total] = await Promise.all([
-        findOrderItemsPage(order._id, { page, limit }),
-        countOrderItemsByOrderId(order._id),
-    ]);
+  const [items, total] = await Promise.all([
+    findOrderItemsPage(order._id, { page, limit }),
+    countOrderItemsByOrderId(order._id),
+  ]);
 
-    const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil(total / limit);
 
-    return {
-        orderId: order._id,
-        items,
-        pagination: {
-            page,
-            limit,
-            total,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1,
-        },
-    };
+  return {
+    orderId: order._id,
+    items,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
 };
 
+const rejectShippingOrderService = async (currentUser, orderId, body = {}) => {
+  if (!mongoose.isValidObjectId(orderId)) {
+    throw AppError.create("Invalid order ID", 400, FAIL);
+  }
+
+  const reason = typeof body.reason === "string" ? body.reason.trim() : "";
+
+  if (!reason) {
+    throw AppError.create("A rejection reason is required", 400, FAIL);
+  }
+
+  if (reason.length > 1000) {
+    throw AppError.create("Rejection reason cannot exceed 1000 characters", 400, FAIL);
+  }
+
+  const adminId = getAuthenticatedUserId(currentUser);
+  const now = new Date();
+
+  const order = await updateOrderConditionally(
+    {
+      _id: orderId,
+      orderStatus: "onHold",
+      paymentStatus: "paid",
+      shippingDecision: { $in: ["pending", "rejected"] },
+    },
+    {
+      $set: {
+        shippingDecision: "rejected",
+        shippingDecisionReason: reason,
+        shippingDecisionAt: now,
+        shippingDecisionBy: adminId,
+      },
+      $push: {
+        shippingDecisionHistory: {
+          decision: "rejected",
+          reason,
+          decidedAt: now,
+          decidedBy: adminId,
+        },
+      },
+    }
+  );
+
+  if (order) {
+    return order;
+  }
+
+  const existingOrder = await findOrderById(orderId);
+
+  if (!existingOrder) {
+    throw AppError.create("Order not found", 404, ERROR);
+  }
+
+  throw AppError.create("Only paid orders awaiting shipment can be rejected", 409, FAIL);
+};
+
+const shipOrderService = async (currentUser, orderId) => {
+  if (!mongoose.isValidObjectId(orderId)) {
+    throw AppError.create("Invalid order ID", 400, FAIL);
+  }
+
+  const adminId = getAuthenticatedUserId(currentUser);
+  const now = new Date();
+
+  const order = await updateOrderConditionally(
+    {
+      _id: orderId,
+      orderStatus: "onHold",
+      paymentStatus: "paid",
+      shippingDecision: { $in: ["pending", "rejected"] },
+    },
+    {
+      $set: {
+        orderStatus: "shipped",
+        shippingDecision: "approved",
+        shippingDecisionReason: null,
+        shippingDecisionAt: now,
+        shippingDecisionBy: adminId,
+        shippedAt: now,
+        shippedBy: adminId,
+      },
+      $push: {
+        shippingDecisionHistory: {
+          decision: "approved",
+          reason: null,
+          decidedAt: now,
+          decidedBy: adminId,
+        },
+      },
+      $unset: {
+        shippingHoldReason: "",
+        shippingHoldAt: "",
+        shippingHoldBy: "",
+      },
+    }
+  );
+
+  if (order) {
+    return order;
+  }
+
+  const existingOrder = await findOrderById(orderId);
+
+  if (!existingOrder) {
+    throw AppError.create("Order not found", 404, ERROR);
+  }
+
+  throw AppError.create("Only paid orders awaiting shipment can be shipped", 409, FAIL);
+};
+
+const deliverOrderService = async (currentUser, orderId) => {
+  if (!mongoose.isValidObjectId(orderId)) {
+    throw AppError.create("Invalid order ID", 400, FAIL);
+  }
+
+  const order = await updateOrderConditionally(
+    {
+      _id: orderId,
+      orderStatus: "shipped",
+      paymentStatus: "paid",
+    },
+    {
+      $set: {
+        orderStatus: "delivered",
+      },
+    }
+  );
+
+  if (order) {
+    return order;
+  }
+
+  const existingOrder = await findOrderById(orderId);
+
+  if (!existingOrder) {
+    throw AppError.create("Order not found", 404, ERROR);
+  }
+
+  throw AppError.create("Only paid shipped orders can be marked as delivered", 409, FAIL);
+};
+
+
 export {
-    getAdminOrdersService,
-    getAdminOrderStats,
-    getAdminOrderItemsService,
+  getAdminOrdersService,
+  getAdminOrderStats,
+  getAdminOrderItemsService,
+  rejectShippingOrderService,
+  shipOrderService,
+  deliverOrderService,
 };

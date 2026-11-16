@@ -37,7 +37,6 @@ export default function Nav({isOpen, setIsOpen, buttonRef}) {
     `}>
         <NavLink />
         
-        {/*todo*/}
         <div className="max-md:flex flex-col hidden justify-center w-full pt-4 border-t-2 border-t-gray-400 dark:border-t-[#A68A64]">
           <div className="px-8 pb-4">
             <NavSearch />

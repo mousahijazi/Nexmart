@@ -7,12 +7,10 @@ export const metadata = {
 
 export default function page() {
   return (
-    <ProtectedRoute allowedRole="USER">
-      <div className="sm:px-6">
-        <div className="max-w-7xl mx-auto sm:px-6">
-          <Dashbaord showData="userDashboard" /> 
-        </div>
+    <div className="sm:px-6">
+      <div className="max-w-7xl mx-auto sm:px-6">
+        <Dashbaord showData="userDashboard" /> 
       </div>
-    </ProtectedRoute>
+    </div>
   )
 }

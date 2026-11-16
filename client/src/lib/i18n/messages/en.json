@@ -271,7 +271,8 @@
                 "price": "Price",
                 "taxes": "Taxes",
                 "categories": "Categories",
-                "total": "Total"
+                "total": "Total",
+                "shipping": "Shipping"
             }
         }
     },
@@ -341,7 +342,18 @@
             "emailLinkedDesc": "Your account is linked to this email {email}",
             "protected": "Protected",
             "logoutTitle": "Sign Out",
-            "logoutSubtitle": "You will be signed out from this device"
+            "logoutSubtitle": "You will be signed out from this device",
+            "personalInfoSubtitle": "Update the information associated with your account.",
+            "editButton": "Edit",
+            "adminTitle": "Admin Settings",
+            "adminSubtitle": "Manage your administrator account and profile settings.",
+            "adminPersonalInfoTitle": "Personal Information",
+            "adminPersonalInfoSubtitle": "Update the information associated with your administrator account.",
+            "adminSecurityTitle": "Security",
+            "adminSecuritySubtitle": "Security information for your administrator account.",
+            "adminEmailLinkedDesc": "Your administrator account is linked to your email address: {email}",
+            "adminLogoutTitle": "Sign Out",
+            "adminLogoutSubtitle": "Sign out of your administrator account."
         },
         "accountDashboard": {
             "badge": "Account Dashboard",
@@ -1190,7 +1202,7 @@
                 "updating": "Updating..."
             }
         },
-        "oreders": {
+        "orders": {
             "header": {
                 "title": "Orders Management",
                 "description": "Review customer orders, monitor payment statuses, and track fulfillment.",

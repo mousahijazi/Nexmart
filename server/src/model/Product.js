@@ -3,31 +3,13 @@ import mongoose from "mongoose";
 const productSchema = new mongoose.Schema(
   {
     title: {
-      ar: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-
-      en: {
-        type: String,
-        required: true,
-        trim: true,
-      },
+      ar: { type: String, required: true, trim: true },
+      en: { type: String, required: true, trim: true },
     },
 
     description: {
-      ar: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-
-      en: {
-        type: String,
-        required: true,
-        trim: true,
-      },
+      ar: { type: String, required: true, trim: true },
+      en: { type: String, required: true, trim: true },
     },
 
     price: {
@@ -81,6 +63,10 @@ const productSchema = new mongoose.Schema(
       required: true,
       min: 0,
       default: 0,
+      validate: {
+        validator: Number.isInteger,
+        message: "Stock must be an integer",
+      },
     },
 
     slug: {
@@ -97,18 +83,30 @@ const productSchema = new mongoose.Schema(
 
     archivedByCategory: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     archivedByBrand: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+
+    status: {
+      type: String,
+      enum: ["Available", "OutOfStock"],
+      default: "OutOfStock",
+    },
   },
   {
     timestamps: true,
   }
 );
+
+productSchema.pre("validate", function () {
+  if (this.isNew || this.isModified("stock")) {
+    this.status = this.stock > 0 ? "Available" : "OutOfStock";
+  }
+});
 
 const Product = mongoose.model("Product", productSchema);
 export default Product;

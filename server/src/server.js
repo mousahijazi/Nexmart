@@ -7,6 +7,8 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import startOfferExpirationJob from "./jobs/offerExpirationJob.js";
 import startSeasonLifecycleJob from "./jobs/seasonLifecycleJob.js";
+import startProductStockLifecycleJob from "./jobs/productStockLifecycleJob.js";
+import startOrderExpirationJob from "./jobs/orderExpirationJob.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -19,6 +21,8 @@ connectDB()
 
       startSeasonLifecycleJob();
       startOfferExpirationJob();
+      startProductStockLifecycleJob();
+      startOrderExpirationJob();
     });
   })
   .catch((error) => {

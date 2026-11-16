@@ -13,6 +13,7 @@ const mergeDuplicateItems = (items) => {
 
   for (const item of items) {
     const productId = String(item.productId).toLowerCase();
+
     merged.set(productId, (merged.get(productId) || 0) + item.quantity);
   }
 
@@ -25,7 +26,7 @@ const priceCart = async (items, couponCode = "", options = {}) => {
   const { session } = options;
   const requested = mergeDuplicateItems(items);
 
-  const products = await Product.find({ _id: { $in: [...requested.keys()] } })
+  const products = await Product.find({ _id: { $in: [...requested.keys()] }})
     .select("title slug mainImage price stock category isActive archivedByCategory archivedByBrand")
     .session(session || null);
 
@@ -38,17 +39,30 @@ const priceCart = async (items, couponCode = "", options = {}) => {
     const product = productsById.get(productId);
 
     if (!product) {
-      issues.push({ productId, code: "PRODUCT_NOT_FOUND", message: "Product not found" });
+      issues.push({
+        productId,
+        code: "PRODUCT_NOT_FOUND",
+        message: "Product not found",
+      });
       continue;
     }
 
     if (!isProductAvailable(product)) {
-      issues.push({ productId, code: "PRODUCT_UNAVAILABLE", message: "Product is not available" });
+      issues.push({
+        productId,
+        code: "PRODUCT_UNAVAILABLE",
+        message: "Product is not available",
+      });
       continue;
     }
 
     if (quantity > product.stock) {
-      issues.push({ productId, code: "INSUFFICIENT_STOCK", message: "Requested quantity exceeds available stock", availableStock: product.stock });
+      issues.push({
+        productId,
+        code: "INSUFFICIENT_STOCK",
+        message: "Requested quantity exceeds available stock",
+        availableStock: product.stock,
+      });
       continue;
     }
 
@@ -56,7 +70,7 @@ const priceCart = async (items, couponCode = "", options = {}) => {
   }
 
   const pricings = await Promise.all(
-    validEntries.map(({ product }) => getProductPricing(product))
+    validEntries.map(({ product }) => getProductPricing(product, { session }))
   );
 
   let originalSubtotalMinor = 0;
@@ -78,8 +92,10 @@ const priceCart = async (items, couponCode = "", options = {}) => {
       title: product.title,
       mainImage: product.mainImage,
       quantity,
+
       pricing: {
         originalPrice: fromMinorUnits(originalMinor),
+
         discount: pricing.discount
           ? {
               type: pricing.discount.type,
@@ -87,8 +103,10 @@ const priceCart = async (items, couponCode = "", options = {}) => {
               amount: fromMinorUnits(discountMinor),
             }
           : null,
+
         finalPrice: fromMinorUnits(finalMinor),
       },
+
       lineTotal: fromMinorUnits(finalMinor * quantity),
     };
   });
@@ -98,25 +116,23 @@ const priceCart = async (items, couponCode = "", options = {}) => {
   const shippingMinor = lines.length === 0 || freeShipping ? 0 : toMinorUnits(SHIPPING_PRICE);
 
   const normalizedCoupon = typeof couponCode === "string" ? couponCode.trim().toLowerCase() : "";
+
   const couponApplied = normalizedCoupon === VALID_COUPON && lines.length > 0;
   const couponDiscountMinor = couponApplied ? taxMinor : 0;
-
   const grandTotalMinor = Math.max(0, subtotalMinor + taxMinor + shippingMinor - couponDiscountMinor);
 
   return {
     currency: CURRENCY,
     items: lines,
     issues,
+
     coupon: {
       code: normalizedCoupon || null,
       applied: couponApplied,
       discount: fromMinorUnits(couponDiscountMinor),
-      message: !normalizedCoupon
-          ? null
-          : couponApplied
-            ? "Coupon applied successfully"
-            : "Invalid coupon code",
+      message: !normalizedCoupon ? null : couponApplied ? "Coupon applied successfully" : "Invalid coupon code",
     },
+
     totals: {
       originalSubtotal: fromMinorUnits(originalSubtotalMinor),
       discountTotal: fromMinorUnits(originalSubtotalMinor - subtotalMinor),
@@ -125,6 +141,7 @@ const priceCart = async (items, couponCode = "", options = {}) => {
       shipping: fromMinorUnits(shippingMinor),
       grandTotal: fromMinorUnits(grandTotalMinor),
     },
+
     freeShipping,
     canCheckout: lines.length > 0 && issues.length === 0,
   };

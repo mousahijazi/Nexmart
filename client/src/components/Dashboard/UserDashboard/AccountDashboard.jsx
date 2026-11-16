@@ -20,7 +20,7 @@ export default function AccountDashboard() {
                         {tDash("badge")}
                     </div>
                     <h1 className="text-2xl sm:text-3xl font-extrabold">
-                        {tDash("welcome", { name: loading ? "" : firstName})}
+                        {tDash("welcome", { name: firstName })}
                     </h1>
                     <p className="mt-2 text-sm leading-7 text-[#C7D5D0] max-w-xl">
                         {tDash("subtitle")}
@@ -64,7 +64,7 @@ export default function AccountDashboard() {
                             <h2 className="font-bold text-[17px] dark:text-gray-100">
                                 {tDash("recentOrdersTitle")}
                             </h2>
-                            <p className="text-xs text-[var(--color-muted)] dark:text-gray-400 mt-1">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                                 {tDash("recentOrdersDesc")}
                             </p>
                         </div>
@@ -97,7 +97,7 @@ export default function AccountDashboard() {
                                                 order.paymentStatus === "paid"
                                                     ? "bg-[#E7F2EC] text-[#0E4D3A] dark:bg-[#15382E] dark:text-[#D4A94A]"
                                                     : order.paymentStatus === "pending"
-                                                    ? "bg-[#F8F1DD] text-[#8A6B1F] dark:bg-[#352D17] dark:text-[#D4A94A]"
+                                                    ? "bg-[#F8F1DD] text-[var(--color-gold)] dark:bg-[#352D17] dark:text-[#D4A94A]"
                                                     : "bg-[#F7E8E6] text-[#9B4038] dark:bg-[#3A211F] dark:text-[#E7A39C]"
                                             }
                                         `}

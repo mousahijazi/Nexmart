@@ -24,11 +24,11 @@ export default function StatsSection() {
 
     if (ordersLoading) {
         return (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[14px]">
                 {Array.from({ length: 4 }).map((_, index) => (
                     <div key={index} className="bg-white dark:bg-[#18221f] border border-[var(--color-border)] dark:border-[#22332e] rounded-2xl p-5 animate-pulse">
                         <div className="h-5 text-[13px] bg-gray-200 dark:bg-[#22332e] rounded-md w-20"></div>
-                        <div className="h-8 text-2xl bg-gray-200 dark:bg-[#22332e] rounded-md w-16 mt-3"></div>
+                        <div className="font-bold mt-2 h-8 text-2xl bg-gray-200 dark:bg-[#22332e] rounded-md w-16"></div>
                     </div>
                 ))}
             </div>
@@ -43,7 +43,7 @@ export default function StatsSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[14px]">
             {stats.map((ele, index) => (
                 <div key={index} className="bg-white dark:bg-[#18221f] border border-[var(--color-border)] dark:border-[#22332e] rounded-2xl p-5">
-                    <div className="text-[13px] text-[var(--color-muted)] dark:text-gray-400">{ele.label}</div>
+                    <div className="text-[13px] text-gray-600 dark:text-gray-400">{ele.label}</div>
                     <div className="font-bold text-2xl text-[var(--color-green-dark)] dark:text-[var(--color-gold)] mt-2">{ele.value}</div>
                 </div>
             ))}

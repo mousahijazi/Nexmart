@@ -2,7 +2,7 @@ import cron from "node-cron";
 import { updateOffersStatus } from "../service/offer/offerExpirationService.js";
 
 const startOfferExpirationJob = () => {
-  cron.schedule("0 * * * *", async () => {
+  cron.schedule("*/5 * * * *", async () => {
       try {
         const { expiredCount, activatedCount } = await updateOffersStatus();
 

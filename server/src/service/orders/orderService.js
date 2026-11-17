@@ -149,7 +149,8 @@ const changeProductStock = async (productId, quantity, direction, session) => {
 
   const result = await Product.updateOne(
     filter,
-    [{
+    [
+      {
         $set: {
           stock: stockExpression,
           status: {
@@ -160,9 +161,13 @@ const changeProductStock = async (productId, quantity, direction, session) => {
             ],
           },
         },
-    }], 
-    { session }
-    );
+      },
+    ],
+    {
+      session,
+      updatePipeline: true,
+    }
+  );
 
   if (result.modifiedCount !== 1) {
     throw AppError.create(direction === -1 ? `Insufficient stock for product ${productId}` : `Unable to restore stock for product ${productId}`, 409, FAIL);

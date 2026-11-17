@@ -67,22 +67,19 @@ export async function getBackendAdminOrderItems(orderId, token, { page = 1, limi
 }
 
 export async function rejectBackendOrder(orderId, reason, token) {
-  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/reject`,
-    {
-      method: "PATCH",
-      token,
-      body: { reason },
-    }
-  );
+  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/reject`, {
+    method: "PATCH",
+    token,
+    body: { reason },
+  });
 }
 
-export async function shipBackendOrder(orderId, token) {
-  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/ship`,
-    {
-      method: "POST",
-      token,
-    }
-  );
+export async function shipBackendOrder(orderId, reason, token) {
+  return orderApiRequest(`/api/v1/admin/orders/${encodeURIComponent(orderId)}/ship`, {
+    method: "POST",
+    token,
+    body: { reason },
+  });
 }
 
 export async function createBackendOrder({ token, shippingInfo, items, coupon }) {

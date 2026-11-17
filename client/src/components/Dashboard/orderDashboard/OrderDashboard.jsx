@@ -9,7 +9,6 @@ import { useTranslations, useLocale } from "next-intl";
 import { getBackendOrderItems } from "../../../helper/fetchApi";
 
 const ORDERS_PER_PAGE = 5;
-
 const orderGridCols = "grid-cols-[1fr_0.9fr_0.9fr_0.9fr_1.4fr_1fr]";
 const orderTableMinWidth = "min-w-[1050px]";
 
@@ -17,8 +16,9 @@ export default function OrderDashboardData() {
     const t = useTranslations("profile.orders");
     const locale = useLocale();
     const router = useRouter();
+
     const { user, loading } = useUserContext();
-    const { orders, setCurrentOrderId, ordersLoading } = useCheckoutContext();
+    const { orders = [], setCurrentOrderId, ordersLoading } = useCheckoutContext();
 
     const [orderItemsMap, setOrderItemsMap] = useState({});
     const [itemsLoadingMap, setItemsLoadingMap] = useState({});
@@ -35,26 +35,45 @@ export default function OrderDashboardData() {
             [orderId]: !isCurrentlyExpanded,
         }));
 
-        if (!isCurrentlyExpanded && !orderItemsMap[orderId]) {
+        if (!isCurrentlyExpanded && !Object.prototype.hasOwnProperty.call(orderItemsMap, orderId)) {
             try {
-                setItemsLoadingMap((prev) => ({ ...prev, [orderId]: true }));
+                setItemsLoadingMap((prev) => ({
+                    ...prev,
+                    [orderId]: true,
+                }));
 
                 const token = localStorage.getItem("nexmart-token");
+
+                if (!token) {
+                    throw new Error("You must log in to view your orders.");
+                }
+
                 const response = await getBackendOrderItems(orderId, token);
-                
+
+                const items = Array.isArray(response) ? response : response?.items ?? response?.data?.items ?? [];
+
+                if (!Array.isArray(items)) {
+                    throw new Error("Invalid order items response.");
+                }
+
                 setOrderItemsMap((prev) => ({
                     ...prev,
-                    [orderId]: response.items || [],
+                    [orderId]: items,
                 }));
             } catch (error) {
                 console.error("Failed to fetch order items:", error);
             } finally {
-                setItemsLoadingMap((prev) => ({ ...prev, [orderId]: false }));
+                setItemsLoadingMap((prev) => ({
+                    ...prev,
+                    [orderId]: false,
+                }));
             }
         }
     };
 
     const goToPayment = (orderId) => {
+        if (!orderId) return;
+
         setCurrentOrderId(orderId);
         router.push("/checkout?mode=pay");
     };
@@ -72,29 +91,38 @@ export default function OrderDashboardData() {
     };
 
     const filteredOrders = orders.filter((order) => {
-        if (activeTab === "all") return true;
-        if (activeTab === "processing") return order.paymentStatus === "pending";
-        if (activeTab === "delivered") return order.paymentStatus === "paid";
-        if (activeTab === "returned") return order.paymentStatus === "failed";
+        if (activeTab === "all") {
+            return true;
+        }
+
+        if (activeTab === "processing") {
+            return (["pending", "onHold", "shipped"].includes(order.orderStatus) || order.paymentStatus === "pending");
+        }
+
+        if (activeTab === "delivered") {
+            return order.orderStatus === "delivered";
+        }
+
+        if (activeTab === "returned") {
+            return order.paymentStatus === "failed";
+        }
+
         return true;
     });
 
     const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PER_PAGE));
     const safePage = Math.min(currentPage, totalPages);
-
-    const paginatedOrders = filteredOrders.slice(
-        (safePage - 1) * ORDERS_PER_PAGE,
-        safePage * ORDERS_PER_PAGE
-    );
+    const paginatedOrders = filteredOrders.slice((safePage - 1) * ORDERS_PER_PAGE, safePage * ORDERS_PER_PAGE);
 
     if (ordersLoading || loading) {
         return (
             <div className="bg-white dark:bg-[#18221f] border border-[var(--color-border)] dark:border-[#22332e] rounded-2xl overflow-hidden animate-pulse">
                 <div className="px-6 py-[22px] flex items-center justify-between border-b border-[var(--color-divider)] dark:border-[#22332e] flex-wrap gap-[10px]">
-                    <div className="h-[27px] w-20 bg-gray-200 dark:bg-[#22332e] rounded-md"></div>
+                    <div className="h-[27px] w-20 bg-gray-200 dark:bg-[#22332e] rounded-md" />
+
                     <div className="flex gap-[7px] flex-wrap">
                         {orderTabs.map((_, index) => (
-                            <div key={index} className="h-[33.5px] w-[78px] bg-gray-200 dark:bg-[#22332e] rounded-full"></div>
+                            <div key={index} className="h-[33.5px] w-[78px] bg-gray-200 dark:bg-[#22332e] rounded-full" />
                         ))}
                     </div>
                 </div>
@@ -103,24 +131,36 @@ export default function OrderDashboardData() {
     }
 
     if (!user) {
-        return <p className="py-8 text-center text-gray-500">{t("loginRequired")}</p>;
+        return (
+            <p className="py-8 text-center text-gray-500">
+                {t("loginRequired")}
+            </p>
+        );
     }
 
     if (orders.length === 0) {
-        return <p className="py-8 text-center text-gray-500">{t("noOrders")}</p>;
+        return (
+            <p className="py-8 text-center text-gray-500">
+                {t("noOrders")}
+            </p>
+        );
     }
 
     return (
         <>
             <section className="grid w-full grid-cols-[minmax(0,1fr)] overflow-hidden rounded-2xl border border-[var(--color-border)] dark:border-[#22332e] bg-white dark:bg-[#18221f]">
                 <div className="px-6 py-[22px] flex items-center justify-between border-b border-[var(--color-divider)] dark:border-[#22332e] flex-wrap gap-[10px]">
-                    <div className="font-bold text-lg dark:text-gray-100">{t("title")}</div>
+                    <div className="font-bold text-lg dark:text-gray-100">
+                        {t("title")}
+                    </div>
+
                     <div className="flex gap-[7px] flex-wrap">
-                        {orderTabs.map((ele, index) => {
+                        {orderTabs.map((ele) => {
                             const isActive = activeTab === ele.id;
+
                             return (
                                 <button
-                                    key={index}
+                                    key={ele.id}
                                     type="button"
                                     className={`rounded-full px-[15px] py-[6px] text-[13px] cursor-pointer border transition duration-200 ${
                                         isActive
@@ -137,7 +177,7 @@ export default function OrderDashboardData() {
                 </div>
 
                 <div className="min-w-0 overflow-x-auto scrollbar-thin">
-                    <div className={`${orderTableMinWidth} w-full`}>                    
+                    <div className={`${orderTableMinWidth} w-full`}>
                         <div className={`grid ${orderGridCols} px-6 py-[13px] bg-[#FAF9F4] dark:bg-[#121a17] text-[12.5px] font-bold uppercase tracking-[0.08em] text-[var(--color-muted)] dark:text-gray-400 border-b border-[var(--color-divider)] dark:border-[#22332e]`}>
                             <div>{t("table.orderNumber")}</div>
                             <div>{t("table.date")}</div>
@@ -153,19 +193,25 @@ export default function OrderDashboardData() {
                                     const isPending = order.paymentStatus === "pending";
                                     const isFailed = order.paymentStatus === "failed";
                                     const isPaid = order.paymentStatus === "paid";
-                                    const isExpanded = expandedOrders[order._id];
+                                    const isExpanded = !!expandedOrders[order._id];
                                     const items = orderItemsMap[order._id] || [];
-                                    const isLoadingItems = itemsLoadingMap[order._id];
+                                    const isLoadingItems = !!itemsLoadingMap[order._id];
 
                                     return (
                                         <div key={order._id} className="border-b border-[var(--color-divider)] dark:border-[#22332e] pb-3">
                                             <div className={`grid ${orderGridCols} items-center py-4`}>
                                                 <p className="font-semibold text-[#5B3A21] dark:text-[#F5EBE6]">
-                                                    NX-{order._id.slice(0, 8)}
+                                                    NX-{String(order._id).slice(0, 8)}
                                                 </p>
-                                                
-                                                <OrderSummaryRow goToPayment={goToPayment} isPaid={isPaid} isFailed={isFailed} isPending={isPending} order={order} />
-                                                
+
+                                                <OrderSummaryRow
+                                                    goToPayment={goToPayment}
+                                                    isPaid={isPaid}
+                                                    isFailed={isFailed}
+                                                    isPending={isPending}
+                                                    order={order}
+                                                />
+
                                                 <div className="text-start md:text-end">
                                                     {isPaid ? (
                                                         <button
@@ -174,7 +220,8 @@ export default function OrderDashboardData() {
                                                             className="text-[13.5px] text-[var(--color-green-dark)] dark:text-[var(--color-gold)] font-semibold cursor-pointer hover:opacity-70 transition"
                                                         >
                                                             {t("details")}
-                                                            <span className={locale === "ar" ? "mr-1 inline-block" : "ml-1 inline-block rotate-180"}>
+
+                                                            <span className={ locale === "ar" ? "mr-1 inline-block" : "ml-1 inline-block rotate-180" }>
                                                                 ←
                                                             </span>
                                                         </button>
@@ -185,7 +232,8 @@ export default function OrderDashboardData() {
                                                             className="text-[13.5px] text-[var(--color-green-dark)] dark:text-[var(--color-gold)] font-semibold cursor-pointer hover:opacity-70 transition"
                                                         >
                                                             {t("completePayment")}
-                                                            <span className={locale === "ar" ? "mr-1 inline-block" : "ml-1 inline-block rotate-180"}>
+
+                                                            <span className={ locale === "ar" ? "mr-1 inline-block" : "ml-1 inline-block rotate-180" }>
                                                                 ←
                                                             </span>
                                                         </button>
@@ -200,16 +248,23 @@ export default function OrderDashboardData() {
                                                             <Loader2 className="animate-spin text-[var(--color-green-dark)] dark:text-[var(--color-gold)]" size={20} />
                                                         </div>
                                                     ) : items.length === 0 ? (
-                                                        <p className="text-sm text-center text-gray-500">لا توجد منتجات في هذا الطلب.</p>
+                                                        <p className="text-sm text-center text-gray-500">
+                                                            لا توجد منتجات في هذا الطلب.
+                                                        </p>
                                                     ) : (
                                                         <div className="flex flex-col gap-3">
                                                             {items.map((item) => (
                                                                 <div key={item._id} className="flex max-[480px]:flex-col min-[480px]:items-center justify-between gap-2 text-sm">
                                                                     <span className="text-[var(--color-muted)] dark:text-gray-300">
-                                                                        {item.productTitle?.[locale]} × {item.quantity}
+                                                                        {item.productTitle?.[locale] || item.productTitle?.en || item.productTitle?.ar || "—"}{" "} × {item.quantity}
                                                                     </span>
-                                                                    <span className={`font-semibold text-[var(--color-green-dark)] dark:text-[var(--color-gold)] ${locale === "ar" ? "mr-2" : "ml-2"}`}>
-                                                                        {item.subtotal.toFixed(2)} {t("currency") || "ر.س"}
+
+                                                                    <span
+                                                                        className={`font-semibold text-[var(--color-green-dark)] dark:text-[var(--color-gold)] ${
+                                                                            locale === "ar" ? "mr-2" : "ml-2"
+                                                                        }`}
+                                                                    >
+                                                                        {Number(item.subtotal || 0).toFixed(2)}{" "} {t("currency") || "ر.س"}
                                                                     </span>
                                                                 </div>
                                                             ))}
@@ -227,20 +282,22 @@ export default function OrderDashboardData() {
 
                 {totalPages > 1 && (
                     <div className="flex items-center justify-center gap-4 py-4 border-t border-[var(--color-divider)] dark:border-[#22332e]">
-                        <OrderDashboardButton 
-                            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                        <OrderDashboardButton
+                            onClick={() => setCurrentPage((page) =>Math.max(page - 1, 1))}
                             disabled={safePage === 1}
                             label={t("previousPage")}
-                            icon={locale === "ar" ? <ChevronRight /> : <ChevronLeft />} 
+                            icon={ locale === "ar" ? <ChevronRight /> : <ChevronLeft /> }
                         />
+
                         <span className="text-sm text-gray-500 dark:text-zinc-400">
                             {safePage} / {totalPages}
                         </span>
-                        <OrderDashboardButton 
-                            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+
+                        <OrderDashboardButton
+                            onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}
                             disabled={safePage === totalPages}
                             label={t("nextPage")}
-                            icon={locale === "ar" ? <ChevronLeft /> : <ChevronRight />} 
+                            icon={ locale === "ar" ? <ChevronLeft /> : <ChevronRight /> }
                         />
                     </div>
                 )}

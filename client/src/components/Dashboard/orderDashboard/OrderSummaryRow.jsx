@@ -1,77 +1,100 @@
+"use client";
 import { useLocale, useTranslations } from "next-intl";
 import { OrderActionButtons } from "@/index";
 
-export default function OrderSummaryRow({isPaid, isPending, isFailed, order, goToPayment}) {
+export default function OrderSummaryRow({ isPaid, isPending, isFailed, order, goToPayment }) {
     const t = useTranslations("profile.orders");
     const locale = useLocale();
 
-  return (
-    <>
-        <div className="text-[var(--color-muted)] dark:text-gray-400">
-            {new Date(order.createdAt).toLocaleDateString(
-                locale === "ar" ? "ar" : "en-US"
-            )}
-        </div>
-        <div>
-            {isPaid && (
-                <span className="inline-block text-[12.5px] rounded-lg px-[11px] py-[5px] bg-[#E7F0EC] text-[var(--color-green-dark)] dark:bg-[#16382e] dark:text-[#A7D0BF]">
-                    {t("tabs.delivered")}
+    const orderStatus = order.orderStatus;
+
+    let statusLabel = t("tabs.processing");
+
+    if (orderStatus === "delivered") {
+        statusLabel = t("tabs.delivered");
+    } else if (order.paymentStatus === "failed") {
+        statusLabel = t("tabs.returned");
+    } else if (order.paymentStatus === "pending") {
+        statusLabel = t("tabs.processing");
+    }
+
+    return (
+        <>
+            <div className="text-[var(--color-muted)] dark:text-gray-400">
+                {new Date(order.createdAt).toLocaleDateString(locale === "ar" ? "ar" : "en-US")}
+            </div>
+
+            <div>
+                {isPaid && (
+                    <span
+                        className={`inline-block text-[12.5px] rounded-lg px-[11px] py-[5px] ${
+                            orderStatus === "delivered"
+                                ? "bg-[#E7F0EC] text-[var(--color-green-dark)] dark:bg-[#16382e] dark:text-[#A7D0BF]"
+                                : "bg-[#EEF2FA] text-[#4B638F] dark:bg-[#1D293D] dark:text-[#AFC4E8]"
+                        }`}
+                    >
+                        {statusLabel}
+                    </span>
+                )}
+
+                {isPending && (
+                    <button
+                        type="button"
+                        onClick={() => goToPayment(order._id)}
+                        className="
+                            inline-block
+                            text-[12.5px]
+                            rounded-lg
+                            px-[11px]
+                            py-[5px]
+                            bg-[#EEF2FA]
+                            text-[#4B638F]
+                            dark:bg-[#1D293D]
+                            dark:text-[#AFC4E8]
+                            cursor-pointer
+                            hover:opacity-80
+                            transition
+                        "
+                    >
+                        {t("tabs.processing")}
+                    </button>
+                )}
+
+                {isFailed && (
+                    <button
+                        type="button"
+                        onClick={() => goToPayment(order._id)}
+                        className="
+                            inline-block
+                            text-[12.5px]
+                            rounded-lg
+                            px-[11px]
+                            py-[5px]
+                            bg-[#FDECEA]
+                            text-[#C85C4C]
+                            dark:bg-[#3A211E]
+                            dark:text-[#F09A8C]
+                            cursor-pointer
+                            hover:opacity-80
+                            transition
+                        "
+                    >
+                        {t("tabs.returned")}
+                    </button>
+                )}
+            </div>
+
+            <div className="font-bold text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">
+                {Number(order.totalPrice || 0).toFixed(2)}
+
+                <span className={`text-xs ${ locale === "ar" ? "mr-2" : "ml-2" }`}>
+                    ر.س
                 </span>
-            )}
+            </div>
 
-            {isPending && (
-                <button
-                    type="button"
-                    onClick={() => goToPayment(order.id)}
-                    className="
-                        inline-block
-                        text-[12.5px]
-                        rounded-lg
-                        px-[11px]
-                        py-[5px]
-                        bg-[#EEF2FA]
-                        text-[#4B638F]
-                        dark:bg-[#1D293D]
-                        dark:text-[#AFC4E8]
-                        cursor-pointer
-                        hover:opacity-80
-                        transition
-                    "
-                >
-                    {t("tabs.processing")}
-                </button>
-            )}
-
-            {isFailed && (
-                <button
-                    type="button"
-                    onClick={() => goToPayment(order._id)}
-                    className="
-                        inline-block
-                        text-[12.5px]
-                        rounded-lg
-                        px-[11px]
-                        py-[5px]
-                        bg-[#FDECEA]
-                        text-[#C85C4C]
-                        dark:bg-[#3A211E]
-                        dark:text-[#F09A8C]
-                        cursor-pointer
-                        hover:opacity-80
-                        transition
-                    "
-                >
-                    {t("tabs.returned")}
-                </button>
-            )}
-        </div>
-        <div className="font-bold text-[var(--color-green-dark)] dark:text-[var(--color-gold)]">
-            {order.totalPrice.toFixed(2)} 
-            <span className={`text-xs ${locale === "ar" ? "mr-2" : "ml-2"}`}>ر.س</span>
-        </div>
-        <div>
-            <OrderActionButtons order={order} />
-        </div>
-    </>
-  )
+            <div>
+                <OrderActionButtons order={order} />
+            </div>
+        </>
+    );
 }

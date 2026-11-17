@@ -43,7 +43,7 @@ const rejectShippingOrderController = asyncHandler(
 
 const shipOrderController = asyncHandler(
   async (req, res) => {
-    const order = await shipOrderService(req.currentUser, req.params.orderId);
+    const order = await shipOrderService(req.currentUser, req.params.orderId, req.body);
 
     res.status(200).json({
       status: SUCCESS,

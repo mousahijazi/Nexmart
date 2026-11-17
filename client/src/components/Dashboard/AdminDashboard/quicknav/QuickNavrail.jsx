@@ -10,7 +10,7 @@ export default function QuickNavRail() {
   const { activeSection, setActiveSection } = useAdminContext();
 
   return (
-    <aside className="sticky top-32 flex w-full shrink-0 flex-col gap-4 lg:w-56 self-start">
+    <aside className="lg:sticky lg:top-32 flex w-full shrink-0 flex-col gap-4 lg:w-56 self-start">
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
         <div className="flex items-center justify-between px-1.5 pb-2">
           <span className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted-2)]">

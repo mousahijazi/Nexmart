@@ -485,7 +485,7 @@
                 "title": "Final Step",
                 "secondTitle": "Payment Details",
                 "Desc": "Enter your card information to complete the purchase.",
-                "payButton": "Pay ${total}",
+                "payButton": "Pay {total} SAR",
                 "payingButton": "Processing...",
                 "card": {
                     "nameLabel": "Cardholder Name",
@@ -1225,7 +1225,9 @@
                 "confirmed": "Confirmed Orders",
                 "confirmedNote": "Confirmed and awaiting fulfillment",
                 "paid": "Paid Orders",
-                "paidNote": "Orders with paid payment status"
+                "paidNote": "Orders with paid payment status",
+                "onHold": "On Hold",
+                "onHoldNote": "Paid orders awaiting shipping decision"
             },
             "filters": {
                 "searchPlaceholder": "Search order ID, customer, or phone...",
@@ -1241,6 +1243,7 @@
                 "order": {
                     "pending": "Pending",
                     "confirmed": "Confirmed",
+                    "onHold": "On Hold",
                     "shipped": "Shipped",
                     "delivered": "Delivered",
                     "cancelled": "Cancelled"
@@ -1250,6 +1253,11 @@
                     "paid": "Paid",
                     "failed": "Failed",
                     "refunded": "Refunded"
+                },
+                "shippingDecision": {
+                    "pending": "Pending review",
+                    "approved": "Approved",
+                    "rejected": "Rejected"
                 }
             },
             "table": {
@@ -1261,6 +1269,7 @@
                 "total": "Total",
                 "payment": "Payment",
                 "orderStatus": "Order Status",
+                "shippingDecision": "Shipping decision",
                 "actions": "Actions",
                 "empty": "No orders found.",
                 "showing": "Showing {start}–{end} of {total} orders"
@@ -1282,6 +1291,7 @@
                 "customerContact": "Customer & Contact",
                 "shippingAddress": "Shipping Address",
                 "paymentOrderStatus": "Payment & Order Status",
+                "shippingDecision": "Shipping decision",
                 "orderItems": "Order Items ({count})",
                 "loadingItems": "Loading order items...",
                 "noItems": "No order items found.",
@@ -1295,6 +1305,29 @@
                 "shipping": "Shipping",
                 "discount": "Discount",
                 "total": "Total"
+            },
+            "onHold": {
+                "openDetails": "Open order details",
+                "reviewOrder": "Review order",
+                "title": "Review order",
+                "close": "Close",
+                "orderInformation": "Order information",
+                "orderId": "Order ID",
+                "createdAt": "Order date",
+                "paymentId": "Payment ID",
+                "customerInformation": "Customer and shipping information",
+                "customerName": "Customer name",
+                "phone": "Phone number",
+                "shippingAddress": "Shipping address",
+                "products": "Order products",
+                "decisionTitle": "Make an order decision",
+                "decisionDescription": "Review the order details and products, then approve or reject the order with a reason.",
+                "reasonLabel": "Decision reason",
+                "reasonPlaceholder": "Enter the reason for approving or rejecting this order...",
+                "approve": "Approve order",
+                "reject": "Reject order",
+                "confirmDecision": "Confirm decision",
+                "processing": "Processing decision..."
             }
         }
     }

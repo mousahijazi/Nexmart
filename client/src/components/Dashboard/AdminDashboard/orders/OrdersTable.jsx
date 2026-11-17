@@ -46,6 +46,7 @@ export default function OrdersTable({ orders, page, limit = 10, total, totalPage
             <span>{t("table.total")}</span>
             <span>{t("table.payment")}</span>
             <span>{t("table.orderStatus")}</span>
+            <span>{t("table.shippingDecision")}</span>
             <span>{t("table.actions")}</span>
           </div>
 

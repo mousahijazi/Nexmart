@@ -3,14 +3,13 @@ import { useEffect, useState } from "react";
 import { getAllUsers } from "@/helper/fetchApi";
 import { useUserContext } from "../UserProvider";
 
-export default function useAdminUsers() {
+export default function useAdminUsers({ enabled = false } = {}) {
   const [users, setUsers] = useState([]);
-  const [usersLoading, setUsersLoading] = useState(true);
-
+  const [usersLoading, setUsersLoading] = useState(false);
   const { user, loading } = useUserContext();
 
   useEffect(() => {
-    if (loading) return;
+    if (!enabled || loading) return;
 
     if (!user || user.role !== "ADMIN") {
       setUsers([]);
@@ -27,18 +26,18 @@ export default function useAdminUsers() {
         const token = localStorage.getItem("nexmart-token");
 
         if (!token) {
-          setUsers([]);
+          if (!cancelled) setUsers([]);
           return;
         }
 
         const result = await getAllUsers(token);
 
         if (!cancelled) {
-          if (result.status === "success" && Array.isArray(result.users)) {
-            setUsers(result.users);
-          } else {
-            setUsers([]);
-          }
+          setUsers(
+            result.status === "success" && Array.isArray(result.users)
+              ? result.users
+              : []
+          );
         }
       } catch (error) {
         if (!cancelled) {
@@ -46,9 +45,7 @@ export default function useAdminUsers() {
           setUsers([]);
         }
       } finally {
-        if (!cancelled) {
-          setUsersLoading(false);
-        }
+        if (!cancelled) setUsersLoading(false);
       }
     }
 
@@ -57,7 +54,7 @@ export default function useAdminUsers() {
     return () => {
       cancelled = true;
     };
-  }, [user, loading]);
+  }, [enabled, user, loading]);
 
   return {
     users,

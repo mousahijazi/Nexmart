@@ -14,31 +14,51 @@ const AdminContext = createContext();
 export default function AdminProvider({ children }) {
   const [activeSection, setActiveSection] = useState("dashboard");
   const { showAlert } = useAlertContext();
+  const isDashboard = activeSection === "dashboard";
 
-  const productsAdmin = useAdminProducts({ showAlert, enabled: activeSection === "products" || activeSection === "dashboard" });
-  const categoriesAdmin = useAdminCategories({ showAlert, enabled: activeSection === "categories" || activeSection === "products" || activeSection === "dashboard" });
-  const brandsAdmin = useAdminBrands({ showAlert, enabled: activeSection === "brand" || activeSection === "products" || activeSection === "dashboard" });
-   
-  const offersAdmin = useAdminOffers({ showAlert, enabled: activeSection === "offers" });
-  const seasonsAdmin = useAdminSeasons({ showAlert, enabled: activeSection === "seasons" || activeSection === "offers" });
+  const productsAdmin = useAdminProducts({
+    showAlert,
+    enabled: activeSection === "products" || isDashboard,
+  });
 
-  const ordersAdmin = useAdminOrders({ showAlert, enabled: activeSection === "all-orders" });
-  
-  const usersAdmin = useAdminUsers();
+  const categoriesAdmin = useAdminCategories({
+    showAlert,
+    enabled: activeSection === "categories" || activeSection === "products" || isDashboard,
+  });
+
+  const brandsAdmin = useAdminBrands({
+    showAlert,
+    enabled: activeSection === "brand" || activeSection === "products" || isDashboard,
+  });
+
+  const offersAdmin = useAdminOffers({
+    showAlert,
+    enabled: activeSection === "offers",
+  });
+
+  const seasonsAdmin = useAdminSeasons({
+    showAlert,
+    enabled: activeSection === "seasons" || activeSection === "offers",
+  });
+
+  const ordersAdmin = useAdminOrders({
+    showAlert,
+    enabled: activeSection === "all-orders" || isDashboard,
+  });
+
+  const usersAdmin = useAdminUsers({
+    enabled: activeSection === "customers" || isDashboard,
+  });
 
   const value = {
     activeSection,
     setActiveSection,
-
     ...productsAdmin,
     ...categoriesAdmin,
     ...brandsAdmin,
-
     ...usersAdmin,
-
     ...offersAdmin,
     ...seasonsAdmin,
-
     ...ordersAdmin,
   };
 

@@ -44,10 +44,6 @@ export default function Coupon() {
                 <p role="alert" className="text-xs text-red-500 mb-2">{checkoutPricingError}</p>
             )}
 
-            {/* {!checkoutPricingLoading && serverPricing?.coupon && (
-                <p className="text-xs text-green-600 mb-2">Coupon applied successfully.</p>
-            )} */}
-
             {errors.coupon && (
                 <p className="text-red-500 text-sm mb-3">
                     {errors.coupon.message}
@@ -56,8 +52,7 @@ export default function Coupon() {
 
             {coupon && discountAmount > 0 && (
                 <p className="text-[var(--color-green)] dark:text-[var(--color-gold)] text-sm">
-                    {/* تم تطبيق الكوبون: {coupon.toUpperCase()} */}
-                    لم يتم عمل هذه الميزة بعد
+                    تم تطبيق الكوبون: {coupon.toUpperCase()}
                 </p>
             )}
         </>

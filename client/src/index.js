@@ -223,6 +223,14 @@ export {default as OrderShippingForm} from "./components/Dashboard/orderDashboar
 export {default as OrderItemsForm} from "./components/Dashboard/orderDashboard/orderModal/OrderItemsForm";
 export {default as OrderModalFooter} from "./components/Dashboard/orderDashboard/orderModal/OrderModalFooter";
 
+export {default as AdminOrderButton} from "./components/Dashboard/AdminDashboard/shared/AdminOrderButton";
+export {default as AdminOnHoldModal} from "./components/Dashboard/AdminDashboard/shared/adminOnHoldModal/AdminOnHoldModal";
+export {default as OnHoldOrderInfo} from "./components/Dashboard/AdminDashboard/shared/adminOnHoldModal/OnHoldOrderInfo";
+export {default as OnHoldCustomerInfo} from "./components/Dashboard/AdminDashboard/shared/adminOnHoldModal/OnHoldCustomerInfo";
+export {default as OnHoldProducts} from "./components/Dashboard/AdminDashboard/shared/adminOnHoldModal/OnHoldProducts";
+export {default as OnHoldPriceSummary} from "./components/Dashboard/AdminDashboard/shared/adminOnHoldModal/OnHoldPriceSummary";
+export {default as OnHoldDecisionForm} from "./components/Dashboard/AdminDashboard/shared/adminOnHoldModal/OnHoldDecisionForm";
+
 // checkout
 export {default as CheckoutForm} from "./components/Checkout/CheckoutForm";
 export {default as CheckoutData} from "./components/Checkout/CheckoutData";

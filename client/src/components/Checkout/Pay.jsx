@@ -18,15 +18,11 @@ export default function Pay() {
 
     const [order, setOrder] = useState(null);    
     const [loadingPay, setLoadingPay] = useState(true);
-    const hasFinishedRef = useRef(false);
 
-    const paymentId = searchParams.get("id");
+    const paymentId = searchParams.get("id") || searchParams.get("payment_id");
     const orderIdFromUrl = searchParams.get("order_id");
 
-    const callbackProcessedRef = useRef(false);
-
     useEffect(() => {
-        if (hasFinishedRef.current) return;
         if (loading) return;
 
         if (!user) {
@@ -36,7 +32,7 @@ export default function Pay() {
             return;
         }
 
-        const targetOrderId = currentOrderId || orderIdFromUrl;
+        const targetOrderId = orderIdFromUrl || currentOrderId;
 
         if (!targetOrderId) {
             setLoadingPay(false);
@@ -52,6 +48,7 @@ export default function Pay() {
 
             try {
                 const token = localStorage.getItem("nexmart-token");
+
                 if (!token) {
                     throw new Error("Authentication token not found");
                 }
@@ -61,69 +58,60 @@ export default function Pay() {
 
                 const fullOrder = {
                     ...(orderData.order || orderData),
-                    items: itemsData.items || itemsData || []
+                    items: itemsData.items || itemsData || [],
                 };
 
-                if (!fullOrder) {
-                    showAlert("Order not found.", "danger");
-                    router.push("/cart");
-                    return;
-                }
-
                 if (cancelled) return;
-                setOrder(fullOrder);
-                
-                if (paymentId && !callbackProcessedRef.current) {
-                    callbackProcessedRef.current = true;
 
+                setOrder(fullOrder);
+
+                if (paymentId) {
                     const verification = await verifyBackendPayment(paymentId, targetOrderId, token);
 
                     if (cancelled) return;
 
                     if (verification.verified === true) {
-                        setOrder(verification.order || {
+                        const verifiedOrder = verification.order || {
                             ...fullOrder,
                             paymentStatus: "paid",
-                            orderStatus: "confirmed",
+                            orderStatus: verification.orderStatus || "onHold",
                             paymentId,
-                        });
+                        };
+
+                        setOrder(verifiedOrder);
 
                         setOrders((previousOrders) =>
                             (previousOrders || []).map((item) =>
                                 String(item._id || item.id) === String(targetOrderId)
-                                    ? {
-                                        ...item,
-                                        paymentStatus: "paid",
-                                        orderStatus: "confirmed",
-                                        paymentId,
-                                      }
+                                    ? { ...item, ...verifiedOrder }
                                     : item
                             )
                         );
 
                         clearCheckout();
 
-                        showAlert("Payment successful! Your order is confirmed.", "success");
+                        showAlert("Payment successful! Your order is awaiting administrative review.", "success");
 
-                        router.push("/user");
+                        router.replace("/user");
                         return;
                     }
 
-                    const refreshedOrder = {
-                        ...(orderData.order || orderData),
-                        items: itemsData.items || itemsData || []
-                    };
+                    const refreshedOrderData = await getBackendOrderById(targetOrderId, token);
 
-                    if (!cancelled) {
-                        setOrder(refreshedOrder);
-                        showAlert("Payment was not completed. You can try again.", "danger");
-                    }
+                    if (cancelled) return;
+
+                    setOrder({
+                        ...(refreshedOrderData.order || refreshedOrderData),
+                        items: itemsData.items || itemsData || [],
+                    });
+
+                    showAlert(verification.paymentStatus === "failed" ? "Payment failed. You can try again." : "Payment has not been confirmed yet. Please check again.", "danger");
                 }
             } catch (error) {
                 console.error("Pay page error:", error);
 
                 if (!cancelled) {
-                    showAlert("Could not load or verify the order.", "danger");
+                    showAlert(error.message || "Could not load or verify the order.", "danger");
                 }
             } finally {
                 if (!cancelled) {
@@ -137,7 +125,7 @@ export default function Pay() {
         return () => {
             cancelled = true;
         };
-    }, [loading, user, currentOrderId, paymentId, orderIdFromUrl, setOrders, loading, clearCheckout, showAlert, router]);
+    }, [loading, user, currentOrderId, paymentId, orderIdFromUrl, setOrders, clearCheckout, showAlert, router,]);
 
   return (
     <>

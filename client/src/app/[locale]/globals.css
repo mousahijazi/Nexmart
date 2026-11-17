@@ -37,6 +37,7 @@
   --color-soft-2: #5C6660;
 
   --color-red: #B0472F;
+  --color-red-light: #F6E5DF;
 }
 
 .dark {
@@ -66,6 +67,7 @@
   --color-soft-2: #A9B5AF;
 
   --color-red: #D05A3D;
+  --color-red-light: #2E1915;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

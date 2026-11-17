@@ -41,15 +41,14 @@ const parsePagination = (query = {}) => {
 
 const getAdminOrdersService = async (query = {}) => {
   const { page, limit } = parsePagination(query);
-
-  const filter = {};
+  const conditions = [];
 
   if (query.orderStatus) {
     if (!ORDER_STATUSES.includes(query.orderStatus)) {
       throw AppError.create("Invalid order status", 400, FAIL);
     }
 
-    filter.orderStatus = query.orderStatus;
+    conditions.push({ orderStatus: query.orderStatus });
   }
 
   if (query.paymentStatus) {
@@ -57,7 +56,7 @@ const getAdminOrdersService = async (query = {}) => {
       throw AppError.create("Invalid payment status", 400, FAIL);
     }
 
-    filter.paymentStatus = query.paymentStatus;
+    conditions.push({ paymentStatus: query.paymentStatus });
   }
 
   if (query.shippingDecision) {
@@ -65,10 +64,28 @@ const getAdminOrdersService = async (query = {}) => {
       throw AppError.create("Invalid shipping decision", 400, FAIL);
     }
 
-    filter.shippingDecision = query.shippingDecision;
+    conditions.push({ shippingDecision: query.shippingDecision });
+
+    if (["pending", "rejected"].includes(query.shippingDecision)) {
+      conditions.push({
+        orderStatus: "onHold",
+        paymentStatus: "paid",
+      });
+    }
+
+    if (query.shippingDecision === "approved") {
+      conditions.push({
+        orderStatus: { $in: ["shipped", "delivered"] },
+        paymentStatus: "paid",
+      });
+    }
   }
 
   const search = typeof query.search === "string" ? query.search.trim() : "";
+
+  if (search.length > 100) {
+    throw AppError.create("Search query cannot exceed 100 characters", 400, FAIL);
+  }
 
   if (search) {
     const searchRegex = new RegExp(escapeRegex(search), "i");
@@ -84,8 +101,10 @@ const getAdminOrdersService = async (query = {}) => {
       searchConditions.push({ _id: new mongoose.Types.ObjectId(search) });
     }
 
-    filter.$or = searchConditions;
+    conditions.push({ $or: searchConditions });
   }
+
+  const filter = conditions.length ? { $and: conditions } : {};
 
   const [orders, total] = await Promise.all([
     findAllOrders({ filter, page, limit }),
@@ -119,9 +138,20 @@ const getAdminOrderStats = async () => {
     countOrdersByStatus("paymentStatus", "paid"),
     countOrdersByStatus("paymentStatus", "failed"),
     countOrdersByStatus("paymentStatus", "refunded"),
-    countOrdersByStatus("shippingDecision", "pending"),
-    countOrdersByStatus("shippingDecision", "rejected"),
-    countOrdersByStatus("shippingDecision", "approved"),
+    countAllOrders({
+      orderStatus: "onHold",
+      paymentStatus: "paid",
+      shippingDecision: "pending",
+    }),
+    countAllOrders({
+      orderStatus: "onHold",
+      paymentStatus: "paid",
+      shippingDecision: "rejected",
+    }),
+    countAllOrders({
+      shippingDecision: "approved",
+      orderStatus: { $in: ["shipped", "delivered"] },
+    }),
   ]);
 
   return {
@@ -231,9 +261,19 @@ const rejectShippingOrderService = async (currentUser, orderId, body = {}) => {
   throw AppError.create("Only paid orders awaiting shipment can be rejected", 409, FAIL);
 };
 
-const shipOrderService = async (currentUser, orderId) => {
+const shipOrderService = async (currentUser, orderId, body = {}) => {
   if (!mongoose.isValidObjectId(orderId)) {
     throw AppError.create("Invalid order ID", 400, FAIL);
+  }
+
+  const reason = typeof body.reason === "string" ? body.reason.trim() : "";
+
+  if (!reason) {
+    throw AppError.create("An approval reason is required", 400, FAIL);
+  }
+
+  if (reason.length > 1000) {
+    throw AppError.create("Approval reason cannot exceed 1000 characters", 400, FAIL);
   }
 
   const adminId = getAuthenticatedUserId(currentUser);
@@ -250,7 +290,7 @@ const shipOrderService = async (currentUser, orderId) => {
       $set: {
         orderStatus: "shipped",
         shippingDecision: "approved",
-        shippingDecisionReason: null,
+        shippingDecisionReason: reason,
         shippingDecisionAt: now,
         shippingDecisionBy: adminId,
         shippedAt: now,
@@ -259,7 +299,7 @@ const shipOrderService = async (currentUser, orderId) => {
       $push: {
         shippingDecisionHistory: {
           decision: "approved",
-          reason: null,
+          reason,
           decidedAt: now,
           decidedBy: adminId,
         },
@@ -272,17 +312,15 @@ const shipOrderService = async (currentUser, orderId) => {
     }
   );
 
-  if (order) {
-    return order;
-  }
+  if (order) return order;
 
   const existingOrder = await findOrderById(orderId);
 
   if (!existingOrder) {
-    throw AppError.create("Order not found", 404, ERROR);
+      throw AppError.create("Order not found", 404, ERROR);
   }
 
-  throw AppError.create("Only paid orders awaiting shipment can be shipped", 409, FAIL);
+  throw AppError.create("Only paid orders awaiting shipment can be approved", 409, FAIL);
 };
 
 const deliverOrderService = async (currentUser, orderId) => {

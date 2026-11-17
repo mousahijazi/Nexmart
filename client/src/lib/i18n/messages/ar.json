@@ -485,7 +485,7 @@
                 "title": "الخطوة الأخيرة",
                 "secondTitle": "تفاصيل الدفع",
                 "Desc": "أدخل بيانات بطاقتك لإتمام عملية الشراء.",
-                "payButton": "ادفع ${total}",
+                "payButton": "ادفع {total} ر.س",
                 "payingButton": "جاري الشراء...",
                 "card": {
                     "nameLabel": "اسم حامل البطاقة",
@@ -1225,7 +1225,9 @@
                 "confirmed": "الطلبات المؤكدة",
                 "confirmedNote": "تم تأكيدها وبانتظار التجهيز",
                 "paid": "الطلبات المدفوعة",
-                "paidNote": "الطلبات التي تم دفع قيمتها"
+                "paidNote": "الطلبات التي تم دفع قيمتها",
+                "onHold": "بانتظار مراجعة الإدارة",
+                "onHoldNote": "طلبات مدفوعة تنتظر قرار الشحن"
             },
             "filters": {
                 "searchPlaceholder": "ابحث برقم الطلب أو اسم العميل أو الهاتف...",
@@ -1241,6 +1243,7 @@
                 "order": {
                     "pending": "معلق",
                     "confirmed": "مؤكد",
+                    "onHold": "بانتظار المراجعة",
                     "shipped": "تم الشحن",
                     "delivered": "تم التسليم",
                     "cancelled": "ملغي"
@@ -1250,6 +1253,11 @@
                     "paid": "مدفوع",
                     "failed": "فشل الدفع",
                     "refunded": "مسترد"
+                },
+                "shippingDecision": {
+                    "pending": "بانتظار المراجعة",
+                    "approved": "مقبول",
+                    "rejected": "غير مقبول"
                 }
             },
             "table": {
@@ -1261,6 +1269,7 @@
                 "total": "الإجمالي",
                 "payment": "الدفع",
                 "orderStatus": "حالة الطلب",
+                "shippingDecision": "قرار الشحن",
                 "actions": "الإجراءات",
                 "empty": "لم يتم العثور على طلبات.",
                 "showing": "عرض {start}–{end} من أصل {total} طلب"
@@ -1282,6 +1291,7 @@
                 "customerContact": "العميل ومعلومات التواصل",
                 "shippingAddress": "عنوان التوصيل",
                 "paymentOrderStatus": "حالة الدفع والطلب",
+                "shippingDecision": "قرار الشحن",
                 "orderItems": "منتجات الطلب ({count})",
                 "loadingItems": "جارٍ تحميل منتجات الطلب...",
                 "noItems": "لا توجد منتجات في هذا الطلب.",
@@ -1295,6 +1305,29 @@
                 "shipping": "الشحن",
                 "discount": "الخصم",
                 "total": "الإجمالي"
+            },
+            "onHold": {
+                "openDetails": "فتح تفاصيل الطلب",
+                "reviewOrder": "مراجعة الطلب",
+                "title": "مراجعة الطلب",
+                "close": "إغلاق",
+                "orderInformation": "معلومات الطلب",
+                "orderId": "رقم الطلب",
+                "createdAt": "تاريخ الطلب",
+                "paymentId": "رقم عملية الدفع",
+                "customerInformation": "معلومات العميل والشحن",
+                "customerName": "اسم العميل",
+                "phone": "رقم الهاتف",
+                "shippingAddress": "عنوان الشحن",
+                "products": "منتجات الطلب",
+                "decisionTitle": "اتخاذ قرار بشأن الطلب",
+                "decisionDescription": "راجع بيانات الطلب ومنتجاته، ثم اختر قبول الطلب أو رفضه مع توضيح السبب.",
+                "reasonLabel": "سبب القرار",
+                "reasonPlaceholder": "اكتب سبب قبول أو رفض الطلب...",
+                "approve": "قبول الطلب",
+                "reject": "رفض الطلب",
+                "confirmDecision": "تأكيد القرار",
+                "processing": "جارٍ تنفيذ القرار..."
             }
         }
     }

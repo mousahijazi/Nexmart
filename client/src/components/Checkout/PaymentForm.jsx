@@ -43,7 +43,7 @@ export default function PaymentForm({ order, loading }) {
 
             // const intent = await createBackendPaymentIntent(order._id, token, locale);
             // const payment = await fulfillMoyasarPayment(intent, data);
-            const payment = await createMoyasarPayment(order, data);
+            const payment = await createMoyasarPayment(order, data, locale);
 
             if (payment.status === "initiated" && payment.source?.transaction_url) {
                 window.location.assign(payment.source.transaction_url);

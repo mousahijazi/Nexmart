@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserContext } from "../../../Context/UserProvider";
 import { useCheckoutContext } from "../../../Context/CheckoutProvider";
 import { useRouter } from "../../../lib/i18n/routing";
@@ -9,8 +9,8 @@ import { useTranslations, useLocale } from "next-intl";
 import { getBackendOrderItems } from "../../../helper/fetchApi";
 
 const ORDERS_PER_PAGE = 5;
-const orderGridCols = "grid-cols-[1fr_0.9fr_0.9fr_0.9fr_1.4fr_1fr]";
-const orderTableMinWidth = "min-w-[1050px]";
+const orderGridCols = "grid-cols-[1fr_0.9fr_0.9fr_1.1fr_0.9fr_1.4fr_1fr]";
+const orderTableMinWidth = "min-w-[1180px]";
 
 export default function OrderDashboardData() {
     const t = useTranslations("profile.orders");
@@ -26,6 +26,16 @@ export default function OrderDashboardData() {
     const [expandedOrders, setExpandedOrders] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState("all");
+
+    const [currentTime, setCurrentTime] = useState(null);
+
+    useEffect(() => {
+        const updateTime = () => setCurrentTime(Date.now());
+        updateTime();
+
+        const intervalId = setInterval(updateTime, 60 * 1000);
+        return () => clearInterval(intervalId);
+    }, []);
 
     const toggleOrder = async (orderId) => {
         const isCurrentlyExpanded = !!expandedOrders[orderId];
@@ -182,6 +192,7 @@ export default function OrderDashboardData() {
                             <div>{t("table.orderNumber")}</div>
                             <div>{t("table.date")}</div>
                             <div>{t("table.status")}</div>
+                            <div>{t("table.timeRemaining")}</div>
                             <div>{t("table.total")}</div>
                             <div className="text-start md:text-end">الإجراءات</div>
                             <div className="text-start md:text-end">{t("details") || "Action"}</div>
@@ -209,6 +220,7 @@ export default function OrderDashboardData() {
                                                     isPaid={isPaid}
                                                     isFailed={isFailed}
                                                     isPending={isPending}
+                                                    currentTime={currentTime}
                                                     order={order}
                                                 />
 

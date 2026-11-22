@@ -7,7 +7,7 @@ import User from "../model/User.js";
 import { userRoles } from "../utils/userRoles.js";
 import connectDB from "../config/db.js";
 import dotenv from "dotenv";
-import generateJWT from "../utils/generateJWT.js";
+import generateJWT from "../utils/tokenAndCookies/generateJWT.js";
 import generateSlug from "../utils/generateSlug.js";
 
 dotenv.config();

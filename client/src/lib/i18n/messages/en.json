@@ -435,7 +435,14 @@
                 "orderNumber": "Order ID",
                 "date": "Date",
                 "status": "Status",
-                "total": "Total"
+                "total": "Total",
+                "timeRemaining": "Time remaining"
+            },
+            "countdown": {
+                "days": "d",
+                "hours": "h",
+                "minutes": "m",
+                "expired": "Time expired"
             }
         }
     },
@@ -578,16 +585,32 @@
                 "fulfillmentSla": "Fulfillment SLA",
                 "activeCartSessions": "Active Cart Sessions"
             },
+            "hero": {
+                "dailyGmvLabel": "Daily GMV",
+                "dailyGmvValue": "SAR 348,920 (+14.8%)",
+                "fulfillmentSlaLabel": "Fulfillment SLA",
+                "fulfillmentSlaValue": "99.4% On-Time",
+                "activeCartsLabel": "Active Cart Sessions",
+                "activeCartsValue": "1,842 Users"
+            },
+            "overview": {
+                "totalOrders": "Total Orders",
+                "totalOrdersTrend": "All registered orders",
+                "pendingOrders": "Pending Orders",
+                "pendingOrdersTrend": "Awaiting payment",
+                "onHoldOrders": "Orders On Hold",
+                "onHoldOrdersTrend": "Awaiting admin review",
+                "totalProducts": "Total Products",
+                "totalProductsTrend": "Products in catalog",
+                "registeredUsers": "Registered Users",
+                "registeredUsersTrend": "Loaded user records"
+            },
             "stats": {
-                "totalRevenue": "Total Platform Revenue",
                 "activeOrders": "Total Active Orders",
-                "registeredAccounts": "Registered Users & Sellers",
                 "catalogSkus": "Catalog & Active SKUs",
                 "pending": "Pending",
-                "activeDatabase": "Active Database",
                 "products": "Products",
-                "lowStock": "Low Stock",
-                "vsLastMonth": "vs. last month"
+                "lowStock": "Low Stock"
             },
             "fallbackTitle": "Dashboard Home"
         },

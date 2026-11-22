@@ -1,55 +1,59 @@
 import { Wallet, Truck, ShoppingBag, Users2, Boxes, Clock3, PauseCircle } from "lucide-react";
 
-export const heroStats = [
-  { icon: Wallet, label: "Daily GMV", value: "SAR 348,920 (+14.8%)" },
-  { icon: Truck, label: "Fulfillment SLA", value: "99.4% On-Time" },
-  { icon: ShoppingBag, label: "Active Cart Sessions", value: "1,842 Users" },
+export const getHeroStats = (t) => [
+  { icon: Wallet, label: t("hero.dailyGmvLabel"), value: t("hero.dailyGmvValue") },
+  { icon: Truck, label: t("hero.fulfillmentSlaLabel"), value: t("hero.fulfillmentSlaValue") },
+  { icon: ShoppingBag, label: t("hero.activeCartsLabel"), value: t("hero.activeCartsValue") },
 ];
 
-export const getOverviewStats = ({ usersCount = 0, productsTotal = 0, ordersStats = {} } = {}) => [
-  {
-    icon: ShoppingBag,
-    label: "Total Orders",
-    value: Number(ordersStats.total ?? 0).toLocaleString("en-US"),
-    trend: {
-      tone: "positive",
-      text: "All registered orders",
+export const getOverviewStats = ({ usersCount = 0, productsTotal = 0, ordersStats = {}, t, locale = "en" } = {}) => {
+  const formatNumber = (num) => Number(num ?? 0).toLocaleString(locale === "ar" ? "ar-EG" : "en-US");
+
+  return [
+    {
+      icon: ShoppingBag,
+      label: t("overview.totalOrders"),
+      value: formatNumber(ordersStats.total),
+      trend: {
+        tone: "positive",
+        text: t("overview.totalOrdersTrend"),
+      },
     },
-  },
-  {
-    icon: Clock3,
-    label: "Pending Orders",
-    value: Number(ordersStats.pending ?? 0).toLocaleString("en-US"),
-    trend: {
-      tone: "warning",
-      text: "Awaiting payment",
+    {
+      icon: Clock3,
+      label: t("overview.pendingOrders"),
+      value: formatNumber(ordersStats.pending),
+      trend: {
+        tone: "warning",
+        text: t("overview.pendingOrdersTrend"),
+      },
     },
-  },
-  {
-    icon: PauseCircle,
-    label: "Orders On Hold",
-    value: Number(ordersStats.onHold ?? 0).toLocaleString("en-US"),
-    trend: {
-      tone: "warning",
-      text: "Awaiting admin review",
+    {
+      icon: PauseCircle,
+      label: t("overview.onHoldOrders"),
+      value: formatNumber(ordersStats.onHold),
+      trend: {
+        tone: "warning",
+        text: t("overview.onHoldOrdersTrend"),
+      },
     },
-  },
-  {
-    icon: Boxes,
-    label: "Total Products",
-    value: Number(productsTotal).toLocaleString("en-US"),
-    trend: {
-      tone: "positive",
-      text: "Products in catalog",
+    {
+      icon: Boxes,
+      label: t("overview.totalProducts"),
+      value: formatNumber(productsTotal),
+      trend: {
+        tone: "positive",
+        text: t("overview.totalProductsTrend"),
+      },
     },
-  },
-  {
-    icon: Users2,
-    label: "Registered Users",
-    value: Number(usersCount).toLocaleString("en-US"),
-    trend: {
-      tone: "positive",
-      text: "Loaded user records",
+    {
+      icon: Users2,
+      label: t("overview.registeredUsers"),
+      value: formatNumber(usersCount),
+      trend: {
+        tone: "positive",
+        text: t("overview.registeredUsersTrend"),
+      },
     },
-  },
-];
+  ];
+};

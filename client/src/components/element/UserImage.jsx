@@ -13,7 +13,7 @@ export default function UserImage() {
           width={35}
           height={35}
           sizes="35px"
-          quality={60}
+          quality={75}
           className="rounded-full aspect-square shrink-0 object-cover bg-gray-400 dark:border dark:border-zinc-300 cursor-pointer"
       />
       {isUploadingImage && (

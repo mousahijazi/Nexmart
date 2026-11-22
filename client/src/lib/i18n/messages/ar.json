@@ -435,7 +435,14 @@
                 "orderNumber": "رقم الطلب",
                 "date": "التاريخ",
                 "status": "الحالة",
-                "total": "الإجمالي"
+                "total": "الإجمالي",
+                "timeRemaining": "الوقت المتبقي"
+            },
+            "countdown": {
+                "days": "يوم",
+                "hours": "س",
+                "minutes": "د",
+                "expired": "انتهت المهلة"
             }
         }
     },
@@ -579,15 +586,31 @@
                 "activeCartSessions": "جلسات سلة التسوق النشطة"
             },
             "stats": {
-                "totalRevenue": "إجمالي إيرادات المنصة",
                 "activeOrders": "إجمالي الطلبات النشطة",
-                "registeredAccounts": "المستخدمون والتجار المسجلون",
                 "catalogSkus": "المنتجات والوحدات النشطة",
                 "pending": "قيد الانتظار",
-                "activeDatabase": "قاعدة البيانات نشطة",
                 "products": "منتجات",
-                "lowStock": "مخزون منخفض",
-                "vsLastMonth": "مقارنة بالشهر الماضي"
+                "lowStock": "مخزون منخفض"
+            },
+            "hero": {
+                "dailyGmvLabel": "إجمالي المبيعات اليومية",
+                "dailyGmvValue": "348,920 ر.س (+14.8%)",
+                "fulfillmentSlaLabel": "التزام التجهيز والتوصيل",
+                "fulfillmentSlaValue": "99.4% في الوقت المحدد",
+                "activeCartsLabel": "جلسات السلة النشطة",
+                "activeCartsValue": "1,842 مستخدم"
+            },
+            "overview": {
+                "totalOrders": "إجمالي الطلبات",
+                "totalOrdersTrend": "جميع الطلبات المسجلة",
+                "pendingOrders": "الطلبات المعلقة",
+                "pendingOrdersTrend": "بانتظار الدفع",
+                "onHoldOrders": "طلبات قيد المراجعة",
+                "onHoldOrdersTrend": "بانتظار مراجعة الإدارة",
+                "totalProducts": "إجمالي المنتجات",
+                "totalProductsTrend": "المنتجات في الكتالوج",
+                "registeredUsers": "المستخدمون المسجلون",
+                "registeredUsersTrend": "سجلات المستخدمين المحمّلة"
             },
             "fallbackTitle": "الصفحة الرئيسية للوحة التحكم"
         },

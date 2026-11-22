@@ -6,6 +6,8 @@ import AppError from "./utils/AppError.js";
 import { FAIL } from "./utils/httpStatusText.js";
 import { fileURLToPath } from "node:url";
 import { API_BASE_PATH } from "./utils/apiEndpoints.js";
+import cookieParser from "cookie-parser";
+import csrfProtection from "./middlewares/csrfProtection.js";
 import path from "node:path";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,8 +15,25 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = (process.env.CLIENT_URLS || "http://localhost:3000")
+  .split(",").map((origin) => origin.trim()).filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Origin not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json());
+app.use(cookieParser());
+app.use(csrfProtection);
 
 setupSwagger(app);
 

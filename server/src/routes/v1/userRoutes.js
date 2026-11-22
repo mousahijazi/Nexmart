@@ -1,10 +1,10 @@
 import express from "express";
-import { getAllUsers, registerUser, loginUser, getCurrentUser, logoutUser, updateUser } from "../../controllers/usersController.js";
+import { getAllUsers, getUserById, registerUser, loginUser, getCurrentUser, logoutUser, updateUser } from "../../controllers/usersController.js";
 import { registerValidator } from "../../validators/createUsersSchema.js";
 import generateSlug from "../../utils/generateSlug.js";
 import validate from "../../middlewares/validate.js";
 import User from "../../model/User.js";
-import {authorizeRoles} from "../../middlewares/role.js";
+import { authorizeRoles } from "../../middlewares/role.js";
 import { authToken } from "../../middlewares/auth.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
 import { uploadUserImage } from "../../middlewares/uploadmiddleware/uploadUserMiddleware.js";
@@ -12,29 +12,24 @@ import { registerRateLimit, loginRateLimit } from "../../middlewares/authRateLim
 
 const router = express.Router();
 
-router.route("/")
-        .get(authToken, authorizeRoles("ADMIN"), getAllUsers);
+router.get("/", authToken, authorizeRoles("ADMIN"), getAllUsers);
 
 router.route("/me")
-        .get(authToken, checkUserRole, getCurrentUser)
-        .patch(authToken, uploadUserImage, validate, updateUser);
+  .get(authToken, checkUserRole, getCurrentUser)
+  .patch(authToken, uploadUserImage, validate, updateUser);
 
-router.route("/register")
-        .post(
-                registerRateLimit,
-                registerValidator, 
-                validate, 
-                generateSlug({
-                        model: User, 
-                        slugSource: (body) => `${body.firstName} ${body.lastName}`
-                }), 
-                registerUser
-        );
+router.post("/register", registerRateLimit, registerValidator, validate,
+  generateSlug({
+    model: User,
+    slugSource: (body) => `${body.firstName} ${body.lastName}`,
+  }),
+  registerUser
+);
 
-router.route("/login")
-        .post(loginRateLimit, validate, loginUser);
+router.post("/login", loginRateLimit, validate, loginUser);
 
-router.route("/logout")
-        .post(authToken, logoutUser);
+router.post("/logout", authToken, logoutUser);
+
+router.get("/:userId", authToken, authorizeRoles("ADMIN"), getUserById);
 
 export default router;

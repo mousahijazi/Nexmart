@@ -1,60 +1,91 @@
-import User from "../model/User.js";
 import bcrypt from "bcrypt";
-import generateJWT from "../utils/generateJWT.js";
+import mongoose from "mongoose";
+import generateJWT from "../utils/tokenAndCookies/generateJWT.js";
+import hashToken from "../utils/tokenAndCookies/hashToken.js";
 import AppError from "../utils/AppError.js";
 import { FAIL } from "../utils/httpStatusText.js";
 import { deleteFile } from "../middlewares/fileService.js";
+import { findUserByEmail, createUser, saveUserSession, findUserById, findAllUsers, updateUserById, revokeUserSession } from "../repositories/usersRepository.js";
 
-export const getAllUsersService = async (limit, page) => {
-  const skip = (page - 1) * limit;
+const sanitizeUser = (user) => {
+  const userObject = user.toObject ? user.toObject() : { ...user };
 
-  const users = await User.find({},{__v: false, password: false}).limit(limit).skip(skip);
-  return users;
+  delete userObject.password;
+  delete userObject.token;
+  delete userObject.__v;
+
+  return userObject;
 };
 
-export const getCurrentUserService = async (userId) => {
-  const user = await User.findById(userId, {password: false, token: false, __v: false});
+const createUserSession = async (user, expiration) => {
+  const token = await generateJWT(
+    {
+      email: user.email,
+      id: user._id,
+      role: user.role,
+    },
+    expiration
+  );
+
+  await saveUserSession(user, hashToken(token));
+  return token;
+};
+
+export const getAllUsersService = async (limit = 10, page = 1) => {
+  const safeLimit = Math.min(Math.max(Number(limit) || 10, 1), 100);
+  const safePage = Math.max(Number(page) || 1, 1);
+  const skip = (safePage - 1) * safeLimit;
+
+  return findAllUsers(safeLimit, skip);
+};
+
+export const getUserByIdService = async (userId) => {
+  if (!mongoose.isValidObjectId(userId)) {
+    throw AppError.create("Invalid user ID", 400, FAIL);
+  }
+
+  const user = await findUserById(userId);
 
   if (!user) {
-    const error = AppError.create("User not found", 404, FAIL);
-    throw error;
+    throw AppError.create("User not found", 404, FAIL);
   }
 
   return user;
 };
 
-export const registerUserService = async ({firstName, lastName, email, password, phoneNumber, slug}) => {
-  const oldUser = await User.findOne({ email });
+export const getCurrentUserService = async (userId) => {
+  return getUserByIdService(userId);
+};
+
+export const registerUserService = async ({ firstName, lastName, email, password, phoneNumber, slug }) => {
+  const oldUser = await findUserByEmail(email);
 
   if (oldUser) {
-    const error = AppError.create("user already exists!", 400, FAIL);
-    throw error;
+    throw AppError.create("User already exists", 400, FAIL);
   }
 
-  const hashedUser = await bcrypt.hash(password, 12);
+  const hashedPassword = await bcrypt.hash(password, 12);
 
-  const newUser = new User({
+  const newUser = await createUser({
     firstName,
     lastName,
     email,
-    password: hashedUser,
+    password: hashedPassword,
     phoneNumber,
     slug,
   });
 
-  const token = await generateJWT({email: email, id: newUser._id, role: newUser.role}, "7d");
-  newUser.token = token;
-
-  await newUser.save();
+  const token = await createUserSession(newUser, "7d");
 
   return {
-    user: newUser,
+    user: sanitizeUser(newUser),
+    token,
     redirectTo: newUser.role === "ADMIN" ? "/admin" : "/user",
   };
 };
 
 export const loginUserService = async (email, password) => {
-  const user = await User.findOne({ email },  {__v: false});
+  const user = await findUserByEmail(email);
 
   if (!user) {
     throw AppError.create("Email or password is incorrect", 401, FAIL);
@@ -71,48 +102,37 @@ export const loginUserService = async (email, password) => {
   }
 
   const tokenExpiration = user.role === "ADMIN" ? "1d" : "7d";
-
-  const token = await generateJWT({email: user.email, id: user._id, role: user.role}, tokenExpiration);
-  const userResponse = user.toObject();
-  delete userResponse.password;
-  userResponse.token = token; 
+  const token = await createUserSession(user, tokenExpiration);
 
   return {
-    user: userResponse,
+    user: sanitizeUser(user),
+    token,
     redirectTo: user.role === "ADMIN" ? "/admin" : "/user",
   };
 };
 
 export const updateUserService = async (userId, updateData) => {
-  const oldUser = await User.findById(userId);
+  const oldUser = await findUserById(userId);
 
   if (!oldUser) {
     throw AppError.create("User not found", 404, FAIL);
   }
 
-  const user = await User.findByIdAndUpdate(
-    userId,
-    { $set: updateData },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
+  const updatedUser = await updateUserById(userId, updateData);
+
+  if (!updatedUser) {
+    throw AppError.create("User not found", 404, FAIL);
+  }
 
   if (updateData.avatar && oldUser.avatar) {
     await deleteFile(oldUser.avatar);
   }
 
-  const userResponse = user.toObject();
-
-  delete userResponse.password;
-  delete userResponse.token;
-  delete userResponse.__v;
-
-  return userResponse;
+  return sanitizeUser(updatedUser);
 };
 
 export const logoutUserService = async (userId) => {
-  await User.findByIdAndUpdate(userId, { token: null });
+  await revokeUserSession(userId);
+
   return { success: true };
 };

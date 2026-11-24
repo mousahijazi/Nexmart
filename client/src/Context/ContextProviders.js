@@ -7,11 +7,11 @@ import CheckoutProvider from "./CheckoutProvider";
 import ReviewProvider from "./ReviewProvider";
 import OrdersProvider from "./OrdersContext";
 
-export default function ContextProviders({children}) {
+export default function ContextProviders({ children, initialUser }) {
   return (
     <ThemeProvider>
       <AlertProvider>
-        <UserProvider>
+        <UserProvider initialUser={initialUser}>
             <ReviewProvider>
               <CheckoutProvider>
                 <OrdersProvider>

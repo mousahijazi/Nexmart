@@ -1,35 +1,17 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useUserContext } from "@/Context/UserProvider";
-import { useRouter } from "@/lib/i18n/routing";
-import PageSkeleton from "./PageSkeleton";
+import { redirect } from "next/navigation";
+import { getServerUser } from "@/lib/server/auth";
+import { getLocale } from "next-intl/server";
 
-export default function ProtectedRoute({ children, allowedRole, redirectTo = "/auth?mode=login" }) {
-  const router = useRouter();
-  const { user, role, loading } = useUserContext();
+export default async function ProtectedRoute({ children, allowedRole, redirectTo = "/auth?mode=login" }) {
+  const user = await getServerUser();
+  const locale = await getLocale();
 
-  const [authorized, setAuthorized] = useState(false);
+  if (!user) {
+    redirect(`/${locale}${redirectTo}`);
+  }
 
-  useEffect(() => {
-    if (loading) return;
-
-    if (!user) {
-      setAuthorized(false);
-      router.replace(redirectTo);
-      return;
-    }
-
-    if (allowedRole && role !== allowedRole) {
-      setAuthorized(false);
-      router.replace("/user");
-      return;
-    }
-
-    setAuthorized(true);
-  }, [user, role, loading, allowedRole, redirectTo, router]);
-
-  if (loading || !authorized) {
-    return <PageSkeleton />;
+  if (allowedRole && user.role !== allowedRole) {
+    redirect(`/${locale}/user`);
   }
 
   return children;

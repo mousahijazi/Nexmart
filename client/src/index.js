@@ -281,6 +281,3 @@ export {default as ProductsButton} from "./components/element/ProductsCard/Produ
 export {default as ShowCard} from "./components/element/ProductsCard/ShowCard";
 
 export {default as EditProfileButton} from "./components/element/EditProfileButton";
-
-// middleware
-export {default as ProtectedRoute} from "./middleware/ProtectedRoute";

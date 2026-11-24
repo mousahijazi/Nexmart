@@ -1,4 +1,5 @@
-import { Dashbaord, ProtectedRoute } from "@/index";
+import { Dashbaord } from "@/index";
+import ProtectedRoute from "@/middleware/ProtectedRoute";
 
 export const metadata = {
   title: "Nexmart - Admin profile",

@@ -46,13 +46,14 @@ function mergeGuestData(userId) {
   localStorage.removeItem("wishlist-guest");
 }
 
-export default function UserProvider({ children }) {
+export default function UserProvider({ children, initialUser = null }) {
   const router = useRouter();
   const { showAlert } = useAlertContext();
 
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState(null);
+  const [user, setUser] = useState(initialUser);
+  const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState(initialUser?.role || null);
+
   const [redirectTo, setRedirectTo] = useState(null);
 
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -71,37 +72,10 @@ export default function UserProvider({ children }) {
     setRedirectTo(null);
   }, []);
 
-  const fetchUser = useCallback(async () => {
-    setLoading(true);
-
-    try {
-      localStorage.removeItem("nexmart-token");
-      localStorage.removeItem("nexmart-user");
-
-      const result = await getCurrentUser();
-
-      if (!result.success || !result.user) {
-        clearUser();
-        return null;
-      }
-
-      applyUser(result.user, result.redirectTo);
-
-      return result.user;
-    } catch (error) {
-      console.error("fetchUser:", error);
-
-      clearUser();
-
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [applyUser, clearUser]);
-
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    localStorage.removeItem("nexmart-token");
+    localStorage.removeItem("nexmart-user");
+  }, []);
 
   const login = async (data, isLogin) => {
     try {
@@ -119,34 +93,34 @@ export default function UserProvider({ children }) {
         showAlert(result.message, "danger");
 
         return {
-            success: false,
-            message: result.message,
+          success: false,
+          message: result.message,
         };
       }
 
-        const currentUser = await getCurrentUser();
+      const currentUser = await getCurrentUser();
 
-        if (!currentUser.success || !currentUser.user) {
-          if (!isLogin) {
-            showAlert("Account created! Please log in.", "success");
+      if (!currentUser.success || !currentUser.user) {
+        if (!isLogin) {
+          showAlert("Account created! Please log in.", "success");
 
-            setTimeout(() => {
-              router.replace("/auth?mode=login");
-            }, 1000);
-
-            return {
-              success: true,
-              requiresLogin: true,
-            };
-          }
-
-          showAlert("Login succeeded, but user information could not be loaded.", "danger");
+          setTimeout(() => {
+            router.replace("/auth?mode=login");
+          }, 1000);
 
           return {
-            success: false,
-            message: currentUser.message,
+            success: true,
+            requiresLogin: true,
           };
         }
+
+        showAlert("Login succeeded, but user information could not be loaded.", "danger");
+
+        return {
+          success: false,
+          message: currentUser.message,
+        };
+      }
 
       const loggedInUser = currentUser.user;
 
@@ -245,9 +219,9 @@ export default function UserProvider({ children }) {
       localStorage.removeItem("nexmart-user");
 
       if (!result.success) {
-          showAlert(result.message || "Server logout failed", "danger");
+        showAlert(result.message || "Server logout failed", "danger");
       } else {
-          showAlert("You have successfully logged out", "success");
+        showAlert("You have successfully logged out", "success");
       }
     } catch (error) {
       console.error("Logout error:", error);
@@ -299,7 +273,6 @@ export default function UserProvider({ children }) {
     login,
     updateProfile,
     logout,
-    fetchUser,
 
     activeTab,
     setActiveTab,

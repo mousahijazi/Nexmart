@@ -1,19 +1,17 @@
 "use client";
-import { Clock, CalendarDays, Download } from "lucide-react";
+import { Clock, CalendarDays } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { AdminAddButton, ProductModal } from "@/index";
-import { useAdminContext } from "@/Context/Adminprovider";
 import { useUserContext } from "@/Context/UserProvider";
+import OverviewHeroActions from "./OverviewHeroActions";
 
-export default function OverviewHero({ dateLabel, onExport, onAddProduct }) {
+export default function OverviewHero() {
   const t = useTranslations("Admin.dashboard");
   const locale = useLocale();
-  const { openProductModal } = useAdminContext();
   const { user } = useUserContext();
 
   const adminName = user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "";
 
-  const formattedDate = dateLabel || new Intl.DateTimeFormat(
+  const formattedDate = new Intl.DateTimeFormat(
     locale === "ar" ? "ar-SA-u-ca-islamic-umalqura" : "en",
     {
       weekday: "long",
@@ -24,7 +22,7 @@ export default function OverviewHero({ dateLabel, onExport, onAddProduct }) {
   ).format(new Date());
 
   return (
-    <div className="rounded-2xl bg-[var(--color-green-dark)] p-6 text-white sm:p-7">
+    <section className="rounded-2xl bg-[var(--color-green-dark)] p-6 text-white sm:p-7">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-white/60">
           <Clock size={13} aria-hidden="true" />
@@ -48,22 +46,8 @@ export default function OverviewHero({ dateLabel, onExport, onAddProduct }) {
           </p>
         </div>
 
-        <div className="flex shrink-0 flex-wrap items-center gap-2 md:flex-col">
-          <button
-            type="button"
-            onClick={onExport}
-            disabled={!onExport}
-            className="flex items-center gap-1.5 rounded-lg border border-white/20 px-3.5 py-2 text-sm font-medium text-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Download size={15} aria-hidden="true" />
-            {t("exportAudit")}
-          </button>
-
-          <AdminAddButton label={t("addProduct")} onClick={onAddProduct || openProductModal} />
-        </div>
+        <OverviewHeroActions />
       </div>
-
-      <ProductModal />
-    </div>
+    </section>
   );
 }

@@ -2,6 +2,7 @@ import { Inter, Cairo } from "next/font/google";
 import { Header, Footer, ContextProviders } from "../../index";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import { getServerUser } from "@/lib/server/auth";
 import "./globals.css";
 
 const inter = Inter({ 
@@ -20,6 +21,7 @@ export const metadata = {
 
 export default async function RootLayout({ children, params }) {
   const { locale } = await params;
+  const initialUser = await getServerUser();
   const messages = await getMessages();
   const selectedFont = locale === "ar" ? cairo.className : inter.className;
 
@@ -27,7 +29,7 @@ export default async function RootLayout({ children, params }) {
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className="h-full antialiased scroll-smooth">
       <body className={`${selectedFont} min-h-screen flex flex-col bg-[var(--color-cream)] text-[var(--color-ink)]`}>
         <NextIntlClientProvider messages={messages}>
-          <ContextProviders>
+          <ContextProviders initialUser={initialUser}>
             <Header />
             <main className="flex-1">
               {children}

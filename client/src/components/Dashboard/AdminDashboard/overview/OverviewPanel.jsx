@@ -1,5 +1,5 @@
-"use client";
-import { OverviewHero, OverviewStatsGrid } from "@/index";
+import OverviewHero from "./OverviewHero";
+import { OverviewStatsGrid } from "@/index";
 
 export default function OverviewPanel() {
   return (

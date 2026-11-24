@@ -3,24 +3,24 @@ import { useUserContext } from "../../Context/UserProvider";
 import { getImageUrl } from "@/helper/getImage";
 
 export default function UserImage() {
-    const {user, isUploadingImage} = useUserContext();
+  const { user, isUploadingImage } = useUserContext();
 
   return (
-    <div className="relative shrink-0">
+    <div className="relative h-[35px] w-[35px] shrink-0 overflow-hidden rounded-full bg-gray-400 dark:border dark:border-zinc-300">
       <Image
-          src={getImageUrl(user?.avatar) || `/Profile.jpg`}
-          alt={`User profile picture for ${user?.firstName || "Guest"}`}
-          width={35}
-          height={35}
-          sizes="35px"
-          quality={75}
-          className="rounded-full aspect-square shrink-0 object-cover bg-gray-400 dark:border dark:border-zinc-300 cursor-pointer"
+        src={getImageUrl(user?.avatar) || `/Profile.jpg`}
+        alt={user?.firstName || "Guest"}
+        width={35}
+        height={35}
+        sizes="35px"
+        quality={75}
+        className="h-full w-full cursor-pointer object-cover"
       />
       {isUploadingImage && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-[1px]">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-          </div>
-        )}
+        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-[1px]">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+        </div>
+      )}
     </div>
-  )
+  );
 }

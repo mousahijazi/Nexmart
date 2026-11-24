@@ -1,37 +1,19 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch, readApiJson, getApiError } from "../apiFetch";
 
-export async function getCategories(limit = 10, page = 1, token, { search = "", status = "" } = {}) {
+export async function getCategories(limit = 10, page = 1, { search = "", status = "" } = {}) {
   try {
     const params = new URLSearchParams({
       page: String(page),
       limit: String(limit),
     });
 
-    if (search.trim()) {
-      params.set("search", search.trim());
-    }
+    if (search.trim()) params.set("search", search.trim());
+    if (status) params.set("status", status);
 
-    if (status) {
-      params.set("status", status);
-    }
+    const response = await apiFetch(`/api/v1/categories?${params.toString()}`);
 
-    const response = await fetch(`${API_URL}/api/v1/categories?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        cache: "no-store",
-      }
-    );
-
-    const json = await response.json();
-
-    if (!response.ok || json.status !== "success") {
-      throw new Error(json.message || "Failed to fetch categories");
-    }
-
-    const data = json.data || {};
+    const result = await readApiJson(response);
+    const data = result.data || {};
 
     return {
       success: true,
@@ -43,7 +25,7 @@ export async function getCategories(limit = 10, page = 1, token, { search = "", 
       stats: data.stats ?? null,
     };
   } catch (error) {
-    console.error("Get categories error:", error);
+    console.error("getCategories:", error);
 
     return {
       success: false,
@@ -53,88 +35,70 @@ export async function getCategories(limit = 10, page = 1, token, { search = "", 
       limit,
       totalPages: 0,
       stats: null,
-      message: error.message || "Failed to fetch categories",
+      message: getApiError(error, "Failed to fetch categories"),
     };
   }
 }
 
-export async function createCategory(formData, token) {
+export async function createCategory(formData) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/categories`, {
+    const response = await apiFetch("/api/v1/categories", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       body: formData,
     });
 
-    const json = await res.json();
-
-    if (!res.ok || json.status !== "success") {
-      return { success: false, message: json.message || "Failed to create category" };
-    }
-
-    return { success: true, category: json.data?.category };
-  } catch (error) {
-    return { success: false, message: "Something went wrong" };
-  }
-}
-
-export const updateCategory = async (categoryId, formData, token) => {
-  try {
-    const response = await fetch(`${API_URL}/api/v1/categories/${categoryId}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      return {
-        success: false,
-        message: result.message || "Failed to update category",
-      };
-    }
+    const result = await readApiJson(response);
 
     return {
       success: true,
-      category: result.data.category,
+      category: result.data?.category,
     };
   } catch (error) {
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to create category"),
     };
   }
-};
+}
 
-export async function updateCategoryStatus(categoryId, isActive, token) {
+export async function updateCategory(categoryId, formData) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/categories/${categoryId}/status`,
+    const response = await apiFetch(
+      `/api/v1/categories/${encodeURIComponent(categoryId)}`,
+      {
+        method: "PATCH",
+        body: formData,
+      }
+    );
+
+    const result = await readApiJson(response);
+
+    return {
+      success: true,
+      category: result.data?.category,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: getApiError(error, "Failed to update category"),
+    };
+  }
+}
+
+export async function updateCategoryStatus(categoryId, isActive) {
+  try {
+    const response = await apiFetch(
+      `/api/v1/categories/${encodeURIComponent(categoryId)}/status`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ isActive }),
-        cache: "no-store",
       }
     );
 
-    const result = await res.json();
-
-    if (!res.ok || result.status !== "success") {
-      return {
-        success: false,
-        message: result.message || "Failed to update category status",
-      };
-    }
+    const result = await readApiJson(response);
 
     return {
       success: true,
@@ -145,7 +109,7 @@ export async function updateCategoryStatus(categoryId, isActive, token) {
 
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to update category status"),
     };
   }
 }

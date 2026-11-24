@@ -423,8 +423,6 @@
             "details": "Details",
             "completePayment": "Complete Payment",
             "currency": "SAR",
-            "previousPage": "Previous page",
-            "nextPage": "Next page",
             "tabs": {
                 "all": "All",
                 "processing": "Processing",

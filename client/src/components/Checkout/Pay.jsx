@@ -47,14 +47,9 @@ export default function Pay() {
             setLoadingPay(true);
 
             try {
-                const token = localStorage.getItem("nexmart-token");
 
-                if (!token) {
-                    throw new Error("Authentication token not found");
-                }
-
-                const orderData = await getBackendOrderById(targetOrderId, token);
-                const itemsData = await getBackendOrderItems(targetOrderId, token);
+                const orderData = await getBackendOrderById(targetOrderId);
+                const itemsData = await getBackendOrderItems(targetOrderId);
 
                 const fullOrder = {
                     ...(orderData.order || orderData),
@@ -66,7 +61,7 @@ export default function Pay() {
                 setOrder(fullOrder);
 
                 if (paymentId) {
-                    const verification = await verifyBackendPayment(paymentId, targetOrderId, token);
+                    const verification = await verifyBackendPayment(paymentId, targetOrderId);
 
                     if (cancelled) return;
 
@@ -96,7 +91,7 @@ export default function Pay() {
                         return;
                     }
 
-                    const refreshedOrderData = await getBackendOrderById(targetOrderId, token);
+                    const refreshedOrderData = await getBackendOrderById(targetOrderId);
 
                     if (cancelled) return;
 

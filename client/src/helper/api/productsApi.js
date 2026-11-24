@@ -1,6 +1,6 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch, readApiJson, getApiError } from "../apiFetch";
 
-export async function getProducts(limit = 20, skip = 0, token = null, filters = {}) {
+export async function getProducts(limit = 20, skip = 0, filters = {}) {
   try {
     const page = Math.floor(skip / limit) + 1;
 
@@ -37,34 +37,18 @@ export async function getProducts(limit = 20, skip = 0, token = null, filters = 
       params.set("brands", filters.brands);
     }
 
-    const headers = {};
+    const response = await apiFetch(`/api/v1/products?${params.toString()}`);
 
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    const res = await fetch(`${API_URL}/api/v1/products?${params.toString()}`,
-      {
-        headers,
-        cache: "no-store",
-      }
-    );
-
-    const json = await res.json();
-
-    if (!res.ok || json.status !== "success") {
-      throw new Error(json.message || `HTTP error! status: ${res.status}`);
-    }
-
-    const { products, total, totalPages, page: currentPage, limit: currentLimit } = json.data;
+    const result = await readApiJson(response);
+    const data = result.data || {};
 
     return {
       success: true,
-      products: products || [],
-      total: total || 0,
-      totalPages: totalPages || 0,
-      page: currentPage || page,
-      limit: currentLimit || limit,
+      products: data.products || [],
+      total: data.total || 0,
+      totalPages: data.totalPages || 0,
+      page: data.page || page,
+      limit: data.limit || limit,
     };
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -76,106 +60,75 @@ export async function getProducts(limit = 20, skip = 0, token = null, filters = 
       totalPages: 0,
       page: Math.floor(skip / limit) + 1,
       limit,
-      message: error.message || "Failed to fetch products",
+      message: getApiError(error, "Failed to fetch products"),
     };
   }
 }
 
-export async function getProduct(id, token = null) {
+export async function getProduct(id) {
   try {
-    const headers = {};
+    const response = await apiFetch(`/api/v1/products/${encodeURIComponent(id)}`);
 
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    
-    const res = await fetch(`${API_URL}/api/v1/products/${id}`, { 
-      headers,
-      cache: "no-store" 
-    });
- 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
- 
-    const json = await res.json();
-    const { product } = json.data;
+    const result = await readApiJson(response);
 
-    return {product};
+    return {
+      product: result.data?.product || {},
+    };
   } catch (error) {
-    console.log(error);
+    console.error("getProduct:", error);
     return { product: {} };
   }
 }
 
-export async function updateProduct(productId, formData, token) {
+export async function updateProduct(productId, formData) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/products/${productId}`,
+    const response = await apiFetch(
+      `/api/v1/products/${encodeURIComponent(productId)}`,
       {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
-        cache: "no-store",
       }
     );
 
-    const result = await res.json();
+    const result = await readApiJson(response);
 
-    if (!res.ok || result.status !== "success") {
-      return {
-        success: false,
-        message: result.message || "Failed to update product",
-      };
-    }
-
-    const { product } = result.data;
-    
     return {
       success: true,
-      product: product,
+      product: result.data?.product,
     };
   } catch (error) {
-    console.log(error);
+    console.error("updateProduct:", error);
 
     return {
       success: false,
       product: {},
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to update product"),
     };
   }
 }
 
-export async function getCategoryProducts( categorySlug, limit = 10, page = 1, token = null) {
+export async function getCategoryProducts(categorySlug, limit = 10, page = 1) {
   try {
-    const url = `${API_URL}/api/v1/products?categories=${categorySlug}&page=${page}&limit=${limit}`;
-    const headers = {};
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await fetch(url, {
-      headers,
-      cache: "no-store",
+    const params = new URLSearchParams({
+      categories: categorySlug,
+      page: String(page),
+      limit: String(limit),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await apiFetch(`/api/v1/products?${params.toString()}`);
 
-    const json = await response.json();
+    const result = await readApiJson(response);
+    const data = result.data || {};
 
     return {
-      products: json.data?.products || [],
-      total: json.data?.total || 0,
-      page: json.data?.page || page,
-      limit: json.data?.limit || limit,
-      totalPages: json.data?.totalPages || 0,
+      products: data.products || [],
+      total: data.total || 0,
+      page: data.page || page,
+      limit: data.limit || limit,
+      totalPages: data.totalPages || 0,
     };
   } catch (error) {
-    console.error("Error to get category products:", error);
+    console.error("getCategoryProducts:", error);
 
     return {
       products: [],
@@ -187,35 +140,28 @@ export async function getCategoryProducts( categorySlug, limit = 10, page = 1, t
   }
 }
 
-export async function getBrandProducts( brandSlug, limit = 10, page = 1, token = null) {
+export async function getBrandProducts(brandSlug, limit = 10, page = 1) {
   try {
-    const url = `${API_URL}/api/v1/products?brands=${brandSlug}&page=${page}&limit=${limit}`;
-    const headers = {};
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await fetch(url, {
-      headers,
-      cache: "no-store",
+    const params = new URLSearchParams({
+      brands: brandSlug,
+      page: String(page),
+      limit: String(limit),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await apiFetch(`/api/v1/products?${params.toString()}`);
 
-    const json = await response.json();
+    const result = await readApiJson(response);
+    const data = result.data || {};
 
     return {
-      products: json.data?.products || [],
-      total: json.data?.total || 0,
-      page: json.data?.page || page,
-      limit: json.data?.limit || limit,
-      totalPages: json.data?.totalPages || 0,
+      products: data.products || [],
+      total: data.total || 0,
+      page: data.page || page,
+      limit: data.limit || limit,
+      totalPages: data.totalPages || 0,
     };
   } catch (error) {
-    console.error("Error to get brand products:", error);
+    console.error("getBrandProducts:", error);
 
     return {
       products: [],
@@ -227,61 +173,43 @@ export async function getBrandProducts( brandSlug, limit = 10, page = 1, token =
   }
 }
 
-export async function createProduct(formData, token) {
+export async function createProduct(formData) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/products`, {
+    const response = await apiFetch("/api/v1/products", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       body: formData,
     });
 
-    const result = await res.json();
-
-    if (!res.ok || result.status !== "success") {
-      return {
-        success: false,
-        message: result.message || "Failed to create product",
-      };
-    }
+    const result = await readApiJson(response);
 
     return {
       success: true,
-      product: result.data.product,
+      product: result.data?.product,
     };
   } catch (error) {
-    console.log(error);
+    console.error("createProduct:", error);
 
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to create product"),
     };
   }
 }
 
-export async function updateProductStatus(productId, isActive, token) {
+export async function updateProductStatus(productId, isActive) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/products/${productId}/status`,
+    const response = await apiFetch(
+      `/api/v1/products/${encodeURIComponent(productId)}/status`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ isActive }),
-        cache: "no-store",
       }
     );
 
-    const result = await res.json();
-
-    if (!res.ok || result.status !== "success") {
-      return {
-        success: false,
-        message: result.message ||"Failed to update product status",
-      };
-    }
+    const result = await readApiJson(response);
 
     return {
       success: true,
@@ -289,11 +217,11 @@ export async function updateProductStatus(productId, isActive, token) {
       message: result.message,
     };
   } catch (error) {
-    console.error(error);
+    console.error("updateProductStatus:", error);
 
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to update product status"),
     };
   }
 }

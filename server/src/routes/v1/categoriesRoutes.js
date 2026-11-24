@@ -2,10 +2,9 @@ import {createCategoryController, getAllCategoriesController, getCategoryByIdCon
 import express from "express";
 import validate from "../../middlewares/validate.js";
 import { uploadCategoryImage, uploadCategoryUpdateImage } from "../../middlewares/uploadmiddleware/uploadCategory.js";
-import { authToken } from "../../middlewares/auth.js";
+import { authToken, optionalAuth } from "../../middlewares/auth.js";
 import { authorizeRoles } from "../../middlewares/role.js";
 import { StatusValidator } from "../../validators/statusSchema.js";
-import optionalAuth from "../../middlewares/optionalAuth.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
 
 const router = express.Router();

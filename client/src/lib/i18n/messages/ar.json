@@ -423,8 +423,6 @@
             "details": "التفاصيل",
             "completePayment": "إكمال الدفع",
             "currency": "ر.س",
-            "previousPage": "الصفحة السابقة",
-            "nextPage": "الصفحة التالية",
             "tabs": {
                 "all": "الكل",
                 "processing": "قيد التجهيز",

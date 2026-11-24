@@ -1,7 +1,7 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch, readApiJson } from "../apiFetch";
 
 export async function fetchCartPricing(items, coupon = "", signal) {
-  const response = await fetch(`${API_URL}/api/v1/cart/price`, {
+  const response = await apiFetch("/api/v1/cart/price", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -13,11 +13,7 @@ export async function fetchCartPricing(items, coupon = "", signal) {
     signal,
   });
 
-  const payload = await response.json();
-
-  if (!response.ok) {
-    throw new Error(payload?.message || "Failed to calculate cart pricing");
-  }
+  const payload = await readApiJson(response);
 
   if (!payload?.data) {
     throw new Error("Invalid cart pricing response");

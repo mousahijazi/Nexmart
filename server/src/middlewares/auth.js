@@ -85,6 +85,6 @@ export const authToken = (req, res, next) => {
   return authenticate(req, next);
 };
 
-export const optionalAuthToken = (req, res, next) => {
+export const optionalAuth = (req, res, next) => {
   return authenticate(req, next, true);
 };

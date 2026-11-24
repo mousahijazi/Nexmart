@@ -1,8 +1,7 @@
 import express from "express";
 import { createOfferController, getAllOffersController, getOfferByIdController, updateOfferController, updateOfferStatusController, deleteOfferController } from "../../controllers/offerController.js";
-import { authToken } from "../../middlewares/auth.js";
+import { authToken, optionalAuth } from "../../middlewares/auth.js";
 import { authorizeRoles } from "../../middlewares/role.js";
-import optionalAuth from "../../middlewares/optionalAuth.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
 import validate from "../../middlewares/validate.js";
 import { StatusValidator } from "../../validators/statusSchema.js";

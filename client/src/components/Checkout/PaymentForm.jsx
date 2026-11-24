@@ -35,12 +35,6 @@ export default function PaymentForm({ order, loading }) {
                 throw new Error("Order not found.");
             }
 
-            const token = localStorage.getItem("nexmart-token");
-
-            if (!token) {
-                throw new Error("Authentication token not found.");
-            }
-
             // const intent = await createBackendPaymentIntent(order._id, token, locale);
             // const payment = await fulfillMoyasarPayment(intent, data);
             const payment = await createMoyasarPayment(order, data, locale);
@@ -51,7 +45,7 @@ export default function PaymentForm({ order, loading }) {
             }
 
             if (payment.id) {
-                const verification = await verifyBackendPayment(payment.id, order._id, token);
+                const verification = await verifyBackendPayment(payment.id, order._id);
 
                 if (verification.verified === true) {
                     showAlert("Payment successful! Your order is confirmed.", "success");

@@ -1,6 +1,6 @@
 "use client";
 
-export default function OrderDashboardButton({ onClick, disabled = false, label, icon, type = "button" }) {
+export default function OrderDashboardButton({ onClick, disabled = false, icon, type = "button" }) {
   return (
     <button
       type={type}
@@ -18,7 +18,6 @@ export default function OrderDashboardButton({ onClick, disabled = false, label,
       "
     >
       {icon}
-      <span>{label}</span>
     </button>
   );
 }

@@ -164,13 +164,6 @@ export default function ProductModal() {
   };
 
   const onSubmit = async (data) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert(t("messages.authRequired"), "danger");
-      return;
-    }
-
     if (!isEdit && !mainImage) {
       showAlert(t("messages.mainImageRequired"), "danger");
       return;
@@ -201,8 +194,8 @@ export default function ProductModal() {
 
     try {
       const result = isEdit
-        ? await updateProduct(editingProduct._id, formData, token)
-        : await createProduct(formData, token);
+        ? await updateProduct(editingProduct._id, formData)
+        : await createProduct(formData);
 
       if (!result.success) {
         showAlert(result.message || t(isEdit ? "messages.updateFailed" : "messages.createFailed"), "danger");

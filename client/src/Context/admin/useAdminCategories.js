@@ -51,24 +51,24 @@ export default function useAdminCategories({ showAlert, enabled }) {
       // todo
       const requestId = ++categoriesRequestId.current;
 
-      const token = typeof window !== "undefined" ? localStorage.getItem("nexmart-token") : null;
+      // const token = typeof window !== "undefined" ? localStorage.getItem("nexmart-token") : null;
 
-      if (!token) {
-        setCategories([]);
-        setCategoriesTotal(0);
-        setCategoriesTotalPages(0);
-        setCategoryStats(null);
-        setCategoriesLoading(false);
+      // if (!token) {
+      //   setCategories([]);
+      //   setCategoriesTotal(0);
+      //   setCategoriesTotalPages(0);
+      //   setCategoryStats(null);
+      //   setCategoriesLoading(false);
 
-        showAlert?.("You are not authenticated", "danger");
+      //   showAlert?.("You are not authenticated", "danger");
 
-        return { success: false };
-      }
+      //   return { success: false };
+      // }
 
       setCategoriesLoading(true);
 
       try {
-        const result = await getCategories(limit, page, token, { search, status });
+        const result = await getCategories(limit, page, { search, status });
 
         if (requestId !== categoriesRequestId.current) {
           return { success: false, stale: true };
@@ -163,15 +163,8 @@ export default function useAdminCategories({ showAlert, enabled }) {
   }, [fetchCategories]);
 
   const addCategory = useCallback(async (formData) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert?.("You are not authenticated", "danger");
-      return { success: false };
-    }
-
     try {
-      const result = await createCategory(formData, token);
+      const result = await createCategory(formData);
 
       if (!result.success) {
         showAlert?.(result.message || "Failed to create category", "danger");
@@ -199,15 +192,8 @@ export default function useAdminCategories({ showAlert, enabled }) {
   }, [categoriesPage, fetchCategories, showAlert]);
 
   const editCategory = useCallback(async (categoryId, formData) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert?.("You are not authenticated", "danger");
-      return { success: false };
-    }
-
     try {
-      const result = await updateCategory(categoryId, formData, token);
+      const result = await updateCategory(categoryId, formData);
 
       if (!result.success) {
         showAlert?.(result.message || "Failed to update category", "danger");
@@ -238,15 +224,8 @@ export default function useAdminCategories({ showAlert, enabled }) {
   }, [fetchCategories, showAlert]);
 
   const toggleCategoryActive = useCallback(async (categoryId, isActive) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert?.("You are not authenticated", "danger");
-      return { success: false };
-    }
-
     try {
-      const result = await updateCategoryStatus(categoryId, isActive, token);
+      const result = await updateCategoryStatus(categoryId, isActive);
 
       if (!result.success) {
         showAlert?.(result.message || "Failed to update category status", "danger");
@@ -289,13 +268,6 @@ export default function useAdminCategories({ showAlert, enabled }) {
       return { success: false };
     }
 
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert?.("You are not authenticated", "danger");
-      return { success: false };
-    }
-
     setCategoryProducts((current) => ({
       ...current,
       [categoryId]: {
@@ -305,7 +277,7 @@ export default function useAdminCategories({ showAlert, enabled }) {
     }));
 
     try {
-      const result = await getCategoryProducts(categorySlug, limit, page, token);
+      const result = await getCategoryProducts(categorySlug, limit, page);
 
       setCategoryProducts((current) => ({
         ...current,

@@ -1,90 +1,73 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch, readApiJson, getApiError } from "../apiFetch";
 
-export async function getAllUsers(token) {
+export async function getAllUsers() {
   try {
-    const response = await fetch(`${API_URL}/api/v1/users`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiFetch("/api/v1/users");
 
-    const json = await response.json();
-    const { users } = json.data;
-    return {status: "success", users};
+    const result = await readApiJson(response);
+
+    return {
+      status: "success",
+      users: result.data?.users || [],
+    };
   } catch (error) {
     console.error("Failed to fetch users:", error);
-    return { status: "error", users: [] };
+
+    return {
+      status: "error",
+      users: [],
+      message: getApiError(error),
+    };
   }
 }
 
-export const getCurrentUser = async (token) => {
+export async function getCurrentUser() {
   try {
-    const response = await fetch(`${API_URL}/api/v1/users/me`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
+    const response = await apiFetch("/api/v1/users/me");
 
-    const result = await response.json();
+    const result = await readApiJson(response);
+    const user = result.data?.user;
 
-    if (!response.ok) {
+    if (!user) {
       return {
         success: false,
-        message: result.message || "Failed to get current user",
+        message: "User information was not returned",
       };
     }
 
     return {
       success: true,
-      user: result.data.user,
-      role: result.data.user.role,
-      redirectTo: result.data.redirectTo,
+      user,
+      role: user.role,
+      redirectTo: result.data?.redirectTo || null,
     };
   } catch (error) {
-    console.log(error);
-
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to get current user"),
     };
   }
-};
+}
 
-export async function updateUser(formData, token) {
+export async function updateUser(formData) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/users/me`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-        cache: "no-store",
-      }
-    );
+    const response = await apiFetch("/api/v1/users/me", {
+      method: "PATCH",
+      body: formData,
+    });
 
-    const result = await res.json();
-
-    if (!res.ok || result.status !== "success") {
-      return {
-        success: false,
-        message: result.message || "Failed to update profile",
-      };
-    }
+    const result = await readApiJson(response);
 
     return {
       success: true,
-      user: result.data?.user,
+      user: result.data?.user || null,
     };
   } catch (error) {
-    console.error(error);
+    console.error("updateUser:", error);
 
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to update profile"),
     };
   }
 }

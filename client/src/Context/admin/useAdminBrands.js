@@ -65,9 +65,7 @@ export default function useAdminBrands({ showAlert, enabled }) {
     setBrandsLoading(true);
 
     try {
-      const token = localStorage.getItem("nexmart-token");
-
-      const result = await getBrand(limit, page, token, { search: filters.search ?? "", status: filters.status ?? "all" });
+      const result = await getBrand(limit, page, { search: filters.search ?? "", status: filters.status ?? "all" });
 
       if (requestId !== brandsRequestId.current) {
         return result;
@@ -116,14 +114,7 @@ export default function useAdminBrands({ showAlert, enabled }) {
   }, [fetchBrands, brandsPage, brandsLimit, debouncedSearch, brandsStatus]);
 
   const addBrand = useCallback(async (formData) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-      return { success: false };
-    }
-
-    const result = await createBrand(formData, token);
+    const result = await createBrand(formData);
 
     if (!result.success) {
       return result;
@@ -141,14 +132,7 @@ export default function useAdminBrands({ showAlert, enabled }) {
   }, [showAlert, closeBrandModal, brandsPage, brandsLimit, debouncedSearch, brandsStatus, fetchBrands]);
 
   const editBrand = useCallback(async (brandId, formData) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-      return { success: false };
-    }
-
-    const result = await updateBrand(brandId, formData, token);
+    const result = await updateBrand(brandId, formData);
 
     if (!result.success) {
       return result;
@@ -162,14 +146,7 @@ export default function useAdminBrands({ showAlert, enabled }) {
   }, [showAlert, closeBrandModal, refreshBrands]);
 
   const toggleBrandActive = useCallback(async (brandId, isActive) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-      return { success: false };
-    }
-
-    const result = await updateBrandStatus(brandId, isActive, token);
+    const result = await updateBrandStatus(brandId, isActive);
 
     if (!result.success) {
       showAlert(result.message, "danger");
@@ -194,8 +171,6 @@ export default function useAdminBrands({ showAlert, enabled }) {
   }, [showAlert, refreshBrands, brandsPage]);
   
   const fetchBrandProducts = useCallback(async (brandId, brandSlug, page = 1, limit = 10) => {
-    const token = localStorage.getItem("nexmart-token");
-
     setBrandProducts((current) => ({
       ...current,
       [brandId]: {
@@ -205,7 +180,7 @@ export default function useAdminBrands({ showAlert, enabled }) {
     }));
 
     try {
-      const result = await getBrandProducts(brandSlug, limit, page, token);
+      const result = await getBrandProducts(brandSlug, limit, page);
 
       setBrandProducts((current) => ({
         ...current,
@@ -245,13 +220,6 @@ export default function useAdminBrands({ showAlert, enabled }) {
       return;
     }
 
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-      return { success: false };
-    }
-
     const nextPage = currentBrand.page + 1;
 
     setBrandProducts((current) => ({
@@ -263,7 +231,7 @@ export default function useAdminBrands({ showAlert, enabled }) {
     }));
 
     try {
-      const result = await getBrandProducts(brandSlug, currentBrand.limit || 10, nextPage, token);
+      const result = await getBrandProducts(brandSlug, currentBrand.limit || 10, nextPage);
 
       setBrandProducts((current) => ({
         ...current,

@@ -58,17 +58,17 @@ export default function useAdminProducts({ showAlert, enabled }) {
     setProductsLoading(true);
 
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("nexmart-token") : null;
+      // const token = typeof window !== "undefined" ? localStorage.getItem("nexmart-token") : null;
 
-      if (!token) {
-        if (requestId === requestIdRef.current) {
-          setProducts([]);
-          setProductsTotal(0);
-          setProductsTotalPages(0);
-        }
+      // if (!token) {
+      //   if (requestId === requestIdRef.current) {
+      //     setProducts([]);
+      //     setProductsTotal(0);
+      //     setProductsTotalPages(0);
+      //   }
 
-        return;
-      }
+      //   return;
+      // }
 
       const skip = (page - 1) * limit;
 
@@ -80,7 +80,7 @@ export default function useAdminProducts({ showAlert, enabled }) {
         status: productsStatus,
       };
 
-      const result = await getProducts(limit, skip, token, filters);
+      const result = await getProducts(limit, skip, filters);
 
       if (requestId !== requestIdRef.current) return;
 
@@ -168,15 +168,8 @@ export default function useAdminProducts({ showAlert, enabled }) {
   }, [fetchProducts, productsPage, productsLimit]);
 
   const toggleProductActive = useCallback(async (productId, isActive) => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("nexmart-token") : null;
-
-    if (!token) {
-      showAlert?.("You are not authenticated", "danger");
-      return { success: false };
-    }
-
     try {
-      const result = await updateProductStatus(productId, isActive, token);
+      const result = await updateProductStatus(productId, isActive);
 
       if (!result.success) {
         showAlert?.(result.message, "danger");

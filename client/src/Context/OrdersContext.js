@@ -1,7 +1,6 @@
 "use client";
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { getBackendOrderItems, updateBackendOrder, replaceBackendOrderItems, cancelBackendOrder, getBackendMyOrders } from "@/helper/fetchApi";
-
 import { useAlertContext } from "@/Context/AlertProvider";
 import { useCheckoutContext } from "./CheckoutProvider";
 
@@ -24,15 +23,25 @@ export default function OrdersProvider({ children }) {
 
     const refreshOrders = useCallback(async () => {
         try {
-            const token = localStorage.getItem("nexmart-token");
+            const result = await getBackendMyOrders();
 
-            if (!token) return;
+            const orders = Array.isArray(result?.orders)
+                ? result.orders
+                : Array.isArray(result?.data?.orders) ? result.data.orders : [];
 
-            const result = await getBackendMyOrders(token);
+            setOrders(orders);
 
-            setOrders(result.orders || []);
+            return {
+                success: true,
+                orders,
+            };
         } catch (err) {
             console.error("Failed to refresh orders:", err);
+
+            return {
+                success: false,
+                message: err.message || "Failed to refresh orders",
+            };
         }
     }, [setOrders]);
 
@@ -41,6 +50,7 @@ export default function OrdersProvider({ children }) {
         setModalMode(null);
         setOrderItems([]);
         setError("");
+
         loadingItemsRef.current = false;
         setLoadingItems(false);
     }, []);
@@ -53,10 +63,8 @@ export default function OrdersProvider({ children }) {
     }, []);
 
     const openItemsModal = useCallback(async (order) => {
-        const token = localStorage.getItem("nexmart-token");
-
-        if (!token) {
-            throw new Error("You must log in to view your orders");
+        if (!order?._id) {
+            throw new Error("Invalid order");
         }
 
         if (loadingItemsRef.current || submitting) return;
@@ -70,7 +78,8 @@ export default function OrdersProvider({ children }) {
         setLoadingItems(true);
 
         try {
-            const result = await getBackendOrderItems(order._id, token);
+            const result = await getBackendOrderItems(order._id);
+
             const items = Array.isArray(result) ? result : result?.items ?? result?.data?.items;
 
             if (!Array.isArray(items)) {
@@ -79,6 +88,8 @@ export default function OrdersProvider({ children }) {
 
             setOrderItems(items);
         } catch (err) {
+            console.error("Failed to load order items:", err);
+
             setError(err.message || "تعذر تحميل عناصر الطلب.");
         } finally {
             loadingItemsRef.current = false;
@@ -87,12 +98,6 @@ export default function OrdersProvider({ children }) {
     }, [submitting]);
 
     const saveShippingInfo = useCallback(async (shippingInfo) => {
-        const token = localStorage.getItem("nexmart-token");
-
-        if (!token) {
-            throw new Error("You must log in to manage orders");
-        }
-
         if (!activeOrder?._id || submitting) {
             return { success: false };
         }
@@ -101,16 +106,19 @@ export default function OrdersProvider({ children }) {
         setError("");
 
         try {
-            await updateBackendOrder(activeOrder._id, shippingInfo, token);
+            await updateBackendOrder(activeOrder._id, shippingInfo);
 
             showAlert("تم تحديث بيانات الشحن بنجاح", "success");
 
             closeOrderModal();
+
             await refreshOrders();
 
             return { success: true };
         } catch (err) {
             const message = err.message || "تعذر تحديث بيانات الشحن.";
+
+            console.error("Failed to update shipping information:", err);
 
             setError(message);
             showAlert(message, "danger");
@@ -125,12 +133,6 @@ export default function OrdersProvider({ children }) {
     }, [activeOrder, submitting, showAlert, closeOrderModal, refreshOrders]);
 
     const saveOrderItems = useCallback(async ({ items, coupon }) => {
-        const token = localStorage.getItem("nexmart-token");
-
-        if (!token) {
-            throw new Error("You must log in to manage orders");
-        }
-
         if (!activeOrder?._id || submitting) {
             return { success: false };
         }
@@ -150,10 +152,10 @@ export default function OrdersProvider({ children }) {
         setError("");
 
         try {
-            const result = await replaceBackendOrderItems(activeOrder._id, items, coupon, token);
+            const result = await replaceBackendOrderItems(activeOrder._id, items, coupon);
 
             const updatedOrder = result?.order ?? result?.data?.order;
-            const updatedItems = result?.items ?? result?.data?.items;
+            const updatedItems =result?.items ?? result?.data?.items;
 
             if (!updatedOrder || !Array.isArray(updatedItems)) {
                 throw new Error("استجابة الخادم لا تحتوي على الطلب وعناصره بالشكل المتوقع.");
@@ -165,6 +167,7 @@ export default function OrdersProvider({ children }) {
             showAlert("تم تحديث منتجات الطلب بنجاح", "success");
 
             closeOrderModal();
+
             await refreshOrders();
 
             return {
@@ -174,6 +177,8 @@ export default function OrdersProvider({ children }) {
             };
         } catch (err) {
             const message = err.message || "تعذر تعديل منتجات الطلب.";
+
+            console.error("Failed to update order items:", err);
 
             setError(message);
             showAlert(message, "danger");
@@ -188,12 +193,6 @@ export default function OrdersProvider({ children }) {
     }, [activeOrder, submitting, showAlert, closeOrderModal, refreshOrders]);
 
     const cancelOrder = useCallback(async (order) => {
-        const token = localStorage.getItem("nexmart-token");
-
-        if (!token) {
-            throw new Error("You must log in to manage orders");
-        }
-
         if (!order?._id || submitting || cancellingOrderId) {
             return { success: false };
         }
@@ -219,7 +218,7 @@ export default function OrdersProvider({ children }) {
         setError("");
 
         try {
-            await cancelBackendOrder(order._id, token);
+            await cancelBackendOrder(order._id);
 
             showAlert("تم إلغاء الطلب بنجاح", "success");
 
@@ -228,6 +227,8 @@ export default function OrdersProvider({ children }) {
             return { success: true };
         } catch (err) {
             const message = err.message || "تعذر إلغاء الطلب.";
+
+            console.error("Failed to cancel order:", err);
 
             setError(message);
             showAlert(message, "danger");
@@ -239,7 +240,7 @@ export default function OrdersProvider({ children }) {
         } finally {
             setCancellingOrderId(null);
         }
-    }, [submitting, cancellingOrderId, showAlert, refreshOrders,]);
+    }, [submitting, cancellingOrderId, showAlert, refreshOrders]);
 
     const value = useMemo(() => ({
         activeOrder,

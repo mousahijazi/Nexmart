@@ -52,13 +52,7 @@ export default function OrderDashboardData() {
                     [orderId]: true,
                 }));
 
-                const token = localStorage.getItem("nexmart-token");
-
-                if (!token) {
-                    throw new Error("You must log in to view your orders.");
-                }
-
-                const response = await getBackendOrderItems(orderId, token);
+                const response = await getBackendOrderItems(orderId);
 
                 const items = Array.isArray(response) ? response : response?.items ?? response?.data?.items ?? [];
 
@@ -297,7 +291,6 @@ export default function OrderDashboardData() {
                         <OrderDashboardButton
                             onClick={() => setCurrentPage((page) =>Math.max(page - 1, 1))}
                             disabled={safePage === 1}
-                            label={t("previousPage")}
                             icon={ locale === "ar" ? <ChevronRight /> : <ChevronLeft /> }
                         />
 
@@ -308,7 +301,6 @@ export default function OrderDashboardData() {
                         <OrderDashboardButton
                             onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}
                             disabled={safePage === totalPages}
-                            label={t("nextPage")}
                             icon={ locale === "ar" ? <ChevronLeft /> : <ChevronRight /> }
                         />
                     </div>

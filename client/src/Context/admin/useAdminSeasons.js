@@ -63,23 +63,23 @@ export default function useAdminSeasons({ showAlert, enabled }) {
     setSeasonsLoading(true);
 
     try {
-      const token = localStorage.getItem("nexmart-token");
+      // const token = localStorage.getItem("nexmart-token");
 
-      if (!token) {
-        if (requestId !== seasonsRequestId.current) return;
+      // if (!token) {
+      //   if (requestId !== seasonsRequestId.current) return;
 
-        setSeasons([]);
-        setSeasonsTotal(0);
-        setSeasonsTotalPages(0);
-        setSeasonOffers({});
+      //   setSeasons([]);
+      //   setSeasonsTotal(0);
+      //   setSeasonsTotalPages(0);
+      //   setSeasonOffers({});
 
-        return {
-          success: false,
-          message: "You are not authenticated",
-        };
-      }
+      //   return {
+      //     success: false,
+      //     message: "You are not authenticated",
+      //   };
+      // }
 
-      const result = await getSeasons(limit, page, token, { search: debouncedSearch, status: seasonsStatus });
+      const result = await getSeasons(limit, page, { search: debouncedSearch, status: seasonsStatus });
 
       if (requestId !== seasonsRequestId.current) {
         return result;
@@ -159,17 +159,7 @@ export default function useAdminSeasons({ showAlert, enabled }) {
   }, []);
 
   const addSeason = async (payload) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-
-      return {
-        success: false,
-      };
-    }
-
-    const result = await createSeason(payload, token);
+    const result = await createSeason(payload);
 
     if (result.success) {
       await fetchSeasons(seasonsPage, seasonsLimit);
@@ -183,17 +173,7 @@ export default function useAdminSeasons({ showAlert, enabled }) {
   };
 
   const editSeason = async (seasonId, payload) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-
-      return {
-        success: false,
-      };
-    }
-
-    const result = await updateSeason(seasonId, payload, token);
+    const result = await updateSeason(seasonId, payload);
 
     if (result.success) {
       await fetchSeasons(seasonsPage, seasonsLimit);
@@ -207,16 +187,6 @@ export default function useAdminSeasons({ showAlert, enabled }) {
   };
 
   const fetchSeasonOffers = useCallback(async (seasonId, page = 1) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-
-      return {
-        success: false,
-      };
-    }
-
     setSeasonOffers((current) => ({
       ...current,
       [seasonId]: {
@@ -225,7 +195,7 @@ export default function useAdminSeasons({ showAlert, enabled }) {
       },
     }));
 
-    const result = await getAdminSeasonOffers(seasonId, SEASON_OFFERS_LIMIT, page, token);
+    const result = await getAdminSeasonOffers(seasonId, SEASON_OFFERS_LIMIT, page);
 
     if (!result.success) {
       showAlert(result.message || "Failed to load season offers", "danger");
@@ -276,17 +246,7 @@ export default function useAdminSeasons({ showAlert, enabled }) {
   }, [seasonOffers, fetchSeasonOffers]);
 
   const toggleSeasonActive = async (seasonId, isActive) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-
-      return {
-        success: false,
-      };
-    }
-
-    const result = await updateSeasonStatus(seasonId, isActive, token);
+    const result = await updateSeasonStatus(seasonId, isActive);
 
     if (!result.success) {
       showAlert(result.message || "Failed to update season status", "danger");

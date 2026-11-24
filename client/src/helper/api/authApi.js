@@ -1,77 +1,84 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch, readApiJson, getApiError } from "../apiFetch";
 
 export async function loginUser(email, password) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/users/login`, {
+    const response = await apiFetch("/api/v1/users/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ email, password }),
-      cache: "no-store",
     });
 
-    const result = await res.json();
+    const result = await readApiJson(response);
 
-    if (!res.ok || result.status !== "success") {
-      return { success: false, message: result.message || "Login failed" };
-    }
-
-    return { 
-      success: true, 
-      token: result.data?.user?.token, 
-      user: result.data?.user,
-      redirectTo: result.data?.redirectTo,
+    return {
+      success: true,
+      user: result.data?.user || null,
+      redirectTo: result.data?.redirectTo || null,
     };
   } catch (error) {
-    console.log(error);
-    return { success: false, message: "Something went wrong" };
+    return {
+      success: false,
+      message: getApiError(error, "Login failed"),
+    };
   }
 }
 
-export async function registerUser(email, password, firstName, lastName, phoneNumber) {
+export async function registerUser(email, password, firstName, lastName, phoneNumber = "") {
   try {
-    const res = await fetch(`${API_URL}/api/v1/users/register`, {
+    const response = await apiFetch("/api/v1/users/register", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        firstName, 
-        lastName, 
-        email, 
-        password, 
-        phoneNumber: phoneNumber || "", 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password,
+        phoneNumber: phoneNumber || "",
       }),
-      cache: "no-store",
     });
 
-    const result = await res.json();
+    const result = await readApiJson(response);
 
-    if (!res.ok || result.status !== "success") {
-      return { success: false, message: result.message || "Registration failed" };
-    }
-
-    return { 
-      success: true, 
-      token: result.data?.user?.token, 
-      user: result.data?.user,
-      redirectTo: result.data?.redirectTo,
+    return {
+      success: true,
+      user: result.data?.user || null,
+      redirectTo: result.data?.redirectTo || null,
     };
   } catch (error) {
-    console.log(error);
-    return { success: false, message: "Something went wrong" };
+    return {
+      success: false,
+      message: getApiError(error, "Registration failed"),
+    };
   }
 }
 
-export const logoutApi = async (token) => {
-  const response = await fetch("http://localhost:5000/api/users/logout", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json"
+export async function logoutApi() {
+  try {
+    const response = await apiFetch("/api/v1/users/logout", {
+      method: "POST",
+    });
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: result?.message || "Failed to logout from server",
+      };
     }
-  });
 
-  if (!response.ok) {
-    throw new Error("Failed to logout from server");
+    return {
+      success: true,
+      data: result?.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: getApiError(error, "Failed to logout"),
+    };
   }
-
-  return await response.json();
-};
+}

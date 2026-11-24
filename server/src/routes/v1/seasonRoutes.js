@@ -1,8 +1,7 @@
 import express from "express";
 import { createSeasonController, getAllSeasonsController, getSeasonByIdController, updateSeasonController, updateSeasonStatusController, deleteSeasonController } from "../../controllers/seasonController.js";
-import { authToken } from "../../middlewares/auth.js";
+import { authToken, optionalAuth } from "../../middlewares/auth.js";
 import { authorizeRoles } from "../../middlewares/role.js";
-import optionalAuth from "../../middlewares/optionalAuth.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
 import validate from "../../middlewares/validate.js";
 import { StatusValidator } from "../../validators/statusSchema.js";

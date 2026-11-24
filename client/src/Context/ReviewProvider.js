@@ -3,7 +3,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { getProductReviews, createReview, getCurrentUser } from "@/helper/fetchApi";
 
 const ReviewContext = createContext();
-const TOKEN_KEY = "nexmart-token";
 
 export default function ReviewProvider({ children }) {
   const [reviews, setReviews] = useState([]);
@@ -12,14 +11,6 @@ export default function ReviewProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
-
-  const getToken = () => {
-    if (typeof window === "undefined") {
-      return null;
-    }
-
-    return localStorage.getItem(TOKEN_KEY);
-  };
 
   const getReviews = async (productId, page = 1, limit = 10) => {
     setLoading(true);
@@ -40,38 +31,10 @@ export default function ReviewProvider({ children }) {
     return result;
   };
 
-  const loadCurrentUser = async () => {
-    const token = getToken();
-
-    if (!token) {
-      setCurrentUser(null);
-      return null;
-    }
-
-    const result = await getCurrentUser(token);
-
-    if (result.success) {
-      setCurrentUser(result.user);
-      return result.user;
-    }
-
-    setCurrentUser(null);
-    return null;
-  };
-
   const submitReview = async (productId, rating, comment) => {
-    const token = getToken();
-
-    if (!token) {
-      return {
-        success: false,
-        message: "You must login first",
-      };
-    }
-
     setSubmitting(true);
 
-    const result = await createReview(productId, rating, comment, token);
+    const result = await createReview(productId, rating, comment);
 
     if (result.success) {
       setReviews((prevReviews) => [
@@ -93,10 +56,6 @@ export default function ReviewProvider({ children }) {
 
     return reviews.some((review) => review.user?.email === currentUser.email);
   };
-
-  useEffect(() => {
-    loadCurrentUser();
-  }, []);
 
   const value = {
     reviews,

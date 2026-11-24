@@ -67,17 +67,17 @@ export default function useAdminOffers({ showAlert, enabled }) {
     const requestId = ++requestIdRef.current;
     setOffersLoading(true);
 
-    const token = localStorage.getItem("nexmart-token");
+    // const token = localStorage.getItem("nexmart-token");
 
     try {
-      if (!token) {
-        setOffers([]);
-        setOffersTotal(0);
-        setOffersTotalPages(0);
-        return;
-      }
+      // if (!token) {
+      //   setOffers([]);
+      //   setOffersTotal(0);
+      //   setOffersTotalPages(0);
+      //   return;
+      // }
 
-      const result = await getOffers(limit, page, token, { search: debouncedSearch, status, target, season });
+      const result = await getOffers(limit, page, { search: debouncedSearch, status, target, season });
 
       if (requestId !== requestIdRef.current) return;
 
@@ -149,14 +149,7 @@ export default function useAdminOffers({ showAlert, enabled }) {
   }, []);
 
   const addOffer = useCallback(async (payload) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert?.("You are not authenticated", "danger");
-      return { success: false };
-    }
-
-    const result = await createOffer(payload, token);
+    const result = await createOffer(payload);
 
     if (!result.success) {
       showAlert?.(result.message || "Failed to create offer", "danger");
@@ -171,14 +164,7 @@ export default function useAdminOffers({ showAlert, enabled }) {
   }, [showAlert, refreshOffers]);
 
   const editOffer = useCallback(async (offerId, payload) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert?.("You are not authenticated", "danger");
-      return { success: false };
-    }
-
-    const result = await updateOffer(offerId, payload, token);
+    const result = await updateOffer(offerId, payload);
 
     if (!result.success) {
       showAlert?.(result.message || "Failed to update offer", "danger");
@@ -194,14 +180,7 @@ export default function useAdminOffers({ showAlert, enabled }) {
   }, [showAlert, refreshOffers]);
 
   const toggleOfferActive = useCallback(async (offerId, isActive) => {
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert?.("You are not authenticated", "danger");
-      return { success: false };
-    }
-
-    const result = await updateOfferStatus(offerId, isActive, token);
+    const result = await updateOfferStatus(offerId, isActive);
 
     if (!result.success) {
       showAlert?.(result.message || "Failed to update offer status", "danger");

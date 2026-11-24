@@ -57,15 +57,7 @@ export default function CheckoutForm() {
         isProcessingRef.current = true;
 
         try {
-            const token = localStorage.getItem("nexmart-token");
-
-            if (!token) {
-                showAlert("Your login session has expired. Please log in again.", "danger");
-                return;
-            }
-
             const result = await createBackendOrder({
-                token,
                 shippingInfo: {
                     firstName: data.firstName,
                     lastName: data.lastName,

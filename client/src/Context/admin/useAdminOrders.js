@@ -60,20 +60,20 @@ export default function useAdminOrders({ showAlert, enabled = true }) {
   }, [ordersSearch]);
 
   const fetchOrders = useCallback(async ({ page = 1, search = debouncedOrdersSearch, orderStatus = ordersStatusFilter, paymentStatus = ordersPaymentFilter, shippingDecision = ordersShippingDecisionFilter } = {}) => {
-    const token = localStorage.getItem("nexmart-token");
+    // const token = localStorage.getItem("nexmart-token");
 
-    if (!token) {
-      setOrders([]);
-      setOrdersTotal(0);
-      setOrdersTotalPages(1);
-      setOrdersPage(1);
-      setOrdersStats({ ...INITIAL_ORDERS_STATS });
-      setOrdersLoading(false);
+    // if (!token) {
+    //   setOrders([]);
+    //   setOrdersTotal(0);
+    //   setOrdersTotalPages(1);
+    //   setOrdersPage(1);
+    //   setOrdersStats({ ...INITIAL_ORDERS_STATS });
+    //   setOrdersLoading(false);
 
-      showAlert("You are not authenticated", "danger");
+    //   showAlert("You are not authenticated", "danger");
 
-      return { success: false };
-    }
+    //   return { success: false };
+    // }
 
     const requestId = ++ordersRequestId.current;
 
@@ -81,7 +81,6 @@ export default function useAdminOrders({ showAlert, enabled = true }) {
 
     try {
       const result = await getAdminOrders({
-        token,
         page,
         limit: ORDERS_LIMIT,
         search,
@@ -162,20 +161,13 @@ export default function useAdminOrders({ showAlert, enabled = true }) {
       return { success: false };
     }
 
-    const token = localStorage.getItem("nexmart-token");
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-      return { success: false };
-    }
-
     setOrderItemsLoading((current) => ({
       ...current,
       [orderId]: true,
     }));
 
     try {
-      const result = await getBackendAdminOrderItems(orderId, token, { page, limit: ORDER_ITEMS_LIMIT });
+      const result = await getBackendAdminOrderItems(orderId, { page, limit: ORDER_ITEMS_LIMIT });
       const newItems = result.items || [];
 
       setOrderItems((current) => ({
@@ -235,14 +227,8 @@ export default function useAdminOrders({ showAlert, enabled = true }) {
   }, [onHoldSubmitting]);
 
   const submitOnHoldDecision = useCallback(async (reason, decision) => {
-    const token = localStorage.getItem("nexmart-token");
     const orderId = activeOnHoldOrder?._id;
     const cleanReason = typeof reason === "string" ? reason.trim() : "";
-
-    if (!token) {
-      showAlert("You are not authenticated", "danger");
-      return { success: false };
-    }
 
     if (!orderId || !cleanReason || onHoldSubmitting) {
       return { success: false };
@@ -257,9 +243,9 @@ export default function useAdminOrders({ showAlert, enabled = true }) {
 
     try {
       if (decision === "approved") {
-        await shipBackendOrder(orderId, cleanReason, token);
+        await shipBackendOrder(orderId, cleanReason);
       } else if (decision === "rejected") {
-        await rejectBackendOrder(orderId, cleanReason, token);
+        await rejectBackendOrder(orderId, cleanReason);
       } else {
         return { success: false };
       }

@@ -14,6 +14,7 @@ export default function CheckoutProvider({ children }) {
     const [isLoaded, setIsLoaded] = useState(false);
 
     const { user, loading: userLoading } = useUserContext();
+
     const [orders, setOrders] = useState([]);
     const [ordersLoading, setOrdersLoading] = useState(true);
     const [ordersError, setOrdersError] = useState("");
@@ -74,6 +75,7 @@ export default function CheckoutProvider({ children }) {
             setOrders([]);
             setOrdersError("");
             setOrdersLoading(false);
+
             return;
         }
 
@@ -84,20 +86,21 @@ export default function CheckoutProvider({ children }) {
             setOrdersError("");
 
             try {
-                const token = localStorage.getItem("nexmart-token");
+                const result = await getBackendMyOrders();
 
-                if (!token) {
-                    throw new Error("You must log in to view your orders");
-                }
-
-                const result = await getBackendMyOrders(token);
+                const userOrders = Array.isArray(result?.orders)
+                    ? result.orders
+                    : Array.isArray(result?.data?.orders) ? result.data.orders : [];
 
                 if (!cancelled) {
-                    setOrders(result.orders || []);
+                    setOrders(userOrders);
                 }
             } catch (error) {
+                console.error("Failed to load user orders:", error);
+
                 if (!cancelled) {
                     setOrdersError(error.message || "Could not load orders");
+
                     setOrders([]);
                 }
             } finally {
@@ -121,6 +124,7 @@ export default function CheckoutProvider({ children }) {
             setServerPricing(null);
             setCheckoutPricingError("");
             setCheckoutPricingLoading(false);
+
             return;
         }
 
@@ -162,10 +166,7 @@ export default function CheckoutProvider({ children }) {
         if (!product) return;
 
         setCheckoutItems([
-            {
-                ...product,
-                quantity,
-            },
+            { ...product, quantity },
         ]);
     };
 
@@ -185,8 +186,9 @@ export default function CheckoutProvider({ children }) {
         setCheckoutPricingError("");
     };
 
-    const totalItems = useMemo(() => 
-        checkoutItems.reduce((total, item) => total + Number(item.quantity || 1), 0), [checkoutItems]
+    const totalItems = useMemo(
+        () => checkoutItems.reduce((total, item) => total + Number(item.quantity || 1), 0),
+        [checkoutItems]
     );
 
     const subtotal = serverPricing?.totals?.subtotal ?? 0;

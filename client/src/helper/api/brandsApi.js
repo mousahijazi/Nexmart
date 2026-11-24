@@ -1,51 +1,35 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch, readApiJson, getApiError } from "../apiFetch";
 
-export async function getBrand( limit, page = 1, token = null, filters = {}) {
+export async function getBrand(limit, page = 1, filters = {}) {
   try {
-    const headers = {};
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
     const params = new URLSearchParams();
 
     if (limit) {
-      params.set("limit", limit);
-      params.set("page", page);
+      params.set("limit", String(limit));
+      params.set("page", String(page));
     }
 
     const search = filters.search?.trim();
 
-    if (search) {
-      params.set("search", search);
-    }
+    if (search) params.set("search", search);
 
     if (filters.status && filters.status !== "all") {
       params.set("status", filters.status);
     }
 
-    const queryString = params.toString();
+    const query = params.toString();
 
-    const url = `${API_URL}/api/v1/brands${ queryString ? `?${queryString}` : ""}`;
+    const response = await apiFetch(`/api/v1/brands${query ? `?${query}` : ""}`);
 
-    const res = await fetch(url, {
-      headers,
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
-    const json = await res.json();
+    const result = await readApiJson(response);
+    const data = result.data || {};
 
     return {
-      brands: json.data?.brands || [],
-      total: json.data?.total || 0,
-      page: json.data?.page || 1,
-      limit: json.data?.limit || limit || 10,
-      totalPages: json.data?.totalPages || 0,
+      brands: data.brands || [],
+      total: data.total || 0,
+      page: data.page || 1,
+      limit: data.limit || limit || 10,
+      totalPages: data.totalPages || 0,
     };
   } catch (error) {
     console.error("getBrand:", error);
@@ -60,57 +44,14 @@ export async function getBrand( limit, page = 1, token = null, filters = {}) {
   }
 }
 
-export async function createBrand(formData, token) {
+export async function createBrand(formData) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/brands`, {
+    const response = await apiFetch("/api/v1/brands", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       body: formData,
     });
 
-    const json = await res.json();
-
-    if (!res.ok || json.status !== "success") {
-      return {
-        success: false,
-        message: json.message || "Failed to create brand",
-      };
-    }
-
-    return {
-      success: true,
-      brand: json.data?.brand,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: "Something went wrong",
-    };
-  }
-}
-
-export async function updateBrand(brandId, formData, token) {
-  try {
-    const response = await fetch(`${API_URL}/api/v1/brands/${brandId}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok || result.status !== "success") {
-      return {
-        success: false,
-        message: result.message || "Failed to update brand",
-      };
-    }
+    const result = await readApiJson(response);
 
     return {
       success: true,
@@ -119,33 +60,49 @@ export async function updateBrand(brandId, formData, token) {
   } catch (error) {
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to create brand"),
     };
   }
 }
 
-export async function updateBrandStatus(brandId, isActive, token) {
+export async function updateBrand(brandId, formData) {
   try {
-    const res = await fetch(`${API_URL}/api/v1/brands/${brandId}/status`,
+    const response = await apiFetch(
+      `/api/v1/brands/${encodeURIComponent(brandId)}`,
+      {
+        method: "PATCH",
+        body: formData,
+      }
+    );
+
+    const result = await readApiJson(response);
+
+    return {
+      success: true,
+      brand: result.data?.brand,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: getApiError(error, "Failed to update brand"),
+    };
+  }
+}
+
+export async function updateBrandStatus(brandId, isActive) {
+  try {
+    const response = await apiFetch(
+      `/api/v1/brands/${encodeURIComponent(brandId)}/status`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ isActive }),
-        cache: "no-store",
       }
     );
 
-    const result = await res.json();
-
-    if (!res.ok || result.status !== "success") {
-      return {
-        success: false,
-        message: result.message || "Failed to update brand status",
-      };
-    }
+    const result = await readApiJson(response);
 
     return {
       success: true,
@@ -156,7 +113,7 @@ export async function updateBrandStatus(brandId, isActive, token) {
 
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to update brand status"),
     };
   }
 }

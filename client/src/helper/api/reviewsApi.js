@@ -1,27 +1,24 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch, readApiJson, getApiError } from "../apiFetch";
 
 export async function getProductReviews(productId, page = 1, limit = 10) {
   try {
-    const response = await fetch(`${API_URL}/api/v1/reviews/products/${productId}/reviews?page=${page}&limit=${limit}`,
-      {
-        method: "GET",
-        cache: "no-store",
-      }
-    );
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await apiFetch(`/api/v1/reviews/products/${encodeURIComponent(productId)}/reviews?${params}`);
 
-    const result = await response.json();
+    const result = await readApiJson(response);
+    const data = result.data || {};
 
     return {
       success: true,
-      reviews: result.data?.reviews || [],
-      total: result.data?.total || 0,
-      page: result.data?.page || page,
-      limit: result.data?.limit || limit,
-      totalPages: result.data?.totalPages || 0,
+      reviews: data.reviews || [],
+      total: data.total || 0,
+      page: data.page || page,
+      limit: data.limit || limit,
+      totalPages: data.totalPages || 0,
     };
   } catch (error) {
     console.error("getProductReviews:", error);
@@ -33,36 +30,25 @@ export async function getProductReviews(productId, page = 1, limit = 10) {
       page,
       limit,
       totalPages: 0,
-      message: "Something went wrong",
+      message: getApiError(error),
     };
   }
 }
 
-export async function createReview(productId, rating, comment, token) {
+export async function createReview(productId, rating, comment) {
   try {
-    const response = await fetch(`${API_URL}/api/v1/reviews/products/${productId}/reviews`,
+    const response = await apiFetch(
+      `/api/v1/reviews/products/${encodeURIComponent(productId)}/reviews`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          rating,
-          comment,
-        }),
-        cache: "no-store",
+        body: JSON.stringify({ rating, comment }),
       }
     );
 
-    const result = await response.json();
-
-    if (!response.ok || result.status !== "success") {
-      return {
-        success: false,
-        message: result.message || "Failed to create review",
-      };
-    }
+    const result = await readApiJson(response);
 
     return {
       success: true,
@@ -73,7 +59,7 @@ export async function createReview(productId, rating, comment, token) {
 
     return {
       success: false,
-      message: "Something went wrong",
+      message: getApiError(error, "Failed to create review"),
     };
   }
 }

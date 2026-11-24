@@ -2,11 +2,10 @@ import express from "express";
 import { createBrandController, getAllBrandsController, getBrandByIdController, updateBrandController, updateBrandStatusController, deleteBrandController } from "../../controllers/brandController.js";
 import validate from "../../middlewares/validate.js";
 import { uploadBrandLogo, uploadBrandUpdateImage } from "../../middlewares/uploadmiddleware/uploadBrand.js";
-import { authToken } from "../../middlewares/auth.js";
+import { authToken, optionalAuth } from "../../middlewares/auth.js";
 import { authorizeRoles } from "../../middlewares/role.js";
 import { StatusValidator } from "../../validators/statusSchema.js";
 import checkUserRole from "../../middlewares/checkUserRole.js";
-import optionalAuth from "../../middlewares/optionalAuth.js";
 
 const router = express.Router();
 
